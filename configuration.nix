@@ -11,6 +11,7 @@
   ];
   # Modules
   modules.console.fish.enable = hostVariables.modules.console.fish;
+  modules.console.zsh.enable = hostVariables.modules.console.zsh;
   modules.driver.amdgpu.enable = hostVariables.modules.driver.amdgpu;
   modules.driver.nvidia.enable = hostVariables.modules.driver.nvidia;
   modules.gui.gnome.enable = hostVariables.modules.gui.gnome;

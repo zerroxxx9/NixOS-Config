@@ -7,6 +7,7 @@
   modules = {
     console = {
       fish = false;
+      zsh = true;
     };
     driver = {
       nvidia = true;

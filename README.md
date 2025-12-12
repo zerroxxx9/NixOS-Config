@@ -161,10 +161,3 @@ rebuild switch --flake .#your-host
 If you're using `nix-direnv`, reload the shell with `direnv reload`.
 
 ---
-
-## 📄 License
-
-This project is licensed under the [MIT License](./LICENSE).
----
-
-> 💬 Feedback, PRs, and questions are always welcome.

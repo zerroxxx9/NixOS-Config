@@ -17,24 +17,35 @@
 
     environment.systemPackages = with pkgs; [
       dconf-editor
-      ffmpegthumbnailer
-      gnome-chess
       gnome-tweaks
-      gnomeExtensions.clipboard-history
       gnomeExtensions.dash-to-dock
       gnomeExtensions.user-themes
       gnomeExtensions.system-monitor
-      gucharmap
-      loupe
-      papirus-icon-theme
+      gnomeExtensions.clipboard-history
       yaru-theme
+      zsh-clipboard
     ];
 
+    home-manager.useGlobalPkgs = true;
+    home-manager.useUserPackages = true;
     home-manager.users.${hostVariables.username} = {
-      dconf.settings = {
-        "org/gnome/shell" = {
-          app-picker-layout = "[]";
+      home.packages = with pkgs; [
+        zsh-autosuggestions
+        zsh-syntax-highlighting
+      ];
+      programs.zsh = {
+        enable = true;
+        enableCompletion = true;
+
+        oh-my-zsh = {
+          enable = true;
+          plugins = ["git" "zsh-autosuggestions" "zsh-syntax-highlighting"];
+          theme = "robbyrussell";
         };
+      };
+
+      home.stateVersion = "25.11";
+      dconf.settings = {
         "org/gnome/shell" = {
           disable-user-extensions = false;
           disabled-extensions = [];
@@ -51,14 +62,13 @@
           show-battery-percentage = true;
           color-scheme = "prefer-dark";
           gtk-theme = "Yaru";
-          cursor-theme = "Yaru";
-          icon-theme = "Papirus-Dark";
+          icon-theme = "Yaru";
         };
         "org/gnome/shell/extensions/user-theme" = {
           name = "Yaru-dark";
         };
         "org/gnome/shell/extensions/dash-to-dock" = {
-          dock-position = "BOTTOM";
+          dock-position = "LEFT";
           dock-fixed = true;
           extend-height = true;
           dash-max-icon-size = 42;
@@ -78,6 +88,7 @@
           edge-tiling = true;
           dynamic-workspaces = true;
           workspaces-only-on-primary = false;
+          experimental-features = ["scale-monitor-framebuffer" "xwayland-native-scaling"];
         };
         "org/gtk/gtk4/settings/file-chooser" = {
           show-hidden = true;
@@ -95,13 +106,10 @@
         };
         "org/gnome/desktop/screensaver" = {
           lock-enabled = true;
-          lock-delay = 0;
+          lock-delay = 0; # 0sec
         };
         "org/gnome/desktop/notifications" = {
           show-in-lock-screen = false;
-        };
-        "org/gnome/desktop/peripherals/mouse" = {
-          left-handed = hostVariables.gnome.left-handed;
         };
 
         # keybindings
@@ -121,6 +129,12 @@
           name = "Open file manager";
           command = "nautilus ./Downloads";
           binding = "<Super>e";
+        };
+        # TODO fix flameshot
+        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-flameshot" = {
+          name = "Open flameshot (screenshot tool)";
+          command = "flameshot gui";
+          binding = "<Primary><Shift><Alt>section";
         };
       };
     };

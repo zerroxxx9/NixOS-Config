@@ -62,7 +62,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${hostVariables.username} = {
     isNormalUser = true;
-    description = "Frederik Nies";
+    description = "Erik Peters";
     extraGroups = ["networkmanager" "wheel"];
     packages = with pkgs; [
       #  thunderbird
@@ -83,22 +83,20 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    android-studio
-    bitwarden-desktop
     unstable.brave
-    unstable.dbeaver-bin
     unstable.bruno
-    drawio
-    jetbrains.idea-ultimate
-    keepassxc
-    logseq
     neofetch
-    pinta
-    yubioath-flutter
+    jetbrains.idea-ultimate
+    discord
+    keepassxc
+    github-desktop
+    vscode-with-extensions
+    obsidian
+    gh
   ];
 
   #Yubikey
-  services.pcscd.enable = true;
+  services.pcscd.enable = false;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

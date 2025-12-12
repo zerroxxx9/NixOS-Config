@@ -1,5 +1,5 @@
 {
-  username = "erik";
+  username = "erikp";
   host = "default";
   system = "x86_64-linux";
   location = "de_DE.UTF-8";
@@ -38,7 +38,7 @@
       credential-helper = "store";
     };
     credentials = {
-      email = "31123359+Sandbox-Freddy@users.noreply.github.com";
+      email = "159010501+kushyme@users.noreply.github.com";
       name = "kushyme";
     };
     includes = [];
@@ -47,6 +47,5 @@
     fav-icon = [
     ];
     idle-delay = 0;
-    left-handed = false;
   };
 }

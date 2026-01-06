@@ -44,7 +44,7 @@
     includes = [];
   };
   gnome = {
-    fav-icon = [];
+    fav-icon = ["org.gnome.Nautilus.desktop" "discord.desktop"  "brave-browser.desktop" "brave-pjibgclleladliembfgfagdaldikeohf-Default.desktop" "brave-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" "brave-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop" "idea.desktop" "bruno.desktop" "org.keepassxc.KeePassXC.desktop" "obsidian.desktop"];
     idle-delay = 0;
   };
 }

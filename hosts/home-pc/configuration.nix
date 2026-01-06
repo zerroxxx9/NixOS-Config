@@ -85,6 +85,7 @@
   environment.systemPackages = with pkgs; [
     unstable.brave
     unstable.bruno
+    spotify
     neofetch
     jetbrains.idea-ultimate
     discord

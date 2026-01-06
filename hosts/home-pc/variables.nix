@@ -3,7 +3,7 @@ let
 in
   default
   // {
-    host = "work";
+    host = "home-pc";
     modules =
       default.modules
       // {

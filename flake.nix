@@ -1,9 +1,9 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager?ref=release-25.05";
+      url = "github:nix-community/home-manager?ref=release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -49,6 +49,10 @@
       work = mkNixosConfiguration {
         modules = [./hosts/work];
         hostVariables = import ./hosts/work/variables.nix;
+      };
+      home-pc = mkNixosConfiguration {
+        modules = [./hosts/home-pc];
+        hostVariables = import ./hosts/home-pc/variables.nix;
       };
     };
     overlays = import ./overlays.nix inputs;

@@ -2,7 +2,8 @@
   username = "erikp";
   host = "default";
   system = "x86_64-linux";
-  location = "de_DE.UTF-8";
+  osLanguage = "en_US.UTF-8";
+  keyboardLayout = "de_DE.UTF-8";
   stateVersion = "25.11";
   modules = {
     console = {
@@ -28,8 +29,6 @@
     systemSettings = {
       bootanimation = true;
       gaming = false;
-      printer = false;
-      scanner = false;
     };
   };
   git = {
@@ -45,8 +44,7 @@
     includes = [];
   };
   gnome = {
-    fav-icon = [
-    ];
+    fav-icon = [];
     idle-delay = 0;
   };
 }

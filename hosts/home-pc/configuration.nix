@@ -87,7 +87,7 @@
     unstable.bruno
     spotify
     neofetch
-    jetbrains.idea-ultimate
+    jetbrains.idea
     discord
     keepassxc
     github-desktop

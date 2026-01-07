@@ -86,7 +86,7 @@
     unstable.brave
     unstable.bruno
     neofetch
-    jetbrains.idea-ultimate
+    jetbrains.idea
     discord
     keepassxc
     github-desktop

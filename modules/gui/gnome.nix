@@ -68,7 +68,7 @@
           name = "Yaru-dark";
         };
         "org/gnome/shell/extensions/dash-to-dock" = {
-          dock-position = "LEFT";
+          dock-position = "BOTTOM";
           dock-fixed = true;
           extend-height = true;
           dash-max-icon-size = 42;

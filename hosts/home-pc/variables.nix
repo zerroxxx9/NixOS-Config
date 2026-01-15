@@ -17,7 +17,7 @@ in
           // {
             display-link = true;
           };
-          systemSettings =
+        systemSettings =
           default.modules.systemSettings
           // {
             gaming = true;

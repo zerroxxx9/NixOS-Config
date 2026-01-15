@@ -16,7 +16,7 @@ This repository contains my modular NixOS system configuration, powered by [Nix 
 ### 1. Clone into `.dotfiles`
 
 ```bash
-git clone https://github.com/Sandbox-Freddy/.dotfiles ~/.dotfiles
+git clone https://github.com/kushyme/.dotfiles ~/.dotfiles
 cd ~/.dotfiles
 ```
 
@@ -25,7 +25,7 @@ cd ~/.dotfiles
 Edit:
 
 ```nix
-./hosts/{work,private}/variables.nix
+./hosts/{work,home-pc}/variables.nix
 ```
 
 Then run:
@@ -51,7 +51,7 @@ switch
 
 ## ➕ Adding a New Host
 
-1. Create a new folder in `./hosts/`, e.g. `my-laptop`
+1. Create a new folder in `./hosts/`, e.g. `home-pc`
 2. Add these files:
     - `configuration.nix`
     - `default.nix`
@@ -62,13 +62,14 @@ switch
 
 ```nix
 {
-  username = "freddy";
+  username = "Erik";
   host = "default";
   system = "x86_64-linux";
-  stateVersion = "25.05";
+  stateVersion = "25.11";
   modules = {
     console = {
-      fish = true;
+      fish = false;
+      zsh = true;
     };
     driver = {
       nvidia = false;
@@ -100,8 +101,8 @@ switch
       credential-helper = "store";
     };
     credentials = {
-      email = "31123359+Sandbox-Freddy@users.noreply.github.com";
-      name = "Sandbox-Freddy";
+      email = "159010501+kushyme@users.noreply.github.com";
+      name = "kushyme";
     };
     includes = [];
   };
@@ -116,9 +117,9 @@ switch
 
 ```nix
 nixosConfigurations = {
-  my-laptop = mkNixosConfiguration {
-    modules = [ ./hosts/my-laptop ];
-    hostVariables = import ./hosts/my-laptop/variables.nix;
+  home-pc = mkNixosConfiguration {
+    modules = [ ./hosts/home-pc ];
+    hostVariables = import ./hosts/home-pc/variables.nix;
   };
 };
 ```

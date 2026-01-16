@@ -55,6 +55,7 @@
       "bruno.desktop"
       "org.keepassxc.KeePassXC.desktop"
       "obsidian.desktop"
+      "org.gnome.Console.desktop"
     ];
     idle-delay = 0;
   };

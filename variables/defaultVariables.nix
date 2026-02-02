@@ -28,7 +28,7 @@
     };
     systemSettings = {
       bootanimation = true;
-      gaming = true;
+      gaming = false;
     };
   };
   git = {

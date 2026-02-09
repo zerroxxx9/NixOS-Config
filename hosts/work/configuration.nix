@@ -85,19 +85,12 @@
   environment.systemPackages = with pkgs; [
     unstable.brave
     unstable.bruno
-    neofetch
     jetbrains.idea
-    discord
     keepassxc
-    github-desktop
     vscode-with-extensions
     obsidian
     gh
-    python313
   ];
-
-  #Yubikey
-  services.pcscd.enable = false;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

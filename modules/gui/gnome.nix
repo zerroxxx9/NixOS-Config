@@ -23,27 +23,11 @@
       gnomeExtensions.system-monitor
       gnomeExtensions.clipboard-history
       yaru-theme
-      zsh-clipboard
     ];
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
     home-manager.users.${hostVariables.username} = {
-      home.packages = with pkgs; [
-        zsh-autosuggestions
-        zsh-syntax-highlighting
-      ];
-      programs.zsh = {
-        enable = true;
-        enableCompletion = true;
-
-        oh-my-zsh = {
-          enable = true;
-          plugins = ["git" "zsh-autosuggestions" "zsh-syntax-highlighting"];
-          theme = "robbyrussell";
-        };
-      };
-
       home.stateVersion = "25.11";
       dconf.settings = {
         "org/gnome/shell" = {

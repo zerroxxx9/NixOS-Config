@@ -11,7 +11,6 @@
   ];
   # Modules
   modules.console.fish.enable = hostVariables.modules.console.fish;
-  modules.console.zsh.enable = hostVariables.modules.console.zsh;
   modules.driver.amdgpu.enable = hostVariables.modules.driver.amdgpu;
   modules.driver.nvidia.enable = hostVariables.modules.driver.nvidia;
   modules.gui.gnome.enable = hostVariables.modules.gui.gnome;
@@ -20,8 +19,6 @@
   modules.software.flatpak.enable = hostVariables.modules.software.flatpak;
   modules.software.git.enable = hostVariables.modules.software.git;
   modules.software.noisetorch.enable = hostVariables.modules.software.noisetorch;
-  modules.software.wine.enable = hostVariables.modules.software.wine;
-  modules.software.ollama.enable = hostVariables.modules.software.ollama;
   modules.system.bootanimation.enable = hostVariables.modules.systemSettings.bootanimation;
   modules.system.gaming.enable = hostVariables.modules.systemSettings.gaming;
 

@@ -68,8 +68,7 @@ switch
   stateVersion = "25.11";
   modules = {
     console = {
-      fish = false;
-      zsh = true;
+      fish = true;
     };
     driver = {
       nvidia = false;
@@ -84,13 +83,11 @@ switch
       flatpak = false;
       git = true;
       noisetorch = true;
-      wine = false;
       vscode = true;
     };
     systemSettings = {
       bootanimation = true;
       gaming = false;
-      printer = true;
       virtualization = false;
     };
   };

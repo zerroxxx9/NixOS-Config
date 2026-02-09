@@ -8,7 +8,6 @@
   modules = {
     console = {
       fish = true;
-      zsh = false;
     };
     driver = {
       nvidia = false;
@@ -23,8 +22,6 @@
       flatpak = false;
       git = true;
       noisetorch = true;
-      wine = false;
-      ollama = false;
     };
     systemSettings = {
       bootanimation = true;
@@ -54,6 +51,7 @@
       "brave-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop"
       "brave-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop"
       "code.desktop"
+      "obsidian.desktop"
     ];
     idle-delay = 0;
   };

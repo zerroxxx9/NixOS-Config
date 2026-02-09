@@ -11,7 +11,7 @@
       zsh = true;
     };
     driver = {
-      nvidia = true;
+      nvidia = false;
       amdgpu = false;
     };
     gui = {

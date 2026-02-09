@@ -44,7 +44,17 @@
     includes = [];
   };
   gnome = {
-    fav-icon = [];
+    fav-icon = [
+      "org.keepassxc.KeePassXC.desktop"
+      "org.gnome.Console.desktop"
+      "bruno.desktop"
+      "idea.desktop"
+      "brave-browser.desktop"
+      "brave-pjibgclleladliembfgfagdaldikeohf-Default.desktop"
+      "brave-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop"
+      "brave-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop"
+      "code.desktop"
+    ];
     idle-delay = 0;
   };
 }

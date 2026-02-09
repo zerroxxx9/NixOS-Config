@@ -50,10 +50,6 @@
         modules = [./hosts/work];
         hostVariables = import ./hosts/work/variables.nix;
       };
-      home-pc = mkNixosConfiguration {
-        modules = [./hosts/home-pc];
-        hostVariables = import ./hosts/home-pc/variables.nix;
-      };
     };
     overlays = import ./overlays.nix inputs;
   };

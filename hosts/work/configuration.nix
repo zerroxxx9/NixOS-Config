@@ -62,7 +62,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.${hostVariables.username} = {
     isNormalUser = true;
-    description = "Erik Peters";
+    description = "zerrox";
     extraGroups = ["networkmanager" "wheel"];
     packages = with pkgs; [
       #  thunderbird

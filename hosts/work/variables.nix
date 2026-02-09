@@ -10,12 +10,12 @@ in
         driver =
           default.modules.driver
           // {
-            nvidia = true;
+            amdgpu = true;
           };
         software =
           default.modules.software
           // {
-            display-link = true;
+            display-link = false;
           };
       };
     git =

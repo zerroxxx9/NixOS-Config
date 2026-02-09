@@ -1,5 +1,5 @@
 {
-  username = "erikp";
+  username = "zerrox";
   host = "default";
   system = "x86_64-linux";
   osLanguage = "en_US.UTF-8";
@@ -7,8 +7,8 @@
   stateVersion = "25.11";
   modules = {
     console = {
-      fish = false;
-      zsh = true;
+      fish = true;
+      zsh = false;
     };
     driver = {
       nvidia = false;
@@ -38,25 +38,13 @@
       credential-helper = "store";
     };
     credentials = {
-      email = "159010501+kushyme@users.noreply.github.com";
-      name = "kushyme";
+      email = "190294721+zerroxxx9@users.noreply.github.com";
+      name = "zerroxxx9";
     };
     includes = [];
   };
   gnome = {
-    fav-icon = [
-      "org.gnome.Nautilus.desktop"
-      "discord.desktop"
-      "brave-browser.desktop"
-      "brave-pjibgclleladliembfgfagdaldikeohf-Default.desktop"
-      "brave-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop"
-      "brave-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop"
-      "idea.desktop"
-      "bruno.desktop"
-      "org.keepassxc.KeePassXC.desktop"
-      "obsidian.desktop"
-      "org.gnome.Console.desktop"
-    ];
+    fav-icon = [];
     idle-delay = 0;
   };
 }

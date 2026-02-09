@@ -16,7 +16,7 @@ This repository contains my modular NixOS system configuration, powered by [Nix 
 ### 1. Clone into `.dotfiles`
 
 ```bash
-git clone https://github.com/kushyme/.dotfiles ~/.dotfiles
+git clone https://github.com/zerroxxx9/NixOS-dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
@@ -62,7 +62,7 @@ switch
 
 ```nix
 {
-  username = "Erik";
+  username = "zerrox";
   host = "default";
   system = "x86_64-linux";
   stateVersion = "25.11";
@@ -101,8 +101,8 @@ switch
       credential-helper = "store";
     };
     credentials = {
-      email = "159010501+kushyme@users.noreply.github.com";
-      name = "kushyme";
+      email = "190294721+zerroxxx9@users.noreply.github.com";
+      name = "zerroxxx9";
     };
     includes = [];
   };

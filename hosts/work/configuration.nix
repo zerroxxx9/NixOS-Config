@@ -90,7 +90,9 @@
     vscode-with-extensions
     obsidian
     gh
+    zip
     unzip
+    burpsuite
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

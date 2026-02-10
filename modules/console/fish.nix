@@ -32,7 +32,7 @@
         programs.oh-my-posh = {
           enable = true;
           enableFishIntegration = true;
-          settings = builtins.fromJSON (builtins.unsafeDiscardStringContext (builtins.readFile ./oh-my-posh/theme/atomic.omp.json));
+          settings = builtins.fromJSON (builtins.unsafeDiscardStringContext (builtins.readFile ./oh-my-posh/theme/bubbles.omp.json));
         };
         programs.atuin = {
           enable = true;

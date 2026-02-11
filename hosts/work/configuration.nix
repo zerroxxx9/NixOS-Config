@@ -77,6 +77,10 @@
     enable = true;
   };
 
+  systemd.tmpfiles.rules = [
+    "d /home/${hostVariables.username}/Dev 0755 ${hostVariables.username}"
+  ];
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 

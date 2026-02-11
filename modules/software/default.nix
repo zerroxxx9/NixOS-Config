@@ -5,5 +5,6 @@
     ./flatpak.nix
     ./git.nix
     ./noisetorch.nix
+    ./vscode.nix
   ];
 }

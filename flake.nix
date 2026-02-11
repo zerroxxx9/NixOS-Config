@@ -6,6 +6,7 @@
       url = "github:nix-community/home-manager?ref=release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
   outputs = inputs @ {
@@ -41,7 +42,7 @@
             }
           ];
         specialArgs = {
-          inherit hostVariables;
+          inherit hostVariables inputs system;
         };
       };
   in {

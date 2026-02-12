@@ -52,6 +52,8 @@
 
   systemd.tmpfiles.rules = [
     "d /home/${hostVariables.username}/Dev 0755 ${hostVariables.username}"
+    "d /home/${hostVariables.username}/Documents/Berufsschule 0755 ${hostVariables.username}"
+    "d /home${hostVariables.username}/Documents/Obsidian 0755 ${hostVariables.username}"
   ];
 
   nixpkgs.config.allowUnfree = true;

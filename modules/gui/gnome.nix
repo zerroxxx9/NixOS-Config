@@ -49,8 +49,8 @@
           icon-theme = "Yaru";
         };
         "org/gnome/desktop/background" = {
-          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/7.jpg";
-          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/7.jpg";
+          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/2.jpg";
+          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/2.jpg";
           picture-options = "zoom"; # scaled, none, centred, zoom, streched, wallpaper, spanned
         };
         "org/gnome/shell/extensions/user-theme" = {
@@ -106,24 +106,17 @@
           custom-keybindings = [
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-open-terminal/"
             "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-open-filemanager/"
-            "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-flameshot/"
           ];
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-open-terminal" = {
           name = "Open terminal";
           command = "kgx";
-          binding = "<Super>r";
+          binding = "<Super>t";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-open-filemanager" = {
           name = "Open file manager";
           command = "nautilus ./Downloads";
           binding = "<Super>e";
-        };
-        # TODO fix flameshot
-        "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-flameshot" = {
-          name = "Open flameshot (screenshot tool)";
-          command = "flameshot gui";
-          binding = "<Primary><Shift><Alt>section";
         };
       };
     };

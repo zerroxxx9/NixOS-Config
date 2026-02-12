@@ -4,5 +4,6 @@
     update = "nix flake update --flake /home/${hostVariables.username}/.dotfiles";
     switchnix = "nh os switch -H ${hostVariables.host} /home/${hostVariables.username}/.dotfiles";
     nixfmt = "alejandra ./";
+    bye = "shutdown now";
   };
 }

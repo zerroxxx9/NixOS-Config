@@ -42,6 +42,7 @@
     "editor.fontFamily" = "'JetBrainsMono Nerd Font', 'Droid Sans Mono', 'monospace', monospace";
     "terminal.integrated.fontSize" = 14;
     "markdown.preview.fontSize" = 20;
+    "files.autoSave" = "onFocusChange";
   };
 in {
   options.default-extensions.enable = lib.mkOption {

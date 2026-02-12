@@ -15,7 +15,6 @@
     # Optional: Theme auswählen
     boot.plymouth.theme = "spinner"; # oder "spinner", "fade-in", "text", "tribar" …
 
-    # Initrd muss systemd verwenden – hast du schon ✅
     boot.initrd.systemd.enable = true;
   };
 }

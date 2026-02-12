@@ -60,7 +60,7 @@
           dock-position = "BOTTOM";
           dock-fixed = true;
           extend-height = true;
-          dash-max-icon-size = 42;
+          dash-max-icon-size = 38;
           click-action = "minimize-or-previews";
           multi-monitor = true;
           scroll-action = "cycle-windows";

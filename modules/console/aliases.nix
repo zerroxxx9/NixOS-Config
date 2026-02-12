@@ -5,5 +5,6 @@
     switchnix = "nh os switch -H ${hostVariables.host} /home/${hostVariables.username}/.dotfiles";
     nixfmt = "alejandra ./";
     bye = "shutdown now";
+    flake = "direnv allow";
   };
 }

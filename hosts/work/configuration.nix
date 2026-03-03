@@ -11,7 +11,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = hostVariables.host; # Define your hostname.
+  networking.hostName = hostVariables.host;
 
   networking.networkmanager.enable = true;
 
@@ -61,14 +61,15 @@
   environment.systemPackages = with pkgs; [
     unstable.brave
     unstable.bruno
+    unstable.obsidian
     jetbrains.idea
     keepassxc
     vscode-with-extensions
-    obsidian
     gh
     zip
     unzip
     burpsuite
+    libreoffice-qt
   ];
 
   system.stateVersion = hostVariables.stateVersion;

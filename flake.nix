@@ -6,6 +6,10 @@
       url = "github:nix-community/home-manager?ref=release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
   };
 
@@ -50,6 +54,13 @@
       work = mkNixosConfiguration {
         modules = [./hosts/work];
         hostVariables = import ./hosts/work/variables.nix;
+      };
+      wsl = mkNixosConfiguration {
+        modules = [
+          ./hosts/wsl
+          inputs.nixos-wsl.nixosModules.wsl
+        ];
+        hostVariables = import ./hosts/wsl/variables.nix;
       };
     };
     overlays = import ./overlays.nix inputs;

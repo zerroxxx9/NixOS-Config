@@ -7,8 +7,6 @@
     enable = true;
     defaultUser = variables.username;
     startMenuLaunchers = true;
-
-    interop.enable = true;
   };
 
   boot.loader.grub.enable = lib.mkForce false;

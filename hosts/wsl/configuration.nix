@@ -1,11 +1,11 @@
-{ config, pkgs, lib, variables, ... }:
+{ hostVariables, pkgs, lib, ... }:
 
 {
   imports = [];
 
   wsl = {
     enable = true;
-    defaultUser = variables.username;
+    defaultUser = hostVariables.username;
     startMenuLaunchers = true;
   };
 
@@ -13,11 +13,19 @@
   boot.loader.systemd-boot.enable = lib.mkForce false;
 
   networking = {
-    hostName = variables.host;
+    hostName = hostVariables.host;
     useHostResolvConf = lib.mkForce false;
   };
 
   services.resolved.enable = true;
+
+  users.users.${hostVariables.username} = {
+    isNormalUser = true;
+    description = hostVariables.username;
+    extraGroups = [ "wheel" ];
+  };
+
+  programs.direnv.enable = true;
 
   environment.systemPackages = with pkgs; [
     wget
@@ -43,5 +51,7 @@
     LC_TIME           = "de_DE.UTF-8";
   };
 
-  system.stateVersion = variables.stateVersion;
+  nixpkgs.config.allowUnfree = true;
+
+  system.stateVersion = hostVariables.stateVersion;
 }

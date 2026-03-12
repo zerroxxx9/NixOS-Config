@@ -22,9 +22,9 @@
   modules.system.bootanimation.enable = hostVariables.modules.systemSettings.bootanimation;
   modules.system.gaming.enable = hostVariables.modules.systemSettings.gaming;
 
-  system.activationScripts.script.text = ''
-      cp /home/${hostVariables.username}/.dotfiles/assets/profilePictures/kitty.jpg /var/lib/AccountsService/icons/${hostVariables.username}
-    ''; # requires to manually insert the picture via settings due to missing users config
+  system.activationScripts.script.text = lib.optionalString hostVariables.modules.gui.gnome ''
+    cp /home/${hostVariables.username}/.dotfiles/assets/profilePictures/kitty.jpg /var/lib/AccountsService/icons/${hostVariables.username}
+  ''; # requires to manually insert the picture via settings due to missing users config
 
   environment.systemPackages = with pkgs; [
     alejandra

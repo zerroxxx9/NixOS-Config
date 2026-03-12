@@ -4,6 +4,7 @@
 {
   pkgs,
   hostVariables,
+  lib
   ...
 }: {
   imports = [

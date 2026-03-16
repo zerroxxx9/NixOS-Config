@@ -58,6 +58,7 @@
       "gppongmhjkpfnbhagpmjfkannfbllamg" #Wappalyzer
       "fmkadmapgofadopljbjfkapdkoienihi" #React Dev Tools
       "eimadpbcbfnmbkopoojfekhnkhdbieeh" #Dark Reader
+      "gcknhkkoolaabfmlnjonogaaifnjlfnp" #FoxyProxy
     ];
   };
 

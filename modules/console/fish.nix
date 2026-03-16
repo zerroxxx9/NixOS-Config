@@ -20,6 +20,11 @@
           interactiveShellInit = ''
             # Disable greeting
             set fish_greeting
+            function launch_ranger
+              ranger
+              commandline -f repaint
+            end
+            bind \e\[1\;2C launch_ranger
           '';
         };
         programs.oh-my-posh = {

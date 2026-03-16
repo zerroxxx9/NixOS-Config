@@ -24,7 +24,7 @@
               ranger
               commandline -f repaint
             end
-            bind \e\[1\;2C launch_ranger
+            bind shift-right launch_ranger
           '';
         };
         programs.oh-my-posh = {

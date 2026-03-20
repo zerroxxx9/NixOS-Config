@@ -25,7 +25,7 @@ cd ~/.dotfiles
 Edit:
 
 ```nix
-./hosts/{work,home-pc}/variables.nix
+./hosts/{work,wsl,homelab}/variables.nix
 ```
 
 Then run:
@@ -76,6 +76,7 @@ switch
     };
     gui = {
       gnome = true;
+      hyprland = false;
     };
     software = {
       display-link = false;

@@ -62,6 +62,13 @@
         ];
         hostVariables = import ./hosts/wsl/variables.nix;
       };
+      homelab = mkNixosConfiguration {
+        modules = [
+          ./hosts/homelab
+          inputs.nixos-homelab.nixosModules.homelab
+        ];
+        hostVariables = import ./hosts/homelab/variables.nix;
+      };
     };
     overlays = import ./overlays.nix inputs;
   };

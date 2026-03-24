@@ -6,5 +6,6 @@
     nixfmt = "alejandra ./";
     bye = "shutdown now";
     flake = "direnv allow";
+    check = "nix store verify --all";
   };
 }

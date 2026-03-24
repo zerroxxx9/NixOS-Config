@@ -46,6 +46,11 @@
 
   programs.direnv.enable = true;
 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    biome
+  ];
+
   programs.firefox = {
     enable = true;
   };
@@ -65,7 +70,7 @@
   systemd.tmpfiles.rules = [
     "d /home/${hostVariables.username}/Dev 0755 ${hostVariables.username}"
     "d /home/${hostVariables.username}/Documents/Berufsschule 0755 ${hostVariables.username}"
-    "d /home${hostVariables.username}/Documents/Obsidian 0755 ${hostVariables.username}"
+    "d /home/${hostVariables.username}/Documents/Obsidian 0755 ${hostVariables.username}"
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -74,7 +79,6 @@
     unstable.brave
     unstable.bruno
     unstable.obsidian
-    jetbrains.idea
     keepassxc
     vscode-with-extensions
     gh

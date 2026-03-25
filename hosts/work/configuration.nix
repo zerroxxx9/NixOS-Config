@@ -38,10 +38,6 @@
     pulse.enable = true;
   };
 
-  environment.sessionVariables = {
-    NIXOS_ONZONE_WL = "1";
-  };
-
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
@@ -85,7 +81,6 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    unstable.brave
     unstable.bruno
     unstable.obsidian
     keepassxc
@@ -96,6 +91,12 @@
     burpsuite
     libreoffice-qt
     chromium
+    (unstable.brave.override{
+      commandLineArgs = [
+        "--enable-features=UseOzonePlatform"
+        "--ozone-platform=wayland"
+      ];
+    })
   ];
 
   system.stateVersion = hostVariables.stateVersion;

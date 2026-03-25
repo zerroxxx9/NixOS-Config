@@ -38,6 +38,15 @@
     pulse.enable = true;
   };
 
+  environment.sessionVariables = {
+    NIXOS_ONZONE_WL = "1";
+  };
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+  };
+
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";

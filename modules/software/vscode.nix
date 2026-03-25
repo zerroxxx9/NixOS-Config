@@ -43,6 +43,7 @@
     "terminal.integrated.fontSize" = 14;
     "markdown.preview.fontSize" = 20;
     "files.autoSave" = "onFocusChange";
+    "git.blame.editorDecoration.enabled" = "true";
   };
 in {
   options.default-extensions.enable = lib.mkOption {

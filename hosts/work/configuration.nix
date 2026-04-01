@@ -90,6 +90,7 @@
     unzip
     burpsuite
     libreoffice-qt
+    github-copilot-cli
     chromium
     (unstable.brave.override{
       commandLineArgs = [

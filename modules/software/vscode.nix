@@ -31,9 +31,6 @@
     ms-vscode-remote.remote-ssh
     ms-vscode.hexeditor
 
-    # vibecode
-    kilocode.kilo-code
-
     # nix & flake support
     bbenoist.nix
     mkhl.direnv

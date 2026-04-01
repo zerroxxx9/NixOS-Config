@@ -40,24 +40,29 @@
   };
 
   config = lib.mkIf config.tailscale.enable {
-    services.tailscale = {
-      enable = true;
+    services.tailscale =
+      {
+        enable = true;
 
-      authKeyFile = lib.mkIf (config.tailscale.authKeyFile != null) config.tailscale.authKeyFile;
+        extraUpFlags =
+          lib.optionals config.tailscale.exitNode [ "--advertise-exit-node" ]
+          ++ lib.optionals (config.tailscale.subnetRoutes != []) [
+            "--advertise-routes=${lib.concatStringsSep "," config.tailscale.subnetRoutes}"
+          ]
+          ++ lib.optionals config.tailscale.useSSH [ "--ssh" ];
+      }
+      // lib.optionalAttrs (config.tailscale.authKeyFile != null) {
+        authKeyFile = config.tailscale.authKeyFile;
+      };
 
-      extraUpFlags =
-        lib.optionals config.tailscale.exitNode [ "--advertise-exit-node" ]
-        ++ lib.optionals (config.tailscale.subnetRoutes != []) [
-          "--advertise-routes=${lib.concatStringsSep "," config.tailscale.subnetRoutes}"
-        ]
-        ++ lib.optionals config.tailscale.useSSH [ "--ssh" ];
-    };
-
-    networking.firewall = {
-      allowedUDPPorts = [ config.services.tailscale.port ];
-      trustedInterfaces = [ "tailscale0" ];
-      checkReversePath = lib.mkIf (config.tailscale.exitNode || config.tailscale.subnetRoutes != []) "loose";
-    };
+    networking.firewall =
+      {
+        allowedUDPPorts = [ config.services.tailscale.port ];
+        trustedInterfaces = [ "tailscale0" ];
+      }
+      // lib.optionalAttrs (config.tailscale.exitNode || config.tailscale.subnetRoutes != []) {
+        checkReversePath = "loose";
+      };
 
     boot.kernel.sysctl = lib.mkIf (config.tailscale.exitNode || config.tailscale.subnetRoutes != []) {
       "net.ipv4.ip_forward" = 1;

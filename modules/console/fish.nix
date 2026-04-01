@@ -39,6 +39,9 @@
         programs.ranger = {
           enable = true;
         };
+        programs.tmux = {
+          enable = true;
+        };
 
         home.file.".config/atuin/config.toml".text = ''
           enter_accept = true

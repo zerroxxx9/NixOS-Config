@@ -92,6 +92,7 @@
     libreoffice-qt
     github-copilot-cli
     chromium
+    element-desktop
     (unstable.brave.override{
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

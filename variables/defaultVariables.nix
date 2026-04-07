@@ -23,6 +23,10 @@
       git = true;
       noisetorch = true;
     };
+    security = {
+      yubikey = false;
+      agenix = false;
+    };
     systemSettings = {
       bootanimation = true;
       gaming = false;

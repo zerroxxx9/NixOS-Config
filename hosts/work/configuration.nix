@@ -1,34 +1,29 @@
 {
   hostVariables,
   pkgs,
+  config,
   ...
 }: {
   imports = [
     ./hardware-configuration.nix
   ];
 
-  # Bootloader.
+  # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = hostVariables.host;
-
   networking.networkmanager.enable = true;
 
   time.timeZone = "Europe/Berlin";
 
-  # Enable the X11 windowing system.
   services.xserver.enable = true;
-
-  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "de";
     variant = "";
   };
-
   console.keyMap = "de";
 
-  # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -46,29 +41,23 @@
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = [ "networkmanager" "wheel" ];
   };
 
   programs.direnv.enable = true;
-
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    biome
-  ];
+  programs.nix-ld.libraries = with pkgs; [ biome ];
 
-  programs.firefox = {
-    enable = true;
-  };
-
+  programs.firefox.enable = true;
   programs.chromium = {
     enable = true;
     extensions = [
-      "jpmkfafbacpgapdghgdpembnojdlgkdl" #AWS Extend Switch Roles
-      "cjpalhdlnbpafiamejdnhcphjbkeiagm" #uBlock Origin
-      "gppongmhjkpfnbhagpmjfkannfbllamg" #Wappalyzer
-      "fmkadmapgofadopljbjfkapdkoienihi" #React Dev Tools
-      "eimadpbcbfnmbkopoojfekhnkhdbieeh" #Dark Reader
-      "gcknhkkoolaabfmlnjonogaaifnjlfnp" #FoxyProxy
+      "jpmkfafbacpgapdghgdpembnojdlgkdl"
+      "cjpalhdlnbpafiamejdnhcphjbkeiagm"
+      "gppongmhjkpfnbhagpmjfkannfbllamg"
+      "fmkadmapgofadopljbjfkapdkoienihi"
+      "eimadpbcbfnmbkopoojfekhnkhdbieeh"
+      "gcknhkkoolaabfmlnjonogaaifnjlfnp"
     ];
   };
 
@@ -92,13 +81,27 @@
     libreoffice-qt
     github-copilot-cli
     chromium
-    (unstable.brave.override{
+    (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
         "--ozone-platform=wayland"
       ];
     })
   ];
+
+  # agenix Secrets aktivieren
+  modules.security.agenix.secrets = {
+    tailscaleAuthKey = true;
+    wifiPasswords = true;
+    copilotApiKey = true;
+    braveBookmarks = true;
+  };
+
+  # YubiKey für SSH zu GitHub nutzen
+  modules.security.yubikey = {
+    enableSSH = true;
+    enablePAM = false;  # true wenn YubiKey für sudo
+  };
 
   system.stateVersion = hostVariables.stateVersion;
 

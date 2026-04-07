@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   pkgs,
   hostVariables,
@@ -10,6 +7,7 @@
   imports = [
     ./home.nix
   ];
+
   # Modules
   modules.console.fish.enable = hostVariables.modules.console.fish;
   modules.driver.amdgpu.enable = hostVariables.modules.driver.amdgpu;
@@ -23,9 +21,12 @@
   modules.system.bootanimation.enable = hostVariables.modules.systemSettings.bootanimation;
   modules.system.gaming.enable = hostVariables.modules.systemSettings.gaming;
 
+  modules.security.yubikey.enable = hostVariables.modules.security.yubikey;
+  modules.security.agenix.enable = hostVariables.modules.security.agenix;
+
   system.activationScripts.script.text = lib.optionalString hostVariables.modules.gui.gnome ''
     cp /home/${hostVariables.username}/.dotfiles/assets/profilePictures/kitty.jpg /var/lib/AccountsService/icons/${hostVariables.username}
-  ''; # requires to manually insert the picture via settings due to missing users config
+  '';
 
   environment.systemPackages = with pkgs; [
     alejandra

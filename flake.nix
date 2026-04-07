@@ -11,6 +11,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -37,6 +42,9 @@
             ./configuration.nix
             ./modules
             home-manager.nixosModules.home-manager
+
+            inputs.agenix.nixosModules.default
+
             {
               nixpkgs.overlays = [
                 (final: prev: {

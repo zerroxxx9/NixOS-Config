@@ -17,6 +17,10 @@ in
           // {
             display-link = false;
           };
+        security = {
+          yubikey = true;
+          agenix = true;
+        };
       };
     git =
       default.git

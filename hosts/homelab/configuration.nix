@@ -6,10 +6,10 @@
     ./hardware-configuration.nix
     ];
 
-  homelab = {
-    enable = true;
-    defaultUser = hostVariables.username;
-    startMenuLaunchers = true;
+   homelab = {
+     enable = true;
+     defaultUser = hostVariables.username;
+     startMenuLaunchers = true;
   };
 
   boot.loader.systemd-boot.enable = true;

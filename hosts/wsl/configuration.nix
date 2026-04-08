@@ -35,6 +35,11 @@
     unzip
     zip
     codex
+    ffuf
+    seclists
+    sqlmap
+    feroxbuster
+    gobuster
   ];
 
   time.timeZone = "Europe/Berlin";

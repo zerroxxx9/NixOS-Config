@@ -93,6 +93,7 @@
     github-copilot-cli
     chromium
     element-desktop
+    codex
     (unstable.brave.override{
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

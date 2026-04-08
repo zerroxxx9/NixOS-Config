@@ -34,6 +34,7 @@
     htop
     unzip
     zip
+    codex
   ];
 
   time.timeZone = "Europe/Berlin";

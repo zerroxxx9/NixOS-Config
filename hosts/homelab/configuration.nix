@@ -2,9 +2,8 @@
 
 {
   imports = [
-    ../software/tailscale.nix
     ./hardware-configuration.nix
-    ];
+  ];
 
   homelab = {
     enable = true;
@@ -39,7 +38,6 @@
     zip
     #lab specific
     opencloud
-    tailscale
   ];
 
   time.timeZone = "Europe/Berlin";
@@ -55,14 +53,6 @@
     LC_PAPER          = "de_DE.UTF-8";
     LC_TELEPHONE      = "de_DE.UTF-8";
     LC_TIME           = "de_DE.UTF-8";
-  };
-
-  tailscale = {
-    enable = true;
-    exitNode = true;
-    subnetRoutes = [ "192.168.1.0/24" ];
-    authKeyFile = config.age.secrets.tailscale.path;
-    useSSH = true;
   };
 
   nixpkgs.config.allowUnfree = true;

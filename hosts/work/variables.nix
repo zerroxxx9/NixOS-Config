@@ -16,6 +16,8 @@ in
           default.modules.software
           // {
             display-link = false;
+            tailscale = false
+            ;
           };
       };
     git =

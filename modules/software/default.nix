@@ -6,5 +6,6 @@
     ./git.nix
     ./noisetorch.nix
     ./vscode.nix
+    ./tailscale.nix
   ];
 }

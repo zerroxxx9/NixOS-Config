@@ -22,6 +22,7 @@
       flatpak = false;
       git = true;
       noisetorch = true;
+      tailscale = false;
     };
     systemSettings = {
       bootanimation = true;

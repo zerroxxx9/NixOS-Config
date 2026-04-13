@@ -65,7 +65,6 @@
       homelab = mkNixosConfiguration {
         modules = [
           ./hosts/homelab
-          inputs.nixos-homelab.nixosModules.homelab
         ];
         hostVariables = import ./hosts/homelab/variables.nix;
       };

@@ -21,6 +21,7 @@ default // {
       flatpak = false;
       git = true;
       noisetorch = false; #Kein Audio
+      tailscale = true;
       vscode = false;
     };
     systemSettings = {

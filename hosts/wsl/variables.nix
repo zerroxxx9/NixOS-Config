@@ -15,6 +15,10 @@ default // {
     gui = {
       gnome = false; #Kein GUI
     };
+    security = {
+      yubikey = true;
+      agenix = true;
+    };
     software = {
       display-link = false;
       docker = true;

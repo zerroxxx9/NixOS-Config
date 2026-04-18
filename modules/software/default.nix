@@ -7,5 +7,6 @@
     ./noisetorch.nix
     ./vscode.nix
     ./tailscale.nix
+    ./opencloud.nix
   ];
 }

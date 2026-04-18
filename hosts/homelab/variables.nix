@@ -22,6 +22,7 @@ default // {
       git = true;
       noisetorch = false; #Kein Audio
       tailscale = true;
+      opencloud = true;
       vscode = false;
     };
     systemSettings = {

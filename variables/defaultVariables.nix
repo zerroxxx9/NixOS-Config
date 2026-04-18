@@ -23,6 +23,7 @@
       git = true;
       noisetorch = true;
       tailscale = false;
+      opencloud = false;
     };
     systemSettings = {
       bootanimation = true;

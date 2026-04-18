@@ -15,7 +15,7 @@
     enable = true;
     settings = {
       PermitRootLogin = "no";
-    }
+    };
   };
   users.users.${hostVariables.username} = {
     isNormalUser = true;

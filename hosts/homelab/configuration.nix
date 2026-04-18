@@ -16,7 +16,7 @@
     settings = {
       PermitRootLogin = "no";
     }
-  }
+  };
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = hostVariables.username;

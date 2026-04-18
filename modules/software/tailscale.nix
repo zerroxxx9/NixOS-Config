@@ -13,6 +13,18 @@
     services.tailscale = {
       enable = true;
       openFirewall = true;
+
+      serve = {
+        enable = true;
+        services = {
+          opencloud = {
+            endpoints = {
+              "tcp:443" = "http://127.0.0.1:9200";
+            };
+          };
+        };
+      };
     };
+    networking.firewall.trustedInterfaces = [ "tailscale0" ];
   };
 }

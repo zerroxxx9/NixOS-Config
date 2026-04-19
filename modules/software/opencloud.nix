@@ -1,22 +1,28 @@
-{ config, lib, ... }:
+{ lib, config, ... }:
 {
-  services.opencloud = {
-    enable = true;
-    address = "127.0.0.1";
-    port = 9200;
-    url = "https://homelab.zerrox.ts.net";
+  options.modules.software.opencloud = {
+    enable = lib.mkEnableOption "opencloud";
   };
 
-  systemd.services.tailscale-serve-opencloud = {
-    description = "Publish OpenCloud via Tailscale Serve";
-    after = [ "tailscaled.service" "opencloud.service" ];
-    wants = [ "tailscaled.service" "opencloud.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg 9200";
-      ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=443 off";
+  config = lib.mkIf config.modules.software.opencloud.enable {
+    services.opencloud = {
+      enable = true;
+      address = "127.0.0.1";
+      port = 9200;
+      url = "https://homelab.zerrox.ts.net";
+    };
+
+    systemd.services.tailscale-serve-opencloud = {
+      description = "Publish OpenCloud via Tailscale Serve";
+      after = [ "network-online.target" "tailscaled.service" "opencloud.service" ];
+      wants = [ "network-online.target" "tailscaled.service" "opencloud.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes 9200";
+        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=443 off";
+      };
     };
   };
 }

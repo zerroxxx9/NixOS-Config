@@ -20,6 +20,7 @@
   modules.software.flatpak.enable = hostVariables.modules.software.flatpak;
   modules.software.git.enable = hostVariables.modules.software.git;
   modules.software.noisetorch.enable = hostVariables.modules.software.noisetorch;
+  modules.software.opencloud.enable = hostVariables.modules.software.opencloud;
   modules.software.tailscale.enable = hostVariables.modules.software.tailscale;
   modules.system.bootanimation.enable = hostVariables.modules.systemSettings.bootanimation;
   modules.system.gaming.enable = hostVariables.modules.systemSettings.gaming;

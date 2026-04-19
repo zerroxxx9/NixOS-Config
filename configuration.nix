@@ -19,6 +19,7 @@
   modules.software.docker.enable = hostVariables.modules.software.docker;
   modules.software.flatpak.enable = hostVariables.modules.software.flatpak;
   modules.software.git.enable = hostVariables.modules.software.git;
+  modules.software.immich.enable = hostVariables.modules.software.immich;
   modules.software.noisetorch.enable = hostVariables.modules.software.noisetorch;
   modules.software.opencloud.enable = hostVariables.modules.software.opencloud;
   modules.software.tailscale.enable = hostVariables.modules.software.tailscale;

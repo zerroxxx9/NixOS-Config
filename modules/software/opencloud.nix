@@ -9,7 +9,7 @@
       enable = true;
       address = "127.0.0.1";
       port = 9200;
-      url = "https://homelab.tail11bba0.ts.net/";
+      url = "https://homelab.tail11bba0.ts.net";
     };
 
     systemd.services.tailscale-serve-opencloud = {

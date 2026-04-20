@@ -20,7 +20,7 @@
         Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes https+insecure://127.0.0.1:1337";
-        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=443 off";
+        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=1337 off";
       };
     };
   };

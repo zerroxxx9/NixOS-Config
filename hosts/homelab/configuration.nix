@@ -30,8 +30,6 @@
     htop
     unzip
     zip
-    #lab specific
-    opencloud
   ];
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = lib.mkForce "de_DE.UTF-8";

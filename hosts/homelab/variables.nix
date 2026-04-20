@@ -24,6 +24,7 @@ default // {
       noisetorch = false; #Kein Audio
       tailscale = true;
       opencloud = true;
+      paperless-ngx = true;
       vscode = false;
     };
     systemSettings = {

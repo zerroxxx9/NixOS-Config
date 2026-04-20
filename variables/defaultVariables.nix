@@ -25,6 +25,7 @@
       noisetorch = true;
       tailscale = false;
       opencloud = false;
+      paperless-ngx = false;
     };
     systemSettings = {
       bootanimation = true;

@@ -9,6 +9,7 @@
       enable = true;
       address = "127.0.0.1";
       port = 1337;
+      domain = "homelab.tail11bba0.ts.net:1337";
     };
 
     systemd.services.tailscale-serve-paperless-ngx = {
@@ -19,9 +20,10 @@
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes https+insecure://127.0.0.1:1337";
+        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=1337 http://127.0.0.1:1337";
         ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=1337 off";
       };
     };
   };
 }
+

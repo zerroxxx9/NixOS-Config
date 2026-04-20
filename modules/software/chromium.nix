@@ -20,12 +20,12 @@
           ];
         };
         extensions = [
-          "jpmkfafbacpgapdghgdpembnojdlgkdl" # AWS Extend Switch Roles
-          "cjpalhdlnbpafiamejdnhcphjbkeiagm" # uBlock Origin
-          "gppongmhjkpfnbhagpmjfkannfbllamg" # Wappalyzer
-          "fmkadmapgofadopljbjfkapdkoienihi" # React Dev Tools
-          "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
-          "gcknhkkoolaabfmlnjonogaaifnjlfnp" # FoxyProxy
+          { id = "jpmkfafbacpgapdghgdpembnojdlgkdl"; } # AWS Extend Switch Roles
+          { id = "cjpalhdlnbpafiamejdnhcphjbkeiagm"; } # uBlock Origin
+          { id = "gppongmhjkpfnbhagpmjfkannfbllamg"; } # Wappalyzer
+          { id = "fmkadmapgofadopljbjfkapdkoienihi"; } # React Dev Tools
+          { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
+          { id = "gcknhkkoolaabfmlnjonogaaifnjlfnp"; } # FoxyProxy
         ];
       };
     };

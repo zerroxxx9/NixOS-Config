@@ -9,5 +9,6 @@
     ./vscode.nix
     ./tailscale.nix
     ./opencloud.nix
+    ./chromium.nix
   ];
 }

@@ -25,6 +25,7 @@
       noisetorch = true;
       tailscale = false;
       opencloud = false;
+      chromium = false;
     };
     systemSettings = {
       bootanimation = true;

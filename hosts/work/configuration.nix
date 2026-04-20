@@ -60,18 +60,6 @@
     enable = true;
   };
 
-  programs.chromium = {
-    enable = true;
-    extensions = [
-      "jpmkfafbacpgapdghgdpembnojdlgkdl" #AWS Extend Switch Roles
-      "cjpalhdlnbpafiamejdnhcphjbkeiagm" #uBlock Origin
-      "gppongmhjkpfnbhagpmjfkannfbllamg" #Wappalyzer
-      "fmkadmapgofadopljbjfkapdkoienihi" #React Dev Tools
-      "eimadpbcbfnmbkopoojfekhnkhdbieeh" #Dark Reader
-      "gcknhkkoolaabfmlnjonogaaifnjlfnp" #FoxyProxy
-    ];
-  };
-
   systemd.tmpfiles.rules = [
     "d /home/${hostVariables.username}/Dev 0755 ${hostVariables.username}"
     "d /home/${hostVariables.username}/Documents/Berufsschule 0755 ${hostVariables.username}"
@@ -91,15 +79,9 @@
     burpsuite
     libreoffice-qt
     github-copilot-cli
-    chromium
     element-desktop
     codex
-    (unstable.brave.override{
-      commandLineArgs = [
-        "--enable-features=UseOzonePlatform"
-        "--ozone-platform=wayland"
-      ];
-    })
+    tailscale
   ];
 
   system.stateVersion = hostVariables.stateVersion;

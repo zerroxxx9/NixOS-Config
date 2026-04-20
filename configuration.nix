@@ -23,7 +23,6 @@
   modules.software.noisetorch.enable = hostVariables.modules.software.noisetorch;
   modules.software.opencloud.enable = hostVariables.modules.software.opencloud;
   modules.software.tailscale.enable = hostVariables.modules.software.tailscale;
-  modules.software.chromium.enable = hostVariables.modules.software.chromium;
   modules.system.bootanimation.enable = hostVariables.modules.systemSettings.bootanimation;
   modules.system.gaming.enable = hostVariables.modules.systemSettings.gaming;
 

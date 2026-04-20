@@ -17,7 +17,6 @@ in
           // {
             display-link = false;
             tailscale = true;
-            chromium = true;
           };
       };
     git =

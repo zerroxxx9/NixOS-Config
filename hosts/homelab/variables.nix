@@ -26,6 +26,7 @@ default // {
       opencloud = true;
       paperless-ngx = true;
       vscode = false;
+      fail2ban = true;
     };
     systemSettings = {
       bootanimation = true;

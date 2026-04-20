@@ -19,6 +19,7 @@
     software = {
       display-link = true;
       docker = true;
+      fail2ban = false;
       flatpak = false;
       git = true;
       immich = false;
@@ -60,3 +61,4 @@
     idle-delay = 0;
   };
 }
+

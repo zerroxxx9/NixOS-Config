@@ -2,6 +2,7 @@
   imports = [
     ./displaylink.nix
     ./docker.nix
+    ./fail2ban.nix
     ./flatpak.nix
     ./git.nix
     ./immich.nix
@@ -12,3 +13,4 @@
     ./paperless-ngx.nix
   ];
 }
+

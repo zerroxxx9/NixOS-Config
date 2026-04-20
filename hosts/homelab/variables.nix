@@ -20,8 +20,10 @@ default // {
       docker = true;
       flatpak = false;
       git = true;
+      immich = true;
       noisetorch = false; #Kein Audio
       tailscale = true;
+      opencloud = true;
       vscode = false;
     };
     systemSettings = {

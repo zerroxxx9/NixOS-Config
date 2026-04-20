@@ -11,6 +11,12 @@
     useHostResolvConf = lib.mkForce false;
   };
   services.resolved.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PermitRootLogin = "no";
+    };
+  };
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = hostVariables.username;

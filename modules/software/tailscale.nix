@@ -1,21 +1,17 @@
+{ pkgs, lib, config, ... }:
 {
-  pkgs,
-  lib,
-  config,
-  ...
-}: {
   options.modules.software.tailscale = {
     enable = lib.mkEnableOption "tailscale";
   };
 
   config = lib.mkIf config.modules.software.tailscale.enable {
-    environment.systemPackages = [pkgs.tailscale];
+    environment.systemPackages = [ pkgs.tailscale ];
 
-    services.tailscale.enable = true;
-
-    networking.firewall = {
-      allowedUDPPorts = [config.services.tailscale.port];
-      trustedInterfaces = ["tailscale0"];
+    services.tailscale = {
+      enable = true;
+      openFirewall = true;
     };
+
+    networking.firewall.trustedInterfaces = [ "tailscale0" ];
   };
 }

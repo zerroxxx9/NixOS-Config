@@ -21,8 +21,10 @@
       docker = true;
       flatpak = false;
       git = true;
+      immich = false;
       noisetorch = true;
       tailscale = false;
+      opencloud = false;
     };
     systemSettings = {
       bootanimation = true;

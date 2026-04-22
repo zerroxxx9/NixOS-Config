@@ -19,6 +19,7 @@
     software = {
       display-link = true;
       docker = true;
+      couchdb = false;
       fail2ban = false;
       flatpak = false;
       git = true;
@@ -61,4 +62,3 @@
     idle-delay = 0;
   };
 }
-

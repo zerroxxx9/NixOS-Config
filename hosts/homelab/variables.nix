@@ -18,6 +18,7 @@ default // {
     software = {
       display-link = false;
       docker = true;
+      couchdb = true;
       flatpak = false;
       git = true;
       immich = true;

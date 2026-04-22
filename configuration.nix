@@ -17,6 +17,7 @@
   modules.gui.gnome.enable = hostVariables.modules.gui.gnome;
   modules.software.displaylink.enable = hostVariables.modules.software.display-link;
   modules.software.docker.enable = hostVariables.modules.software.docker;
+  modules.software.couchdb.enable = hostVariables.modules.software.couchdb;
   modules.software.fail2ban.enable = hostVariables.modules.software.fail2ban;
   modules.software.flatpak.enable = hostVariables.modules.software.flatpak;
   modules.software.git.enable = hostVariables.modules.software.git;
@@ -46,4 +47,3 @@
     flake = "/home/${hostVariables.username}/.dotfiles";
   };
 }
-

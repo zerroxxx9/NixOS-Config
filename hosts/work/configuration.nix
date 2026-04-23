@@ -90,11 +90,10 @@
     unzip
     burpsuite
     libreoffice-qt
-    github-copilot-cli
     chromium
     element-desktop
     codex
-    tailscale
+    busybox
     (unstable.brave.override{
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

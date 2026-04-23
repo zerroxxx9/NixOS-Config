@@ -40,6 +40,7 @@
     sqlmap
     feroxbuster
     gobuster
+    busybox
   ];
 
   time.timeZone = "Europe/Berlin";

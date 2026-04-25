@@ -16,6 +16,7 @@ in
           default.modules.software
           // {
             display-link = false;
+            tailscale = true;
           };
         security = {
           yubikey = true;

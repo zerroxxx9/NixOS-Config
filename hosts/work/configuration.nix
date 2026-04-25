@@ -79,9 +79,11 @@
     unzip
     burpsuite
     libreoffice-qt
-    github-copilot-cli
     chromium
-    (unstable.brave.override {
+    element-desktop
+    codex
+    busybox
+    (unstable.brave.override{
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
         "--ozone-platform=wayland"

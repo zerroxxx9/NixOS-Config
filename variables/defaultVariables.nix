@@ -19,9 +19,15 @@
     software = {
       display-link = true;
       docker = true;
+      couchdb = false;
+      fail2ban = false;
       flatpak = false;
       git = true;
+      immich = false;
       noisetorch = true;
+      tailscale = false;
+      opencloud = false;
+      paperless-ngx = false;
     };
     security = {
       yubikey = false;

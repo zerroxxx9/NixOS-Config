@@ -18,10 +18,16 @@ default // {
     software = {
       display-link = false;
       docker = true;
+      couchdb = true;
       flatpak = false;
       git = true;
+      immich = true;
       noisetorch = false; #Kein Audio
+      tailscale = true;
+      opencloud = true;
+      paperless-ngx = true;
       vscode = false;
+      fail2ban = true;
     };
     systemSettings = {
       bootanimation = true;

@@ -1,24 +1,58 @@
-# SSH Public Keys — diese Hosts/User dürfen die Secrets entschlüsseln.
+# Recipients, die agenix-Secrets entschl?sseln d?rfen.
 #
-# Host-Keys findest du mit: ssh-keyscan localhost
-# Oder: cat /etc/ssh/ssh_host_ed25519_key.pub
+# Sicher im Repo:
+# - age-Recipients (age1...)
+# - SSH Public Keys (*.pub)
 #
-# Deinen YubiKey FIDO2 SSH-Key findest du mit: cat ~/.ssh/id_ed25519_sk.pub
+# Niemals im Repo:
+# - private SSH keys
+# - age-plugin-yubikey Identit?ten
+#
+# Erwartete committed Dateien:
+# - recipients/zerrox-yubikey.age.pub
+# - recipients/work-ssh-host-ed25519.pub
+# - recipients/homelab-ssh-host-ed25519.pub
+#
+# Optionaler Fallback-Admin-Key:
+# - recipients/zerrox-admin-ssh-ed25519.pub
 let
-  # Dein persönlicher Schlüssel (YubiKey FIDO2 SSH oder normaler SSH-Key)
-  # Wird zum Verschlüsseln/Re-Encrypting auf deinem Rechner gebraucht
-  zerrox = "ssh-ed25519 AAAA... zerrox@work"; # ← ERSETZEN mit deinem Public Key
-  # SSH Host-Key deines Arbeitsrechners (zum Entschlüsseln beim Boot)
-  work = "ssh-ed25519 AAAA... root@work"; # ← ERSETZEN mit: cat /etc/ssh/ssh_host_ed25519_key.pub
-  homelab = "ssh-ed25519 AAAA... root@homelab"; # SSH Host-key Homelab
+  readRecipient = path:
+    builtins.replaceStrings ["\r" "\n"] ["" ""] (builtins.readFile path);
 
-  allUsers = [ zerrox ];
-  allHosts = [ work homelab wsl ];
-  workOnly = [ work ];
-  homelabOnly = [ homelab ]
-in {
-  "tailscale-authkey.age".publicKeys = allUsers ++ homelabOnly;
-  "wifi-passwords.age".publicKeys = allUsers ++ workOnly;
-  "copilot-api-key.age".publicKeys = allUsers ++ workOnly;
-  "brave-bookmarks.age".publicKeys = allUsers ++ workOnly;
+  optionalRecipient = path:
+    if builtins.pathExists path then
+      [ (readRecipient path) ]
+    else
+      [ ];
+
+  requiredRecipient = name: path:
+    if builtins.pathExists path then
+      readRecipient path
+    else
+      throw "Missing recipient file for ${name}: ${toString path}";
+
+  adminRecipients =
+    let
+      recipients =
+        optionalRecipient ./recipients/zerrox-yubikey.age.pub
+        ++ optionalRecipient ./recipients/zerrox-admin-ssh-ed25519.pub;
+    in
+      if recipients != [ ] then
+        recipients
+      else
+        throw ''
+          No admin recipient configured.
+          Add at least one of:
+            - secrets/recipients/zerrox-yubikey.age.pub
+            - secrets/recipients/zerrox-admin-ssh-ed25519.pub
+        '';
+
+  workHost = requiredRecipient "work host SSH public key" ./recipients/work-ssh-host-ed25519.pub;
+  homelabHost = requiredRecipient "homelab host SSH public key" ./recipients/homelab-ssh-host-ed25519.pub;
+in
+{
+  "tailscale-authkey.age".publicKeys = adminRecipients ++ [ homelabHost ];
+  "wifi-passwords.age".publicKeys = adminRecipients ++ [ workHost ];
+  "copilot-api-key.age".publicKeys = adminRecipients ++ [ workHost ];
+  "brave-bookmarks.age".publicKeys = adminRecipients ++ [ workHost ];
 }

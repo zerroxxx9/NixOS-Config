@@ -18,10 +18,12 @@ in
             display-link = false;
             tailscale = true;
           };
-        security = {
-          yubikey = true;
-          agenix = true;
-        };
+        security =
+          default.modules.security
+          // {
+            yubikey = true;
+            agenix = true;
+          };
       };
     git =
       default.git

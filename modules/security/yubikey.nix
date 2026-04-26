@@ -22,37 +22,35 @@
   };
 
   config = lib.mkIf config.modules.security.yubikey.enable {
-    # YubiKey Hardware-Erkennung (udev rules, smartcard daemon)
-    services.udev.packages = [ pkgs.yubikey-personalization ];
+    services.udev.packages = [pkgs.yubikey-personalization];
     services.pcscd.enable = true;
 
-    # Tools
     environment.systemPackages = with pkgs; [
-      yubikey-personalization  # ykman CLI
-      yubikey-manager          # YubiKey Manager GUI + CLI
-      age-plugin-yubikey       # Age-Verschlüsselung direkt mit YubiKey PIV
-      yubioath-flutter         # Yubico Authenticator (TOTP)
+      yubikey-personalization
+      yubikey-manager
+      age
+      age-plugin-yubikey
+      yubioath-flutter
     ];
 
-    # SSH: FIDO2-backed Keys (ed25519-sk)
-    programs.ssh.startAgent = lib.mkIf config.modules.security.yubikey.enableSSH true;
+    # FIDO2-backed SSH keys are fine for Git/SSH, but agenix admin decrypt
+    # should use age-plugin-yubikey with a dedicated age identity.
+    programs.ssh.startAgent = lib.mkDefault (config.modules.security.yubikey.enableSSH && !config.services.gnome.gcr-ssh-agent.enable);
 
-    # Optional: PAM U2F — YubiKey für sudo/Login voraussetzen
     security.pam.u2f = lib.mkIf config.modules.security.yubikey.enablePAM {
       enable = true;
       settings = {
-        cue = true;          # "Bitte YubiKey berühren" Hinweis
-        authFile = "/etc/u2f_mappings"; # Mapping-Datei (siehe Setup-Anleitung unten)
+        cue = true;
+        authFile = "/etc/u2f_mappings";
       };
     };
 
-    # GnuPG-Agent mit Smartcard-Support (falls du GPG auf dem YubiKey nutzt)
     home-manager.users.${hostVariables.username} = {
       programs.gpg.enable = true;
       services.gpg-agent = {
         enable = true;
-        enableSshSupport = false; # true setzen falls du GPG statt FIDO2 für SSH nutzt
-        pinentryPackage = pkgs.pinentry-gnome3;
+        enableSshSupport = false;
+        pinentry.package = pkgs.pinentry-gnome3;
       };
     };
   };

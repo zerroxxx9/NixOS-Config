@@ -5,7 +5,19 @@
   inputs,
   hostVariables,
   ...
-}: {
+}: let
+  cfg = config.modules.security.agenix;
+
+  tailscaleAuthKeyFile = ../../secrets/tailscale-authkey.age;
+  wifiPasswordsFile = ../../secrets/wifi-passwords.age;
+  copilotApiKeyFile = ../../secrets/copilot-api-key.age;
+  braveBookmarksFile = ../../secrets/brave-bookmarks.age;
+
+  hasTailscaleAuthKey = builtins.pathExists tailscaleAuthKeyFile;
+  hasWifiPasswords = builtins.pathExists wifiPasswordsFile;
+  hasCopilotApiKey = builtins.pathExists copilotApiKeyFile;
+  hasBraveBookmarks = builtins.pathExists braveBookmarksFile;
+in {
   options.modules.security.agenix = {
     enable = lib.mkEnableOption "agenix secret management";
 
@@ -36,68 +48,77 @@
     };
   };
 
-  config = lib.mkIf config.modules.security.agenix.enable {
-    # agenix CLI-Tool verfügbar machen (zum Verschlüsseln/Editieren)
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [
       inputs.agenix.packages.${hostVariables.system}.default
+      pkgs.age
     ];
 
-    # Tailscale Auth-Key
-    age.secrets.tailscale-authkey = lib.mkIf config.modules.security.agenix.secrets.tailscaleAuthKey {
-      file = ../../secrets/tailscale-authkey.age;
+    age.identityPaths = lib.mkDefault ["/etc/ssh/ssh_host_ed25519_key"];
+
+    warnings =
+      lib.optional (cfg.secrets.tailscaleAuthKey && !hasTailscaleAuthKey) ''
+        modules.security.agenix.secrets.tailscaleAuthKey is enabled, but secrets/tailscale-authkey.age is missing.
+        Create it from the repo root with:
+          RULES=secrets/secrets.nix agenix -e secrets/tailscale-authkey.age
+      ''
+      ++ lib.optional (cfg.secrets.wifiPasswords && !hasWifiPasswords) ''
+        modules.security.agenix.secrets.wifiPasswords is enabled, but secrets/wifi-passwords.age is missing.
+        Create it from the repo root with:
+          RULES=secrets/secrets.nix agenix -e secrets/wifi-passwords.age
+      ''
+      ++ lib.optional (cfg.secrets.copilotApiKey && !hasCopilotApiKey) ''
+        modules.security.agenix.secrets.copilotApiKey is enabled, but secrets/copilot-api-key.age is missing.
+        Create it from the repo root with:
+          RULES=secrets/secrets.nix agenix -e secrets/copilot-api-key.age
+      ''
+      ++ lib.optional (cfg.secrets.braveBookmarks && !hasBraveBookmarks) ''
+        modules.security.agenix.secrets.braveBookmarks is enabled, but secrets/brave-bookmarks.age is missing.
+        Create it from the repo root with:
+          RULES=secrets/secrets.nix agenix -e secrets/brave-bookmarks.age
+      '';
+
+    age.secrets.tailscale-authkey = lib.mkIf (cfg.secrets.tailscaleAuthKey && hasTailscaleAuthKey) {
+      file = tailscaleAuthKeyFile;
       owner = "root";
       mode = "0400";
     };
 
-    # WLAN-Passwörter (für NetworkManager)
-    age.secrets.wifi-passwords = lib.mkIf config.modules.security.agenix.secrets.wifiPasswords {
-      file = ../../secrets/wifi-passwords.age;
+    age.secrets.wifi-passwords = lib.mkIf (cfg.secrets.wifiPasswords && hasWifiPasswords) {
+      file = wifiPasswordsFile;
       owner = "root";
       mode = "0600";
     };
 
-    # GitHub Copilot API Key
-    age.secrets.copilot-api-key = lib.mkIf config.modules.security.agenix.secrets.copilotApiKey {
-      file = ../../secrets/copilot-api-key.age;
+    age.secrets.copilot-api-key = lib.mkIf (cfg.secrets.copilotApiKey && hasCopilotApiKey) {
+      file = copilotApiKeyFile;
       owner = hostVariables.username;
       mode = "0400";
     };
 
-    # Brave Bookmarks HTML
-    age.secrets.brave-bookmarks = lib.mkIf config.modules.security.agenix.secrets.braveBookmarks {
-      file = ../../secrets/brave-bookmarks.age;
+    age.secrets.brave-bookmarks = lib.mkIf (cfg.secrets.braveBookmarks && hasBraveBookmarks) {
+      file = braveBookmarksFile;
       owner = hostVariables.username;
       mode = "0400";
     };
 
-    # Copilot API Key als Environment-Variable verfügbar machen
-    systemd.user.services.copilot-env = lib.mkIf config.modules.security.agenix.secrets.copilotApiKey {
-      description = "Load Copilot API key into environment";
-      wantedBy = [ "default.target" ];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${pkgs.bash}/bin/bash -c 'mkdir -p %h/.config/environment.d && echo \"GITHUB_COPILOT_API_KEY=$(cat ${config.age.secrets.copilot-api-key.path})\" > %h/.config/environment.d/copilot.conf'";
-      };
+    home-manager.users.${hostVariables.username}.home.sessionVariables = lib.mkIf (cfg.secrets.copilotApiKey && hasCopilotApiKey) {
+      GITHUB_COPILOT_API_KEY_FILE = config.age.secrets."copilot-api-key".path;
     };
 
-    # Brave Bookmarks beim Boot an die richtige Stelle kopieren
-    system.activationScripts.deploy-brave-bookmarks = lib.mkIf config.modules.security.agenix.secrets.braveBookmarks {
+    system.activationScripts.deploy-brave-bookmarks = lib.mkIf (cfg.secrets.braveBookmarks && hasBraveBookmarks) {
       text = ''
         BRAVE_DIR="/home/${hostVariables.username}/.config/BraveSoftware/Brave-Browser/Default"
-        if [ -f "${config.age.secrets.brave-bookmarks.path}" ]; then
+        if [ -f "${config.age.secrets."brave-bookmarks".path}" ]; then
           mkdir -p "$BRAVE_DIR"
-          cp ${config.age.secrets.brave-bookmarks.path} "$BRAVE_DIR/Bookmarks"
+          cp ${config.age.secrets."brave-bookmarks".path} "$BRAVE_DIR/Bookmarks"
           chown ${hostVariables.username}:users "$BRAVE_DIR/Bookmarks"
         fi
       '';
     };
 
-    # WiFi-Passwörter: NetworkManager-Verbindungen generieren
-    # Die .age-Datei sollte eine NetworkManager keyfile sein
-    # Siehe Setup-Anleitung unten für das Format
-    networking.networkmanager.ensureProfiles = lib.mkIf config.modules.security.agenix.secrets.wifiPasswords {
-      environmentFiles = [ config.age.secrets.wifi-passwords.path ];
+    networking.networkmanager.ensureProfiles = lib.mkIf (cfg.secrets.wifiPasswords && hasWifiPasswords) {
+      environmentFiles = [config.age.secrets."wifi-passwords".path];
       profiles = {
         home-wifi = {
           connection = {
@@ -132,20 +153,20 @@
           ipv6.method = "auto";
         };
         school-wifi = {
-            connection = {
-                id = "School-WiFi";
-                type = "wifi";
-            };
-            wifi = {
-                ssid = "$SCHOOL_WIFI_NAME";
-                mode = "infrastructure";
-            };
-            wifi-security = {
-                key-mgmt = "wpa-psk";
-                psk = "$SCHOOL_WIFI_PSK";
-            };
-            ipv4.method = "auto";
-            ipv6.method = "auto";
+          connection = {
+            id = "School-WiFi";
+            type = "wifi";
+          };
+          wifi = {
+            ssid = "$SCHOOL_WIFI_NAME";
+            mode = "infrastructure";
+          };
+          wifi-security = {
+            key-mgmt = "wpa-psk";
+            psk = "$SCHOOL_WIFI_PSK";
+          };
+          ipv4.method = "auto";
+          ipv6.method = "auto";
         };
       };
     };

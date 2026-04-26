@@ -1,5 +1,10 @@
-{ hostVariables, pkgs, lib, ... }:
 {
+  config,
+  hostVariables,
+  pkgs,
+  lib,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -32,18 +37,31 @@
     zip
     busybox
   ];
+
+  modules.security.agenix.secrets.tailscaleAuthKey = true;
+
+  modules.software.tailscale =
+    {
+      exitNode = true;
+      subnetRoutes = ["192.168.1.0/24"];
+      useSSH = true;
+    }
+    // lib.optionalAttrs (builtins.hasAttr "tailscale-authkey" config.age.secrets) {
+      authKeyFile = config.age.secrets."tailscale-authkey".path;
+    };
+
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = lib.mkForce "de_DE.UTF-8";
   i18n.extraLocaleSettings = {
-    LC_ADDRESS        = "de_DE.UTF-8";
+    LC_ADDRESS = "de_DE.UTF-8";
     LC_IDENTIFICATION = "de_DE.UTF-8";
-    LC_MEASUREMENT    = "de_DE.UTF-8";
-    LC_MONETARY       = "de_DE.UTF-8";
-    LC_NAME           = "de_DE.UTF-8";
-    LC_NUMERIC        = "de_DE.UTF-8";
-    LC_PAPER          = "de_DE.UTF-8";
-    LC_TELEPHONE      = "de_DE.UTF-8";
-    LC_TIME           = "de_DE.UTF-8";
+    LC_MEASUREMENT = "de_DE.UTF-8";
+    LC_MONETARY = "de_DE.UTF-8";
+    LC_NAME = "de_DE.UTF-8";
+    LC_NUMERIC = "de_DE.UTF-8";
+    LC_PAPER = "de_DE.UTF-8";
+    LC_TELEPHONE = "de_DE.UTF-8";
+    LC_TIME = "de_DE.UTF-8";
   };
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = hostVariables.stateVersion;

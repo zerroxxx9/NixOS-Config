@@ -9,28 +9,28 @@
   ];
 
   # Modules
-  modules.console.fish.enable = hostVariables.modules.console.fish;
-  modules.driver.amdgpu.enable = hostVariables.modules.driver.amdgpu;
-  modules.driver.nvidia.enable = hostVariables.modules.driver.nvidia;
-  modules.gui.gnome.enable = hostVariables.modules.gui.gnome;
-  modules.software.displaylink.enable = hostVariables.modules.software.display-link;
-  modules.software.docker.enable = hostVariables.modules.software.docker;
-  modules.software.couchdb.enable = hostVariables.modules.software.couchdb;
-  modules.software.fail2ban.enable = hostVariables.modules.software.fail2ban;
-  modules.software.flatpak.enable = hostVariables.modules.software.flatpak;
-  modules.software.git.enable = hostVariables.modules.software.git;
-  modules.software.immich.enable = hostVariables.modules.software.immich;
-  modules.software.noisetorch.enable = hostVariables.modules.software.noisetorch;
-  modules.software.opencloud.enable = hostVariables.modules.software.opencloud;
-  modules.software.tailscale.enable = hostVariables.modules.software.tailscale;
-  modules.software.paperless-ngx.enable = hostVariables.modules.software.paperless-ngx;
-  modules.system.bootanimation.enable = hostVariables.modules.systemSettings.bootanimation;
-  modules.system.gaming.enable = hostVariables.modules.systemSettings.gaming;
+  modules.console.fish.enable = lib.attrByPath ["modules" "console" "fish"] false hostVariables;
+  modules.driver.amdgpu.enable = lib.attrByPath ["modules" "driver" "amdgpu"] false hostVariables;
+  modules.driver.nvidia.enable = lib.attrByPath ["modules" "driver" "nvidia"] false hostVariables;
+  modules.gui.gnome.enable = lib.attrByPath ["modules" "gui" "gnome"] false hostVariables;
+  modules.software.displaylink.enable = lib.attrByPath ["modules" "software" "display-link"] false hostVariables;
+  modules.software.docker.enable = lib.attrByPath ["modules" "software" "docker"] false hostVariables;
+  modules.software.couchdb.enable = lib.attrByPath ["modules" "software" "couchdb"] false hostVariables;
+  modules.software.fail2ban.enable = lib.attrByPath ["modules" "software" "fail2ban"] false hostVariables;
+  modules.software.flatpak.enable = lib.attrByPath ["modules" "software" "flatpak"] false hostVariables;
+  modules.software.git.enable = lib.attrByPath ["modules" "software" "git"] false hostVariables;
+  modules.software.immich.enable = lib.attrByPath ["modules" "software" "immich"] false hostVariables;
+  modules.software.noisetorch.enable = lib.attrByPath ["modules" "software" "noisetorch"] false hostVariables;
+  modules.software.opencloud.enable = lib.attrByPath ["modules" "software" "opencloud"] false hostVariables;
+  modules.software.tailscale.enable = lib.attrByPath ["modules" "software" "tailscale"] false hostVariables;
+  modules.software.paperless-ngx.enable = lib.attrByPath ["modules" "software" "paperless-ngx"] false hostVariables;
+  modules.system.bootanimation.enable = lib.attrByPath ["modules" "systemSettings" "bootanimation"] false hostVariables;
+  modules.system.gaming.enable = lib.attrByPath ["modules" "systemSettings" "gaming"] false hostVariables;
 
-  modules.security.yubikey.enable = hostVariables.modules.security.yubikey;
-  modules.security.agenix.enable = hostVariables.modules.security.agenix;
+  modules.security.yubikey.enable = lib.attrByPath ["modules" "security" "yubikey"] false hostVariables;
+  modules.security.agenix.enable = lib.attrByPath ["modules" "security" "agenix"] false hostVariables;
 
-  system.activationScripts.script.text = lib.optionalString hostVariables.modules.gui.gnome ''
+  system.activationScripts.script.text = lib.optionalString (lib.attrByPath ["modules" "gui" "gnome"] false hostVariables) ''
     cp /home/${hostVariables.username}/.dotfiles/assets/profilePictures/kitty.jpg /var/lib/AccountsService/icons/${hostVariables.username}
   '';
 

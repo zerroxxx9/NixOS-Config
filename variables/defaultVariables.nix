@@ -25,6 +25,7 @@
       git = true;
       immich = false;
       noisetorch = true;
+      vscode = false;
       tailscale = false;
       opencloud = false;
       paperless-ngx = false;
@@ -36,13 +37,14 @@
     systemSettings = {
       bootanimation = true;
       gaming = false;
+      virtualization = false;
     };
   };
   git = {
     lfs = true;
     extraConfig = {
       defaultBranch = "main";
-      credential-helper = "store";
+      credential-helper = null;
     };
     credentials = {
       email = "190294721+zerroxxx9@users.noreply.github.com";

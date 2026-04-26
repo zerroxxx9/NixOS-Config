@@ -35,18 +35,18 @@
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    extraPortals = [pkgs.xdg-desktop-portal-gnome];
   };
 
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel"];
   };
 
   programs.direnv.enable = true;
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [ biome ];
+  programs.nix-ld.libraries = with pkgs; [biome];
 
   programs.firefox.enable = true;
   programs.chromium = {
@@ -83,7 +83,7 @@
     element-desktop
     codex
     busybox
-    (unstable.brave.override{
+    (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
         "--ozone-platform=wayland"
@@ -93,16 +93,15 @@
 
   # agenix Secrets aktivieren
   modules.security.agenix.secrets = {
-    tailscaleAuthKey = true;
     wifiPasswords = true;
     copilotApiKey = true;
     braveBookmarks = true;
   };
 
-  # YubiKey für SSH zu GitHub nutzen
+  # YubiKey f?r SSH zu GitHub nutzen
   modules.security.yubikey = {
     enableSSH = true;
-    enablePAM = false;  # true wenn YubiKey für sudo
+    enablePAM = false;
   };
 
   system.stateVersion = hostVariables.stateVersion;

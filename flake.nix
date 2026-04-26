@@ -15,6 +15,7 @@
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
     };
   };
 
@@ -42,9 +43,7 @@
             ./configuration.nix
             ./modules
             home-manager.nixosModules.home-manager
-
             inputs.agenix.nixosModules.default
-
             {
               nixpkgs.overlays = [
                 (final: prev: {
@@ -71,9 +70,7 @@
         hostVariables = import ./hosts/wsl/variables.nix;
       };
       homelab = mkNixosConfiguration {
-        modules = [
-          ./hosts/homelab
-        ];
+        modules = [./hosts/homelab];
         hostVariables = import ./hosts/homelab/variables.nix;
       };
     };

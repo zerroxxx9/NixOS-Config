@@ -1,17 +1,18 @@
-# ⚙️ NixOS Multi-Host Configuration
+# ?? NixOS Multi-Host Configuration
 
 This repository contains my modular NixOS system configuration, powered by [Nix Flakes](https://nixos.wiki/wiki/Flakes) and [Home Manager](https://nix-community.github.io/home-manager/).
 
-## ✅ Features
+## ? Features
 
-- 🔁 Flake-based for reproducibility
-- 🧩 Modular configuration per host
-- 💻 Includes Home Manager for user-level setup
-- 📁 Centralized `variables.nix` for system flags and module toggles
+- ?? Flake-based for reproducibility
+- ?? Modular configuration per host
+- ?? Includes Home Manager for user-level setup
+- ?? Centralized `variables.nix` for system flags and module toggles
+- ?? agenix-ready secret workflow with host SSH keys and optional YubiKey admin decrypt
 
 ---
 
-## 🏗️ Getting Started
+## ??? Getting Started
 
 ### 1. Clone into `.dotfiles`
 
@@ -40,16 +41,25 @@ For later rebuilds:
 rebuild
 ```
 
-or 
+or
 ```bash
 switch
 ```
 
 > `rebuild` and `switch` is an alias for `nixos-rebuild` with predefined arguments.
 
+### 3. Secrets with agenix
+
+The encrypted secret workflow lives in [./secrets/README.md](./secrets/README.md).
+The short version:
+
+- commit encrypted `*.age` files
+- commit public recipients under `./secrets/recipients/`
+- keep private SSH keys and YubiKey identity files outside the repo
+
 ---
 
-## ➕ Adding a New Host
+## ? Adding a New Host
 
 1. Create a new folder in `./hosts/`, e.g. `home-pc`
 2. Add these files:
@@ -61,52 +71,27 @@ switch
 3. Your `variables.nix` should follow this structure:
 
 ```nix
-{
+let default = import ../../variables/defaultVariables.nix; in
+default // {
   username = "zerrox";
   host = "default";
   system = "x86_64-linux";
   stateVersion = "25.11";
-  modules = {
-    console = {
-      fish = true;
-    };
-    driver = {
-      nvidia = false;
-      amdgpu = false;
-    };
-    gui = {
-      gnome = true;
-      hyprland = false;
-    };
-    software = {
-      display-link = false;
+  modules = default.modules // {
+    software = default.modules.software // {
       docker = true;
-      flatpak = false;
       git = true;
-      noisetorch = true;
-      vscode = true;
+      tailscale = false;
     };
-    systemSettings = {
-      bootanimation = true;
-      gaming = false;
-      virtualization = false;
+    security = default.modules.security // {
+      yubikey = true;
+      agenix = true;
     };
   };
-  git = {
-    lfs = true;
-    extraConfig = {
-      defaultBranch = "main";
-      credential-helper = "store";
+  git = default.git // {
+    extraConfig = default.git.extraConfig // {
+      credential-helper = null;
     };
-    credentials = {
-      email = "190294721+zerroxxx9@users.noreply.github.com";
-      name = "zerroxxx9";
-    };
-    includes = [];
-  };
-  gnome = {
-    fav-icon = [
-    ];
   };
 }
 ```
@@ -124,9 +109,9 @@ nixosConfigurations = {
 
 ---
 
-## 🛠 Troubleshooting & Known Issues
+## ?? Troubleshooting & Known Issues
 
-### ❗ `attribute 'xyz' missing`
+### ? `attribute 'xyz' missing`
 
 Ensure that your `variables.nix` file contains all required attributes. Use a central default like:
 
@@ -137,18 +122,16 @@ default // { ... }
 
 This ensures every module gets all expected keys.
 
+### ?? Module flags not working
 
-
-### 🧨 Module flags not working
-
-Make sure you’re not accidentally shadowing or omitting expected fields:
+Make sure you?re not accidentally shadowing or omitting expected fields:
 
 - Use `default.modules // { ... }` instead of `{}` when overriding
 - Use `lib.attrByPath` or `lib.getAttrFromPath` for optional flags
 
 ---
 
-### 🔄 Flake not updating correctly
+### ?? Flake not updating correctly
 
 Run:
 

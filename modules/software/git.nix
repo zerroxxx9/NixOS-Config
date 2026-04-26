@@ -18,14 +18,17 @@
       programs.git = {
         enable = true;
         lfs.enable = hostVariables.git.lfs;
-        settings = {
-          user = {
-            email = hostVariables.git.credentials.email;
-            name = hostVariables.git.credentials.name;
+        settings =
+          {
+            user = {
+              email = hostVariables.git.credentials.email;
+              name = hostVariables.git.credentials.name;
+            };
+            init.defaultBranch = hostVariables.git.extraConfig.defaultBranch;
+          }
+          // lib.optionalAttrs (hostVariables.git.extraConfig.credential-helper != null) {
+            credential.helper = hostVariables.git.extraConfig.credential-helper;
           };
-          init.defaultBranch = hostVariables.git.extraConfig.defaultBranch;
-          credential.helper = hostVariables.git.extraConfig.credential-helper;
-        };
         includes = hostVariables.git.includes;
       };
     };

@@ -15,6 +15,8 @@
   networking.hostName = hostVariables.host;
   networking.networkmanager.enable = true;
 
+  age.identityPaths = ["/var/lib/agenix/work-agenix"];
+
   time.timeZone = "Europe/Berlin";
 
   services.xserver.enable = true;

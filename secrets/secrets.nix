@@ -1,4 +1,4 @@
-# Recipients, die agenix-Secrets entschl?sseln d?rfen.
+# Recipients, die agenix-Secrets entschluesseln duerfen.
 #
 # Sicher im Repo:
 # - age-Recipients (age1...)
@@ -6,7 +6,7 @@
 #
 # Niemals im Repo:
 # - private SSH keys
-# - age-plugin-yubikey Identit?ten
+# - age-plugin-yubikey Identitaeten
 #
 # Erwartete committed Dateien:
 # - recipients/zerrox-yubikey.age.pub
@@ -16,18 +16,30 @@
 # Optionaler Fallback-Admin-Key:
 # - recipients/zerrox-admin-ssh-ed25519.pub
 let
-  readRecipient = path:
-    builtins.replaceStrings ["\r" "\n"] ["" ""] (builtins.readFile path);
+  readRecipients = path:
+    let
+      lines =
+        builtins.filter
+          (line:
+            builtins.isString line
+            && line != ""
+            && builtins.match "^[[:space:]]*#.*" line == null)
+          (builtins.split "\n" (builtins.replaceStrings ["\r"] [""] (builtins.readFile path)));
+    in
+      if lines != [ ] then
+        lines
+      else
+        throw "Recipient file contains no usable recipients: ${toString path}";
 
   optionalRecipient = path:
     if builtins.pathExists path then
-      [ (readRecipient path) ]
+      readRecipients path
     else
       [ ];
 
   requiredRecipient = name: path:
     if builtins.pathExists path then
-      readRecipient path
+      builtins.head (readRecipients path)
     else
       throw "Missing recipient file for ${name}: ${toString path}";
 

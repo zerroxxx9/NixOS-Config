@@ -44,6 +44,7 @@
     "markdown.preview.fontSize" = 20;
     "files.autoSave" = "onFocusChange";
     "git.blame.editorDecoration.enabled" = "true";
+    "task.allowAutomaticTasks" = "off";
   };
 in {
   options.default-extensions.enable = lib.mkOption {

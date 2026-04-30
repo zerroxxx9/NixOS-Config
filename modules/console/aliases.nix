@@ -7,5 +7,6 @@
     bye = "shutdown now";
     flake = "direnv allow";
     check = "nix store verify --all";
+    ranger = "ranger-cd";
   };
 }

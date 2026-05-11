@@ -15,6 +15,7 @@ in
         software =
           default.modules.software
           // {
+            noisetorch = true;
             display-link = false;
             tailscale = true;
           };

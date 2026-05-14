@@ -18,11 +18,11 @@
   boot.extraModulePackages = [];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/7b5c1c6e-0571-4eba-8c23-6a7ddc67585b";
+    device = "/dev/disk/by-uuid/901749a9-2d75-417e-bc24-154b46f22a5c";
     fsType = "ext4";
   };
 
-  boot.initrd.luks.devices."luks-eebe0a3c-51ef-4180-b553-6d9c5d2b5d75".device = "/dev/disk/by-uuid/eebe0a3c-51ef-4180-b553-6d9c5d2b5d75";
+  #boot.initrd.luks.devices."luks-eebe0a3c-51ef-4180-b553-6d9c5d2b5d75".device = "/dev/disk/by-uuid/eebe0a3c-51ef-4180-b553-6d9c5d2b5d75";
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/8DAF-075B";

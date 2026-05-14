@@ -82,7 +82,7 @@
     element-desktop
     codex
     busybox
-    vencord
+    discord
     steam
     (unstable.brave.override {
       commandLineArgs = [

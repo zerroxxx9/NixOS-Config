@@ -73,6 +73,10 @@
         modules = [./hosts/homelab];
         hostVariables = import ./hosts/homelab/variables.nix;
       };
+      desktop = mkNixosConfiguration {
+        modules = [./hosts/desktop];
+        hostVariables = import ./hosts/desktop/variables.nix;
+      };
     };
     overlays = import ./overlays.nix inputs;
   };

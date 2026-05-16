@@ -13,6 +13,7 @@
   modules.driver.amdgpu.enable = lib.attrByPath ["modules" "driver" "amdgpu"] false hostVariables;
   modules.driver.nvidia.enable = lib.attrByPath ["modules" "driver" "nvidia"] false hostVariables;
   modules.gui.gnome.enable = lib.attrByPath ["modules" "gui" "gnome"] false hostVariables;
+  modules.gui.hyprland.enable = lib.attrByPath ["modules" "gui" "hyprland"] false hostVariables;
   modules.software.displaylink.enable = lib.attrByPath ["modules" "software" "display-link"] false hostVariables;
   modules.software.docker.enable = lib.attrByPath ["modules" "software" "docker"] false hostVariables;
   modules.software.couchdb.enable = lib.attrByPath ["modules" "software" "couchdb"] false hostVariables;

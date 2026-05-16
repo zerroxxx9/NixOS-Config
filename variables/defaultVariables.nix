@@ -15,6 +15,7 @@
     };
     gui = {
       gnome = true;
+      hyprland = false;
     };
     software = {
       display-link = true;
@@ -64,6 +65,8 @@
       "brave-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop"
       "code.desktop"
       "obsidian.desktop"
+      "discord.desktop"
+      "spotify.desktop"
     ];
     idle-delay = 0;
   };

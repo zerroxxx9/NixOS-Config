@@ -55,6 +55,7 @@ RULES=secrets/secrets.nix agenix -e secrets/tailscale-authkey.age -i ~/.config/a
 RULES=secrets/secrets.nix agenix -e secrets/wifi-passwords.age -i ~/.config/age/identities/yubikey.txt
 RULES=secrets/secrets.nix agenix -e secrets/copilot-api-key.age -i ~/.config/age/identities/yubikey.txt
 RULES=secrets/secrets.nix agenix -e secrets/brave-bookmarks.age -i ~/.config/age/identities/yubikey.txt
+RULES=secrets/secrets.nix agenix -e secrets/desktop-bookmarks.age -i ~/.config/age/identities/yubikey.txt
 ```
 
 ## 4. What not to commit

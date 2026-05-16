@@ -33,6 +33,15 @@
       yubioath-flutter
     ];
 
+    # NixOS activation scripts intentionally run with a minimal PATH that does
+    # not include the full system profile. age-plugin-yubikey must be on PATH
+    # for agenix/age to decrypt identities like AGE-PLUGIN-YUBIKEY-*.
+    system.activationScripts.yubikey-age-plugin-path = {
+      text = ''
+        export PATH="$PATH:${pkgs.age-plugin-yubikey}/bin"
+      '';
+    };
+
     # FIDO2-backed SSH keys are fine for Git/SSH, but agenix admin decrypt
     # should use age-plugin-yubikey with a dedicated age identity.
     programs.ssh.startAgent = lib.mkDefault (config.modules.security.yubikey.enableSSH && !config.services.gnome.gcr-ssh-agent.enable);

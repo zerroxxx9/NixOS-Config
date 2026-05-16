@@ -12,8 +12,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = hostVariables.host;
-  networking.networkmanager.enable = true;
+  networking = {
+    hostName = hostVariables.host;
+    networkmanager.enable = true;
+    nameservers = ["1.1.1.1" "1.0.0.1"];
+  };
+
+  virtualisation.virtualbox.host.enable = true;
+
+  services.resolved.enable = true;
 
   age.identityPaths = ["/var/lib/agenix/desktop-agenix"];
 
@@ -35,6 +42,30 @@
     pulse.enable = true;
   };
 
+  environment.etc."wireplumber/wireplumber.conf.d/51-cmedia-q9-nosuspend.conf".text = ''
+    monitor.alsa.rules = [
+      {
+        matches = [
+          { node.name = "alsa_input.usb-CMEDIA_Q9-1-00.*" }
+        ]
+        actions = {
+          update-props = {
+            session.suspend-timeout-seconds = 0
+            audio.rate = 48000
+            audio.channels = 1
+            audio.position = [ MONO ]
+          }
+        }
+      }
+    ]
+  '';
+
+  services.udev.extraRules = ''
+    # Q9 (0d8c:0135) - prevent suspend that can wedge streaming
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0d8c", ATTR{idProduct}=="0135", TEST=="power/control", ATTR{power/control}="on"
+  '';
+  boot.kernelParams = ["usbcore.autosuspend=-1"];
+
   xdg.portal = {
     enable = true;
     extraPortals = [pkgs.xdg-desktop-portal-gnome];
@@ -43,7 +74,7 @@
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = ["networkmanager" "wheel" "vboxusers"];
   };
 
   programs.direnv.enable = true;
@@ -55,11 +86,9 @@
     enable = true;
     extensions = [
       "jpmkfafbacpgapdghgdpembnojdlgkdl"
-      "cjpalhdlnbpafiamejdnhcphjbkeiagm"
       "gppongmhjkpfnbhagpmjfkannfbllamg"
-      "fmkadmapgofadopljbjfkapdkoienihi"
-      "eimadpbcbfnmbkopoojfekhnkhdbieeh"
       "gcknhkkoolaabfmlnjonogaaifnjlfnp"
+      "gkeojjjcdcopjkbelgbcpckplegclfeg"
     ];
   };
 
@@ -84,6 +113,13 @@
     busybox
     discord
     steam
+    heroic
+    spotify
+    piper
+    libratbag
+    easyeffects
+    pnpm
+    nodejs_24
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
@@ -96,7 +132,7 @@
   modules.security.agenix.secrets = {
     wifiPasswords = true;
     copilotApiKey = true;
-    braveBookmarks = true;
+    desktopBookmarks = true;
   };
 
   # YubiKey f?r SSH zu GitHub nutzen
@@ -104,6 +140,11 @@
     enableSSH = true;
     enablePAM = false;
   };
+
+  # Fresh installs can end up with /etc/resolv.conf pointing at Tailscale's
+  # DNS (100.100.100.100) before the host is actually logged in, which breaks
+  # basic name resolution (Discord, curl, etc). Prefer normal DNS for now.
+  modules.software.tailscale.acceptDNS = false;
 
   system.stateVersion = hostVariables.stateVersion;
 

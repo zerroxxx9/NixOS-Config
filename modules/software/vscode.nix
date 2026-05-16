@@ -30,6 +30,8 @@
     ms-azuretools.vscode-docker
     ms-vscode-remote.remote-ssh
     ms-vscode.hexeditor
+    pkief.material-icon-theme
+    github.github-vscode-theme
 
     # nix & flake support
     bbenoist.nix
@@ -45,6 +47,8 @@
     "files.autoSave" = "onFocusChange";
     "git.blame.editorDecoration.enabled" = true;
     "task.allowAutomaticTasks" = "off";
+    "workbench.colorTheme" = "GitHub Dark";
+    "workbench.iconTheme" = "material-icon-theme";
   };
 in {
   options.default-extensions.enable = lib.mkOption {

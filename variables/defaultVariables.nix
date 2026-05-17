@@ -67,6 +67,7 @@
       "obsidian.desktop"
       "discord.desktop"
       "spotify.desktop"
+      "virtualbox.desktop"
     ];
     idle-delay = 0;
   };

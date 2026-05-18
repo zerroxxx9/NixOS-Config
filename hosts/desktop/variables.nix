@@ -19,6 +19,11 @@ in
             display-link = false;
             tailscale = true;
           };
+        gui =
+          default.modules.gui
+          // {
+            hyprland = true;
+          };
         security =
           default.modules.security
           // {

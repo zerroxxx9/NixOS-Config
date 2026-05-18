@@ -84,6 +84,22 @@
         "type": "github"
       }
     },
+    "ilyamiro-dots": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1778878164,
+        "narHash": "sha256-Zpa7j+JANtGL+CXHjPGyACRpGpntpA7UUJQdbp4w+r0=",
+        "owner": "ilyamiro",
+        "repo": "nixos-configuration",
+        "rev": "f3ac470fa7447466257f9d4a973bea38449ca31c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ilyamiro",
+        "repo": "nixos-configuration",
+        "type": "github"
+      }
+    },
     "nix-vscode-extensions": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -175,6 +191,7 @@
       "inputs": {
         "agenix": "agenix",
         "home-manager": "home-manager",
+        "ilyamiro-dots": "ilyamiro-dots",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_2",

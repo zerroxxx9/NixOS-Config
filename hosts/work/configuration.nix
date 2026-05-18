@@ -90,8 +90,9 @@
     libreoffice-qt
     chromium
     element-desktop
-    codex
     busybox
+    pnpm
+    nodejs_24
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

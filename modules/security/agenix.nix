@@ -12,11 +12,25 @@
   wifiPasswordsFile = ../../secrets/wifi-passwords.age;
   copilotApiKeyFile = ../../secrets/copilot-api-key.age;
   braveBookmarksFile = ../../secrets/brave-bookmarks.age;
+  desktopBookmarksFile = ../../secrets/desktop-bookmarks.age;
 
   hasTailscaleAuthKey = builtins.pathExists tailscaleAuthKeyFile;
   hasWifiPasswords = builtins.pathExists wifiPasswordsFile;
   hasCopilotApiKey = builtins.pathExists copilotApiKeyFile;
   hasBraveBookmarks = builtins.pathExists braveBookmarksFile;
+  hasDesktopBookmarks = builtins.pathExists desktopBookmarksFile;
+  hasConfiguredBookmarks =
+    (cfg.secrets.braveBookmarks && hasBraveBookmarks)
+    || (cfg.secrets.desktopBookmarks && hasDesktopBookmarks);
+  hasConfiguredAgeSecrets =
+    (cfg.secrets.tailscaleAuthKey && hasTailscaleAuthKey)
+    || (cfg.secrets.wifiPasswords && hasWifiPasswords)
+    || (cfg.secrets.copilotApiKey && hasCopilotApiKey)
+    || hasConfiguredBookmarks;
+  bookmarksSecretPath =
+    if cfg.secrets.desktopBookmarks
+    then config.age.secrets."desktop-bookmarks".path
+    else config.age.secrets."brave-bookmarks".path;
 in {
   options.modules.security.agenix = {
     enable = lib.mkEnableOption "agenix secret management";
@@ -43,7 +57,13 @@ in {
       braveBookmarks = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Deploy Brave browser bookmarks HTML.";
+        description = "Deploy shared Brave browser bookmarks.";
+      };
+
+      desktopBookmarks = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Deploy desktop-specific Brave browser bookmarks.";
       };
     };
   };
@@ -76,7 +96,19 @@ in {
         modules.security.agenix.secrets.braveBookmarks is enabled, but secrets/brave-bookmarks.age is missing.
         Create it from the repo root with:
           RULES=secrets/secrets.nix agenix -e secrets/brave-bookmarks.age
+      ''
+      ++ lib.optional (cfg.secrets.desktopBookmarks && !hasDesktopBookmarks) ''
+        modules.security.agenix.secrets.desktopBookmarks is enabled, but secrets/desktop-bookmarks.age is missing.
+        Create it from the repo root with:
+          RULES=secrets/secrets.nix agenix -e secrets/desktop-bookmarks.age
       '';
+
+    assertions = [
+      {
+        assertion = !(cfg.secrets.braveBookmarks && cfg.secrets.desktopBookmarks);
+        message = "Enable only one Brave bookmarks secret per host: braveBookmarks or desktopBookmarks.";
+      }
+    ];
 
     age.secrets.tailscale-authkey = lib.mkIf (cfg.secrets.tailscaleAuthKey && hasTailscaleAuthKey) {
       file = tailscaleAuthKeyFile;
@@ -102,20 +134,39 @@ in {
       mode = "0400";
     };
 
+    age.secrets.desktop-bookmarks = lib.mkIf (cfg.secrets.desktopBookmarks && hasDesktopBookmarks) {
+      file = desktopBookmarksFile;
+      owner = hostVariables.username;
+      mode = "0400";
+    };
+
     home-manager.users.${hostVariables.username}.home.sessionVariables = lib.mkIf (cfg.secrets.copilotApiKey && hasCopilotApiKey) {
       GITHUB_COPILOT_API_KEY_FILE = config.age.secrets."copilot-api-key".path;
     };
 
-    system.activationScripts.deploy-brave-bookmarks = lib.mkIf (cfg.secrets.braveBookmarks && hasBraveBookmarks) {
-      text = ''
-        BRAVE_DIR="/home/${hostVariables.username}/.config/BraveSoftware/Brave-Browser/Default"
-        if [ -f "${config.age.secrets."brave-bookmarks".path}" ]; then
-          mkdir -p "$BRAVE_DIR"
-          cp ${config.age.secrets."brave-bookmarks".path} "$BRAVE_DIR/Bookmarks"
-          chown ${hostVariables.username}:users "$BRAVE_DIR/Bookmarks"
-        fi
-      '';
-    };
+    system.activationScripts = lib.mkMerge [
+      # If secrets are decrypted using an AGE-PLUGIN-YUBIKEY-* identity, the
+      # activation-time PATH must include the plugin binary.
+      (lib.mkIf (config.modules.security.yubikey.enable && hasConfiguredAgeSecrets) {
+        agenixInstall.deps = lib.mkBefore ["yubikey-age-plugin-path"];
+      })
+      (lib.mkIf hasConfiguredBookmarks {
+        deploy-brave-bookmarks.text = ''
+          BRAVE_DIR="/home/${hostVariables.username}/.config/BraveSoftware/Brave-Browser/Default"
+          if [ -f "${bookmarksSecretPath}" ]; then
+            mkdir -p "$BRAVE_DIR"
+            # Avoid writing while Brave is running (can trigger lock/corruption warnings).
+            if pgrep -u "${hostVariables.username}" -f "/bin/brave|brave" >/dev/null 2>&1; then
+              echo "[agenix] Brave is running; skipping bookmark deploy to $BRAVE_DIR/Bookmarks" >&2
+            else
+              install -m 0600 -o "${hostVariables.username}" -g users \
+                "${bookmarksSecretPath}" \
+                "$BRAVE_DIR/Bookmarks"
+            fi
+          fi
+        '';
+      })
+    ];
 
     networking.networkmanager.ensureProfiles = lib.mkIf (cfg.secrets.wifiPasswords && hasWifiPasswords) {
       environmentFiles = [config.age.secrets."wifi-passwords".path];

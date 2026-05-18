@@ -9,6 +9,12 @@ in {
   options.modules.software.tailscale = {
     enable = lib.mkEnableOption "tailscale";
 
+    acceptDNS = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to let Tailscale manage system DNS (equivalent to tailscale up --accept-dns=...).";
+    };
+
     authKeyFile = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
@@ -42,7 +48,14 @@ in {
         enable = true;
         openFirewall = true;
         extraUpFlags =
-          lib.optionals cfg.exitNode ["--advertise-exit-node"]
+          [
+            "--accept-dns=${
+              if cfg.acceptDNS
+              then "true"
+              else "false"
+            }"
+          ]
+          ++ lib.optionals cfg.exitNode ["--advertise-exit-node"]
           ++ lib.optionals (cfg.subnetRoutes != []) [
             "--advertise-routes=${lib.concatStringsSep "," cfg.subnetRoutes}"
           ]

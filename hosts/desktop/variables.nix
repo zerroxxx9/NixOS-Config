@@ -1,0 +1,44 @@
+let
+  default = import ./../../variables/defaultVariables.nix;
+in
+  default
+  // {
+    host = "desktop";
+    modules =
+      default.modules
+      // {
+        driver =
+          default.modules.driver
+          // {
+            amdgpu = true;
+          };
+        software =
+          default.modules.software
+          // {
+            noisetorch = true;
+            display-link = false;
+            tailscale = true;
+          };
+        security =
+          default.modules.security
+          // {
+            yubikey = true;
+            agenix = true;
+          };
+      };
+    git =
+      default.git
+      // {
+        includes = [
+          {
+            path = "~/Dev/.gitconfig";
+            condition = "gitdir:~/Dev/";
+          }
+        ];
+      };
+    gnome =
+      default.gnome
+      // {
+        idle-delay = 300;
+      };
+  }

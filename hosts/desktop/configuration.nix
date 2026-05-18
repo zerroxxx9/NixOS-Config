@@ -12,10 +12,17 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = hostVariables.host;
-  networking.networkmanager.enable = true;
+  networking = {
+    hostName = hostVariables.host;
+    networkmanager.enable = true;
+    nameservers = ["1.1.1.1" "1.0.0.1"];
+  };
 
-  age.identityPaths = ["/var/lib/agenix/work-agenix"];
+  virtualisation.virtualbox.host.enable = true;
+
+  services.resolved.enable = true;
+
+  age.identityPaths = ["/var/lib/agenix/desktop-agenix"];
 
   time.timeZone = "Europe/Berlin";
 
@@ -33,12 +40,31 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    jack.enable = true;
   };
 
-  systemd.user.extraConfig = ''
-    DefaultLimitNOFILE=524288
+  environment.etc."wireplumber/wireplumber.conf.d/51-cmedia-q9-nosuspend.conf".text = ''
+    monitor.alsa.rules = [
+      {
+        matches = [
+          { node.name = "alsa_input.usb-CMEDIA_Q9-1-00.*" }
+        ]
+        actions = {
+          update-props = {
+            session.suspend-timeout-seconds = 0
+            audio.rate = 48000
+            audio.channels = 1
+            audio.position = [ MONO ]
+          }
+        }
+      }
+    ]
   '';
+
+  services.udev.extraRules = ''
+    # Q9 (0d8c:0135) - prevent suspend that can wedge streaming
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0d8c", ATTR{idProduct}=="0135", TEST=="power/control", ATTR{power/control}="on"
+  '';
+  boot.kernelParams = ["usbcore.autosuspend=-1"];
 
   xdg.portal = {
     enable = true;
@@ -48,7 +74,7 @@
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";
-    extraGroups = ["networkmanager" "wheel"];
+    extraGroups = ["networkmanager" "wheel" "vboxusers"];
   };
 
   programs.direnv.enable = true;
@@ -60,18 +86,15 @@
     enable = true;
     extensions = [
       "jpmkfafbacpgapdghgdpembnojdlgkdl"
-      "cjpalhdlnbpafiamejdnhcphjbkeiagm"
       "gppongmhjkpfnbhagpmjfkannfbllamg"
-      "fmkadmapgofadopljbjfkapdkoienihi"
-      "eimadpbcbfnmbkopoojfekhnkhdbieeh"
       "gcknhkkoolaabfmlnjonogaaifnjlfnp"
+      "gkeojjjcdcopjkbelgbcpckplegclfeg"
       "gphhapmejobijbbhgpjhcjognlahblep"
     ];
   };
 
   systemd.tmpfiles.rules = [
     "d /home/${hostVariables.username}/Dev 0755 ${hostVariables.username}"
-    "d /home/${hostVariables.username}/Private 0755 ${hostVariables.username}"
     "d /home/${hostVariables.username}/Documents/Berufsschule 0755 ${hostVariables.username}"
     "d /home/${hostVariables.username}/Documents/Obsidian 0755 ${hostVariables.username}"
   ];
@@ -79,19 +102,25 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    unstable.bruno
     unstable.obsidian
     keepassxc
     vscode-with-extensions
     gh
     zip
     unzip
-    burpsuite
-    libreoffice-qt
     chromium
     element-desktop
     codex
     busybox
+    discord
+    steam
+    heroic
+    spotify
+    piper
+    libratbag
+    easyeffects
+    pnpm
+    nodejs_24
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
@@ -104,7 +133,7 @@
   modules.security.agenix.secrets = {
     wifiPasswords = true;
     copilotApiKey = true;
-    braveBookmarks = true;
+    desktopBookmarks = true;
   };
 
   # YubiKey f?r SSH zu GitHub nutzen
@@ -112,6 +141,11 @@
     enableSSH = true;
     enablePAM = false;
   };
+
+  # Fresh installs can end up with /etc/resolv.conf pointing at Tailscale's
+  # DNS (100.100.100.100) before the host is actually logged in, which breaks
+  # basic name resolution (Discord, curl, etc). Prefer normal DNS for now.
+  modules.software.tailscale.acceptDNS = false;
 
   system.stateVersion = hostVariables.stateVersion;
 

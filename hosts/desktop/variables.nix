@@ -22,6 +22,7 @@ in
         gui =
           default.modules.gui
           // {
+            gnome = true;
             hyprland = true;
           };
         security =

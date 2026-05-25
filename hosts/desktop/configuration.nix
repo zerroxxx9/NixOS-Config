@@ -65,6 +65,8 @@
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0d8c", ATTR{idProduct}=="0135", TEST=="power/control", ATTR{power/control}="on"
   '';
   boot.kernelParams = ["usbcore.autosuspend=-1"];
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
 
   xdg.portal = {
     enable = true;
@@ -74,7 +76,7 @@
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";
-    extraGroups = ["networkmanager" "wheel" "vboxusers"];
+    extraGroups = ["networkmanager" "wheel" "vboxusers" "libvirtd" "kvm"];
   };
 
   programs.direnv.enable = true;
@@ -121,6 +123,11 @@
     easyeffects
     pnpm
     nodejs_24
+    burpsuite
+    jython
+    qemu
+    virt-manager
+    virt-viewer
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
@@ -131,9 +138,9 @@
 
   # agenix Secrets aktivieren
   modules.security.agenix.secrets = {
-    wifiPasswords = true;
-    copilotApiKey = true;
-    desktopBookmarks = true;
+    wifiPasswords = false;
+    copilotApiKey = false;
+    desktopBookmarks = false;
   };
 
   # YubiKey f?r SSH zu GitHub nutzen

@@ -7,6 +7,32 @@
   ...
 }: let
   cfg = config.modules.gui.hyprland;
+  quickshellWithQtModules = pkgs.symlinkJoin {
+    name = "quickshell-with-qt-modules";
+    paths = [pkgs.quickshell];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = let
+      qtQmlModules = lib.makeSearchPath "lib/qt-6/qml" [
+        pkgs.qt6.qt5compat
+        pkgs.qt6.qtmultimedia
+        pkgs.qt6.qtwebengine
+        pkgs.qt6.qtwebsockets
+      ];
+      qtPlugins = lib.makeSearchPath "lib/qt-6/plugins" [
+        pkgs.qt6.qt5compat
+        pkgs.qt6.qtmultimedia
+        pkgs.qt6.qtwebengine
+        pkgs.qt6.qtwebsockets
+      ];
+    in ''
+      wrapProgram $out/bin/quickshell \
+        --prefix QML2_IMPORT_PATH : ${qtQmlModules} \
+        --prefix QT_PLUGIN_PATH : ${qtPlugins}
+      wrapProgram $out/bin/qs \
+        --prefix QML2_IMPORT_PATH : ${qtQmlModules} \
+        --prefix QT_PLUGIN_PATH : ${qtPlugins}
+    '';
+  };
   hyprlandScripts = pkgs.runCommand "hyprland-scripts" {nativeBuildInputs = [pkgs.perl];} ''
     cp -R ${inputs.ilyamiro-dots}/config/sessions/hyprland/scripts $out
     chmod -R u+w $out
@@ -96,7 +122,7 @@ in {
       networkmanager_dmenu
       playerctl
       python3
-      quickshell
+      quickshellWithQtModules
       rofi
       satty
       slurp
@@ -209,6 +235,7 @@ in {
 
       home.file.".config/hypr/scripts".source = hyprlandScripts;
 
+      xdg.configFile."quickshell/qs-hyprview".source = inputs.qs-hyprview;
       xdg.configFile."hypr/config".source = ./hyprland/ilyamiro/config;
       xdg.configFile."hypr/templates".source =
         inputs.ilyamiro-dots + "/config/sessions/hyprland/templates";

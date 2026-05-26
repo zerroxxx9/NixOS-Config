@@ -15,6 +15,10 @@
       url = "github:ilyamiro/nixos-configuration";
       flake = false;
     };
+    qs-hyprview = {
+      url = "github:dom0/qs-hyprview";
+      flake = false;
+    };
 
     agenix = {
       url = "github:ryantm/agenix";

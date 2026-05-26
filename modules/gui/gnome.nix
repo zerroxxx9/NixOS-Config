@@ -49,8 +49,8 @@
           icon-theme = "Yaru";
         };
         "org/gnome/desktop/background" = {
-          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/2.jpg";
-          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/2.jpg";
+          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
+          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
           picture-options = "zoom"; # scaled, none, centred, zoom, streched, wallpaper, spanned
         };
         "org/gnome/shell/extensions/user-theme" = {

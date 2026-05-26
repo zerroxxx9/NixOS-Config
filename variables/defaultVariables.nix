@@ -27,6 +27,7 @@
       immich = false;
       noisetorch = true;
       vscode = false;
+      vencord = false;
       tailscale = false;
       opencloud = false;
       paperless-ngx = false;
@@ -65,7 +66,7 @@
       "brave-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop"
       "code.desktop"
       "obsidian.desktop"
-      "discord.desktop"
+      "vesktop.desktop"
       "spotify.desktop"
       "virtualbox.desktop"
     ];

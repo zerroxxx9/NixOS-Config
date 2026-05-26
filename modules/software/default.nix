@@ -10,6 +10,7 @@
     ./noisetorch.nix
     ./vscode.nix
     ./tailscale.nix
+    ./vencord.nix
     ./opencloud.nix
     ./paperless-ngx.nix
   ];

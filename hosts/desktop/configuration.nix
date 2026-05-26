@@ -114,7 +114,6 @@
     element-desktop
     codex
     busybox
-    discord
     steam
     heroic
     spotify

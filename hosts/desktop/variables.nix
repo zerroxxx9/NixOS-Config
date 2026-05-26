@@ -18,6 +18,7 @@ in
             noisetorch = true;
             display-link = false;
             tailscale = true;
+            vencord = true;
           };
         gui =
           default.modules.gui

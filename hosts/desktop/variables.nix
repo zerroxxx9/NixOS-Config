@@ -19,6 +19,7 @@ in
             display-link = false;
             tailscale = true;
             vencord = true;
+            spicetify = true;
           };
         gui =
           default.modules.gui

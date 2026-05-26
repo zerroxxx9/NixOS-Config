@@ -116,7 +116,6 @@
     busybox
     steam
     heroic
-    spotify
     piper
     libratbag
     easyeffects

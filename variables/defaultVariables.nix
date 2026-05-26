@@ -31,6 +31,7 @@
       tailscale = false;
       opencloud = false;
       paperless-ngx = false;
+      spicetify = false;
     };
     security = {
       yubikey = false;

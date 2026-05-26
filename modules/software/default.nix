@@ -13,5 +13,6 @@
     ./vencord.nix
     ./opencloud.nix
     ./paperless-ngx.nix
+    ./spicetify.nix
   ];
 }

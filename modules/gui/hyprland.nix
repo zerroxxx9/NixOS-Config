@@ -36,6 +36,8 @@
   hyprlandScripts = pkgs.runCommand "hyprland-scripts" {nativeBuildInputs = [pkgs.perl];} ''
     cp -R ${inputs.ilyamiro-dots}/config/sessions/hyprland/scripts $out
     chmod -R u+w $out
+    cp ${./hyprland/ilyamiro/scripts/quickshell/applauncher/app_fetcher.py} $out/quickshell/applauncher/app_fetcher.py
+    cp ${./hyprland/ilyamiro/scripts/quickshell/applauncher/appLauncher.qml} $out/quickshell/applauncher/appLauncher.qml
 
     substituteInPlace $out/quickshell/Config.qml \
       --replace-fail 'readonly property string weatherEnvPath: qsScriptsDir + "/calendar/.env"' \

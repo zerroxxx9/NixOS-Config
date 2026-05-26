@@ -98,7 +98,8 @@ Item {
         let filtered = [];
         
         for (let i = 0; i < allApps.length; i++) {
-            if (allApps[i].name.toLowerCase().includes(q)) {
+            let searchable = (allApps[i].search || allApps[i].name).toLowerCase();
+            if (searchable.includes(q)) {
                 filtered.push(allApps[i]);
             }
         }

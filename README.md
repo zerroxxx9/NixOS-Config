@@ -1,18 +1,19 @@
-# ?? NixOS Multi-Host Configuration
+# NixOS Multi-Host Configuration
 
 This repository contains my modular NixOS system configuration, powered by [Nix Flakes](https://nixos.wiki/wiki/Flakes) and [Home Manager](https://nix-community.github.io/home-manager/).
 
-## ? Features
+## Features
 
-- ?? Flake-based for reproducibility
-- ?? Modular configuration per host
-- ?? Includes Home Manager for user-level setup
-- ?? Centralized `variables.nix` for system flags and module toggles
-- ?? agenix-ready secret workflow with host SSH keys and optional YubiKey admin decrypt
+- Flake-based for reproducibility
+- Modular configuration per host
+- Includes Home Manager for user-level setup
+- Centralized `variables.nix` for system flags and module toggles
+- agenix-ready secret workflow with host SSH keys and optional YubiKey admin decrypt
+- hyprland & gnome setup
 
 ---
 
-## ??? Getting Started
+## Getting Started
 
 ### 1. Clone into `.dotfiles`
 
@@ -26,7 +27,7 @@ cd ~/.dotfiles
 Edit:
 
 ```nix
-./hosts/{work,wsl,homelab}/variables.nix
+./hosts/{work,wsl,homelab,desktop}/variables.nix
 ```
 
 Then run:
@@ -71,29 +72,56 @@ The short version:
 3. Your `variables.nix` should follow this structure:
 
 ```nix
-let default = import ../../variables/defaultVariables.nix; in
-default // {
-  username = "zerrox";
-  host = "default";
-  system = "x86_64-linux";
-  stateVersion = "25.11";
-  modules = default.modules // {
-    software = default.modules.software // {
-      docker = true;
-      git = true;
-      tailscale = false;
-    };
-    security = default.modules.security // {
-      yubikey = true;
-      agenix = true;
-    };
-  };
-  git = default.git // {
-    extraConfig = default.git.extraConfig // {
-      credential-helper = null;
-    };
-  };
-}
+let
+  default = import ./../../variables/defaultVariables.nix;
+in
+  default
+  // {
+    host = "work";
+    modules =
+      default.modules
+      // {
+        driver =
+          default.modules.driver
+          // {
+            amdgpu = true;
+          };
+        software =
+          default.modules.software
+          // {
+            noisetorch = true;
+            display-link = false;
+            tailscale = true;
+          };
+        gui =
+          default.modules.gui
+          // {
+            hyprland = true;
+          };
+        security =
+          default.modules.security
+          // {
+            yubikey = true;
+            agenix = true;
+          };
+      };
+    git =
+      default.git
+      // {
+        includes = [
+          {
+            path = "~/Dev/.gitconfig";
+            condition = "gitdir:~/Dev/";
+          }
+        ];
+      };
+    gnome =
+      default.gnome
+      // {
+        idle-delay = 300;
+      };
+  }
+
 ```
 
 4. Finally, register the host in your `flake.nix`:

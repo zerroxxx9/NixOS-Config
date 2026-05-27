@@ -4,7 +4,29 @@
   config,
   hostVariables,
   ...
-}: {
+}: let
+  colors = {
+    base = "#1e1e2e";
+    mantle = "#181825";
+    crust = "#11111b";
+    text = "#cdd6f4";
+    subtext0 = "#a6adc8";
+    subtext1 = "#bac2de";
+    surface0 = "#313244";
+    surface1 = "#45475a";
+    surface2 = "#585b70";
+    overlay0 = "#6c7086";
+    overlay1 = "#7f849c";
+    overlay2 = "#9399b2";
+
+    rgb = {
+      crust = "17, 17, 27";
+      text = "205, 214, 244";
+      blue = "137, 180, 250";
+      sapphire = "116, 199, 236";
+    };
+  };
+in {
   options.modules.software.vencord = {
     enable = lib.mkEnableOption "Vesktop with a customized Vencord setup";
   };
@@ -25,8 +47,8 @@
           discordBranch = "stable";
           hardwareAcceleration = true;
           minimizeToTray = true;
-          splashBackground = "#0f1117";
-          splashColor = "#f1f5f9";
+          splashBackground = colors.base;
+          splashColor = colors.text;
           splashTheming = true;
           staticTitle = true;
           tray = true;
@@ -53,15 +75,27 @@ button {
 	--background-image: url('https://i.imgur.com/7SbtKvw.png');
 	--background-image-fallback: url('file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg');
 	--home-image: url('https://i.imgur.com/233d55Y.gif');
-	--background-solid: #161921;
-	--background-solid-dark: #101218;
-	--background-solid-darker: #0c0e12;
-	--background-overlay: rgba(0, 0, 0, 0.48);
-	--background-overlay-strong: rgba(0, 0, 0, 0.72);
-	--accent: 37, 172, 232;
-	--accent-alt: 29, 101, 134;
-	--md-black: 0, 0, 0;
-	--dm-white: 255, 255, 255;
+	--base: ${colors.base};
+	--mantle: ${colors.mantle};
+	--crust: ${colors.crust};
+	--surface0: ${colors.surface0};
+	--surface1: ${colors.surface1};
+	--surface2: ${colors.surface2};
+	--overlay0: ${colors.overlay0};
+	--overlay1: ${colors.overlay1};
+	--overlay2: ${colors.overlay2};
+	--text-color: ${colors.text};
+	--subtext0: ${colors.subtext0};
+	--subtext1: ${colors.subtext1};
+	--background-solid: var(--base);
+	--background-solid-dark: var(--mantle);
+	--background-solid-darker: var(--crust);
+	--background-overlay: rgba(${colors.rgb.crust}, 0.58);
+	--background-overlay-strong: rgba(${colors.rgb.crust}, 0.78);
+	--accent: ${colors.rgb.blue};
+	--accent-alt: ${colors.rgb.sapphire};
+	--md-black: ${colors.rgb.crust};
+	--dm-white: ${colors.rgb.text};
 	/* BlurpleRecolor */
 	--accentcolor: var(--accent);
 	--vaccentcolor-hover: rgb(var(--accent));
@@ -108,7 +142,7 @@ div[class*="userProfile"][class*="unThemed"].theme-light {
 	--header-primary: rgba(var(--dm-white), 1);
 	--header-secondary: rgba(var(--dm-white), 0.6);
 	--text-normal: rgba(var(--dm-white), 0.6);
-	--text-muted: #8a8e94;
+	--text-muted: var(--subtext0);
 	--interactive-muted: rgba(var(--dm-white), 0.15);
 	--interactive-normal: rgba(var(--dm-white), 0.5);
 	--interactive-hover: rgba(var(--dm-white), 0.75);

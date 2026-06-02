@@ -8,6 +8,7 @@
   modules = {
     console = {
       fish = true;
+      alacritty = true;
     };
     driver = {
       nvidia = false;

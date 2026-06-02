@@ -92,6 +92,8 @@ in {
     enable = lib.mkEnableOption "gnome";
   };
   config = lib.mkIf config.modules.gui.gnome.enable {
+    modules.gui.alacritty.enable = lib.mkDefault true;
+
     services.displayManager.gdm = {
       enable = true;
       wayland = true;
@@ -113,6 +115,7 @@ in {
     home-manager.useUserPackages = true;
     home-manager.users.${hostVariables.username} = {
       home.stateVersion = "25.11";
+
       dconf.settings = {
         "org/gnome/shell" = {
           disable-user-extensions = false;
@@ -187,6 +190,22 @@ in {
           ];
           default-zoom-level = "small";
         };
+        "org/gtk/settings/file-chooser" = {
+          location-mode = "path-bar";
+          show-hidden = true;
+          show-size-column = true;
+          show-type-column = true;
+          sort-column = "name";
+          sort-order = "ascending";
+          type-format = "category";
+        };
+        "org/gnome/nautilus/preferences" = {
+          default-folder-viewer = "icon-view";
+          search-filter-time-type = "last_modified";
+        };
+        "org/gnome/nautilus/window-state" = {
+          maximized = true;
+        };
         "org/gnome/settings-daemon/plugins/power" = {
           idle-dim = false;
           sleep-inactive-battery-timeout = 900; # 15min
@@ -215,7 +234,7 @@ in {
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-open-terminal" = {
           name = "Open terminal";
-          command = "kgx";
+          command = "alacritty";
           binding = "<Super>t";
         };
         "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/my-open-filemanager" = {

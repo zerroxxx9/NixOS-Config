@@ -26,6 +26,7 @@
       git = true;
       immich = false;
       noisetorch = true;
+      obsidian = false;
       vscode = false;
       vencord = false;
       tailscale = false;

@@ -104,7 +104,6 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    unstable.obsidian
     keepassxc
     vscode-with-extensions
     gh

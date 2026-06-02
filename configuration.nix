@@ -22,6 +22,7 @@
   modules.software.git.enable = lib.attrByPath ["modules" "software" "git"] false hostVariables;
   modules.software.immich.enable = lib.attrByPath ["modules" "software" "immich"] false hostVariables;
   modules.software.noisetorch.enable = lib.attrByPath ["modules" "software" "noisetorch"] false hostVariables;
+  modules.software.obsidian.enable = lib.attrByPath ["modules" "software" "obsidian"] false hostVariables;
   modules.software.opencloud.enable = lib.attrByPath ["modules" "software" "opencloud"] false hostVariables;
   modules.software.tailscale.enable = lib.attrByPath ["modules" "software" "tailscale"] false hostVariables;
   modules.software.vencord.enable = lib.attrByPath ["modules" "software" "vencord"] false hostVariables;

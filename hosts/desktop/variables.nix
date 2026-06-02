@@ -16,6 +16,7 @@ in
           default.modules.software
           // {
             noisetorch = true;
+            obsidian = true;
             display-link = false;
             tailscale = true;
             vencord = true;

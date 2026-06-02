@@ -83,6 +83,88 @@
       s/\n\s*let cmd = "if command -v kitty.*?curl.*?";\n\s*Quickshell\.execDetached\(\["bash", "-c", cmd\]\);/\n                            Quickshell.execDetached(["notify-send", "Updater disabled", "Use nix flake update and rebuild from your dotfiles."]);/sg;
     ' $out/quickshell/updater/UpdaterPopup.qml $out/quickshell/guide/GuidePopup.qml
   '';
+  catppuccinGtk = pkgs.catppuccin-gtk.override {
+    accents = ["blue"];
+    size = "standard";
+    tweaks = ["normal"];
+    variant = "mocha";
+  };
+  catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
+  gtkFileManagerCss = ''
+    @define-color accent_color #89b4fa;
+    @define-color accent_bg_color #89b4fa;
+    @define-color accent_fg_color #11111b;
+    @define-color window_bg_color #1e1e2e;
+    @define-color window_fg_color #cdd6f4;
+    @define-color view_bg_color #181825;
+    @define-color view_fg_color #cdd6f4;
+    @define-color headerbar_bg_color #181825;
+    @define-color headerbar_fg_color #cdd6f4;
+    @define-color sidebar_bg_color #11111b;
+    @define-color sidebar_fg_color #bac2de;
+    @define-color card_bg_color #313244;
+    @define-color card_fg_color #cdd6f4;
+    @define-color popover_bg_color #181825;
+    @define-color popover_fg_color #cdd6f4;
+
+    window,
+    dialog,
+    filechooser,
+    placessidebar,
+    .nautilus-window {
+      background-color: @window_bg_color;
+      color: @window_fg_color;
+    }
+
+    headerbar,
+    .titlebar {
+      background-color: @headerbar_bg_color;
+      color: @headerbar_fg_color;
+      box-shadow: none;
+      border-bottom: 1px solid alpha(#45475a, 0.65);
+    }
+
+    placessidebar,
+    placessidebar list,
+    .sidebar {
+      background-color: @sidebar_bg_color;
+      color: @sidebar_fg_color;
+    }
+
+    placessidebar row {
+      border-radius: 8px;
+      margin: 2px 6px;
+      padding: 4px 8px;
+    }
+
+    placessidebar row:hover {
+      background-color: alpha(#45475a, 0.55);
+    }
+
+    placessidebar row:selected {
+      background-color: alpha(#89b4fa, 0.24);
+      color: #cdd6f4;
+    }
+
+    pathbar button,
+    button.path-bar,
+    button.flat {
+      border-radius: 8px;
+    }
+
+    button.suggested-action,
+    button.default {
+      background: #89b4fa;
+      color: #11111b;
+    }
+
+    entry,
+    searchbar,
+    .view {
+      background-color: @view_bg_color;
+      color: @view_fg_color;
+    }
+  '';
 in {
   options.modules.gui.hyprland = {
     enable = lib.mkEnableOption "hyprland";
@@ -167,6 +249,7 @@ in {
         cava
         fd
         fortune
+        catppuccinGtk
         gtk3
         ladspaPlugins
         ladspa-sdk
@@ -177,9 +260,56 @@ in {
         qt6.qtmultimedia
         qt6.qtwebengine
         qt6.qtwebsockets
+        papirus-icon-theme
         ripgrep
         tree
       ];
+
+      gtk = {
+        enable = true;
+        theme = {
+          package = lib.mkDefault catppuccinGtk;
+          name = lib.mkDefault catppuccinThemeName;
+        };
+        iconTheme = {
+          package = lib.mkDefault pkgs.papirus-icon-theme;
+          name = lib.mkDefault "Papirus-Dark";
+        };
+        gtk3.extraCss = lib.mkDefault gtkFileManagerCss;
+        gtk4.extraCss = lib.mkDefault gtkFileManagerCss;
+      };
+
+      dconf.settings = {
+        "org/gnome/desktop/interface" = {
+          color-scheme = lib.mkDefault "prefer-dark";
+          gtk-theme = lib.mkDefault catppuccinThemeName;
+          icon-theme = lib.mkDefault "Papirus-Dark";
+        };
+        "org/gtk/gtk4/settings/file-chooser" = {
+          show-hidden = lib.mkDefault true;
+          sort-directories-first = lib.mkDefault true;
+          view-type = lib.mkDefault "list";
+        };
+        "org/gtk/settings/file-chooser" = {
+          show-hidden = lib.mkDefault true;
+          sort-directories-first = lib.mkDefault true;
+        };
+        "org/gnome/nautilus/preferences" = {
+          default-folder-viewer = lib.mkDefault "list-view";
+          migrated-gtk-settings = lib.mkDefault true;
+          search-filter-time-type = lib.mkDefault "last_modified";
+          show-create-link = lib.mkDefault true;
+        };
+        "org/gnome/nautilus/list-view" = {
+          default-visible-columns = lib.mkDefault [
+            "name"
+            "size"
+            "type"
+            "date_modified"
+          ];
+          default-zoom-level = lib.mkDefault "small";
+        };
+      };
 
       home.pointerCursor = {
         gtk.enable = true;

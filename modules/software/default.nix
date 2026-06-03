@@ -1,5 +1,6 @@
 {
   imports = [
+    ./collabora.nix
     ./displaylink.nix
     ./docker.nix
     ./couchdb.nix

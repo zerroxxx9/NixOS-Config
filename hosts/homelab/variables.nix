@@ -34,6 +34,7 @@ in
         software =
           default.modules.software
           // {
+            collabora = true;
             display-link = false;
             docker = true;
             couchdb = true;

@@ -19,6 +19,7 @@
       hyprland = false;
     };
     software = {
+      collabora = false;
       display-link = true;
       docker = true;
       couchdb = false;

@@ -172,8 +172,14 @@ in {
           view-type = "list";
         };
         "org/gtk/settings/file-chooser" = {
+          location-mode = "path-bar";
           show-hidden = true;
+          show-size-column = true;
+          show-type-column = true;
+          sort-column = "name";
           sort-directories-first = true;
+          sort-order = "ascending";
+          type-format = "category";
         };
         "org/gnome/nautilus/preferences" = {
           default-folder-viewer = "list-view";
@@ -189,19 +195,6 @@ in {
             "date_modified"
           ];
           default-zoom-level = "small";
-        };
-        "org/gtk/settings/file-chooser" = {
-          location-mode = "path-bar";
-          show-hidden = true;
-          show-size-column = true;
-          show-type-column = true;
-          sort-column = "name";
-          sort-order = "ascending";
-          type-format = "category";
-        };
-        "org/gnome/nautilus/preferences" = {
-          default-folder-viewer = "icon-view";
-          search-filter-time-type = "last_modified";
         };
         "org/gnome/nautilus/window-state" = {
           maximized = true;

@@ -104,7 +104,24 @@ in {
       aliasGroups = [
         {
           host = wopiUrl;
+          aliases = [
+            "https://${hostname}"
+            "https://${hostname}:443"
+            "http://${hostname}:${toString wopiPort}"
+            "http://127.0.0.1:${toString wopiPort}"
+            "http://localhost:${toString wopiPort}"
+          ];
         }
+      ];
+      extraArgs = [
+        "--o:storage.wopi.alias_groups[@mode]=groups"
+        "--o:storage.wopi.alias_groups.group[0].host=${wopiUrl}"
+        "--o:storage.wopi.alias_groups.group[0].host[@allow]=true"
+        "--o:storage.wopi.alias_groups.group[0].alias[0]=https://${hostname}"
+        "--o:storage.wopi.alias_groups.group[0].alias[1]=https://${hostname}:443"
+        "--o:storage.wopi.alias_groups.group[0].alias[2]=http://${hostname}:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[3]=http://127.0.0.1:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[4]=http://localhost:${toString wopiPort}"
       ];
 
       settings = {

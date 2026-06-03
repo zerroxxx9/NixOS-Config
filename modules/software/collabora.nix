@@ -107,9 +107,15 @@ in {
           aliases = [
             "https://${hostname}"
             "https://${hostname}:443"
+            "https://homelab:${toString wopiPort}"
+            "https://.*.ts.net:${toString wopiPort}"
+            "http://.*.ts.net:${toString wopiPort}"
             "http://${hostname}:${toString wopiPort}"
+            "http://homelab:${toString wopiPort}"
             "http://127.0.0.1:${toString wopiPort}"
             "http://localhost:${toString wopiPort}"
+            "http://100.*:${toString wopiPort}"
+            "https://100.*:${toString wopiPort}"
           ];
         }
       ];
@@ -119,9 +125,15 @@ in {
         "--o:storage.wopi.alias_groups.group[0].host[@allow]=true"
         "--o:storage.wopi.alias_groups.group[0].alias[0]=https://${hostname}"
         "--o:storage.wopi.alias_groups.group[0].alias[1]=https://${hostname}:443"
-        "--o:storage.wopi.alias_groups.group[0].alias[2]=http://${hostname}:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[3]=http://127.0.0.1:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[4]=http://localhost:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[2]=https://homelab:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[3]=https://.*.ts.net:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[4]=http://.*.ts.net:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[5]=http://${hostname}:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[6]=http://homelab:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[7]=http://127.0.0.1:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[8]=http://localhost:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[9]=http://100.*:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[10]=https://100.*:${toString wopiPort}"
       ];
 
       settings = {

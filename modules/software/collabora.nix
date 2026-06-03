@@ -5,7 +5,7 @@
 }: let
   port = 9980;
   hostname = "homelab.tail11bba0.ts.net";
-  wopiHost = "homelab\\.tail11bba0\\.ts\\.net";
+  opencloudUrl = "https://${hostname}";
 in {
   options.modules.software.collabora = {
     enable = lib.mkEnableOption "Collabora Online";
@@ -15,6 +15,11 @@ in {
     services.collabora-online = {
       enable = true;
       inherit port;
+      aliasGroups = [
+        {
+          host = opencloudUrl;
+        }
+      ];
 
       settings = {
         server_name = "${hostname}:${toString port}";
@@ -25,16 +30,16 @@ in {
         };
 
         net = {
+          proto = "IPv4";
           listen = "loopback";
           post_allow.host = [
             "127\\.0\\.0\\.1"
-            "::1"
           ];
         };
 
         storage.wopi = {
           "@allow" = true;
-          host = [wopiHost];
+          alias_groups."@mode" = "groups";
         };
       };
     };

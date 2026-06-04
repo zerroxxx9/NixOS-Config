@@ -4,7 +4,90 @@
   config,
   hostVariables,
   ...
-}: {
+}: let
+  catppuccinGtk = pkgs.catppuccin-gtk.override {
+    accents = ["blue"];
+    size = "standard";
+    tweaks = ["normal"];
+    variant = "mocha";
+  };
+  catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
+  gtkFileManagerCss = ''
+    @define-color accent_color #89b4fa;
+    @define-color accent_bg_color #89b4fa;
+    @define-color accent_fg_color #11111b;
+    @define-color window_bg_color #1e1e2e;
+    @define-color window_fg_color #cdd6f4;
+    @define-color view_bg_color #181825;
+    @define-color view_fg_color #cdd6f4;
+    @define-color headerbar_bg_color #181825;
+    @define-color headerbar_fg_color #cdd6f4;
+    @define-color sidebar_bg_color #11111b;
+    @define-color sidebar_fg_color #bac2de;
+    @define-color card_bg_color #313244;
+    @define-color card_fg_color #cdd6f4;
+    @define-color popover_bg_color #181825;
+    @define-color popover_fg_color #cdd6f4;
+
+    window,
+    dialog,
+    filechooser,
+    placessidebar,
+    .nautilus-window {
+      background-color: @window_bg_color;
+      color: @window_fg_color;
+    }
+
+    headerbar,
+    .titlebar {
+      background-color: @headerbar_bg_color;
+      color: @headerbar_fg_color;
+      box-shadow: none;
+      border-bottom: 1px solid alpha(#45475a, 0.65);
+    }
+
+    placessidebar,
+    placessidebar list,
+    .sidebar {
+      background-color: @sidebar_bg_color;
+      color: @sidebar_fg_color;
+    }
+
+    placessidebar row {
+      border-radius: 8px;
+      margin: 2px 6px;
+      padding: 4px 8px;
+    }
+
+    placessidebar row:hover {
+      background-color: alpha(#45475a, 0.55);
+    }
+
+    placessidebar row:selected {
+      background-color: alpha(#89b4fa, 0.24);
+      color: #cdd6f4;
+    }
+
+    pathbar button,
+    button.path-bar,
+    button.flat {
+      border-radius: 8px;
+    }
+
+    button.suggested-action,
+    button.default {
+      background: #89b4fa;
+      color: #11111b;
+    }
+
+    entry,
+    searchbar,
+    .view {
+      background-color: @view_bg_color;
+      color: @view_fg_color;
+    }
+  '';
+in {
   options.modules.gui.gnome = {
     enable = lib.mkEnableOption "gnome";
   };
@@ -24,7 +107,8 @@
       gnomeExtensions.user-themes
       gnomeExtensions.system-monitor
       gnomeExtensions.clipboard-history
-      yaru-theme
+      catppuccinGtk
+      papirus-icon-theme
     ];
 
     home-manager.useGlobalPkgs = true;
@@ -48,8 +132,8 @@
           clock-show-weekday = true;
           show-battery-percentage = true;
           color-scheme = "prefer-dark";
-          gtk-theme = "Yaru";
-          icon-theme = "Yaru";
+          gtk-theme = catppuccinThemeName;
+          icon-theme = "Papirus-Dark";
         };
         "org/gnome/desktop/background" = {
           picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
@@ -57,7 +141,7 @@
           picture-options = "zoom"; # scaled, none, centred, zoom, streched, wallpaper, spanned
         };
         "org/gnome/shell/extensions/user-theme" = {
-          name = "Yaru-dark";
+          name = catppuccinThemeName;
         };
         "org/gnome/shell/extensions/dash-to-dock" = {
           dock-position = "BOTTOM";
@@ -84,6 +168,8 @@
         };
         "org/gtk/gtk4/settings/file-chooser" = {
           show-hidden = true;
+          sort-directories-first = true;
+          view-type = "list";
         };
         "org/gtk/settings/file-chooser" = {
           location-mode = "path-bar";
@@ -91,12 +177,24 @@
           show-size-column = true;
           show-type-column = true;
           sort-column = "name";
+          sort-directories-first = true;
           sort-order = "ascending";
           type-format = "category";
         };
         "org/gnome/nautilus/preferences" = {
-          default-folder-viewer = "icon-view";
+          default-folder-viewer = "list-view";
+          migrated-gtk-settings = true;
           search-filter-time-type = "last_modified";
+          show-create-link = true;
+        };
+        "org/gnome/nautilus/list-view" = {
+          default-visible-columns = [
+            "name"
+            "size"
+            "type"
+            "date_modified"
+          ];
+          default-zoom-level = "small";
         };
         "org/gnome/nautilus/window-state" = {
           maximized = true;
@@ -137,6 +235,20 @@
           command = "nautilus ./Downloads";
           binding = "<Super>e";
         };
+      };
+
+      gtk = {
+        enable = true;
+        theme = {
+          package = catppuccinGtk;
+          name = catppuccinThemeName;
+        };
+        iconTheme = {
+          package = pkgs.papirus-icon-theme;
+          name = "Papirus-Dark";
+        };
+        gtk3.extraCss = gtkFileManagerCss;
+        gtk4.extraCss = gtkFileManagerCss;
       };
     };
   };

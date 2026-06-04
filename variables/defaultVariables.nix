@@ -19,6 +19,7 @@
       hyprland = false;
     };
     software = {
+      collabora = false;
       display-link = true;
       docker = true;
       couchdb = false;
@@ -27,6 +28,7 @@
       git = true;
       immich = false;
       noisetorch = true;
+      obsidian = false;
       vscode = false;
       vencord = false;
       tailscale = false;

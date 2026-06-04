@@ -1,0 +1,253 @@
+{
+  lib,
+  config,
+  ...
+}: let
+  collaboraPort = 9980;
+  wopiPort = 9300;
+  hostname = "homelab.tail11bba0.ts.net";
+  collaboraUrl = "https://${hostname}:${toString collaboraPort}";
+  wopiUrl = "https://${hostname}:${toString wopiPort}";
+  collaboraAppName = "CollaboraOnline";
+  collaboraMimeTypes = [
+    {
+      mime_type = "application/pdf";
+      extension = "pdf";
+      name = "PDF";
+      description = "PDF document";
+      icon = "";
+      default_app = "";
+      allow_creation = false;
+    }
+    {
+      mime_type = "application/vnd.oasis.opendocument.text";
+      extension = "odt";
+      name = "OpenDocument";
+      description = "OpenDocument text document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.oasis.opendocument.spreadsheet";
+      extension = "ods";
+      name = "OpenSpreadsheet";
+      description = "OpenDocument spreadsheet document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.oasis.opendocument.presentation";
+      extension = "odp";
+      name = "OpenPresentation";
+      description = "OpenDocument presentation document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      extension = "docx";
+      name = "Microsoft Word";
+      description = "Microsoft Word document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.form";
+      extension = "docxf";
+      name = "Form Document";
+      description = "Form Document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      extension = "xlsx";
+      name = "Microsoft Excel";
+      description = "Microsoft Excel document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+      extension = "pptx";
+      name = "Microsoft PowerPoint";
+      description = "Microsoft PowerPoint document";
+      icon = "";
+      default_app = collaboraAppName;
+      allow_creation = true;
+    }
+    {
+      mime_type = "application/vnd.jupyter";
+      extension = "ipynb";
+      name = "Jupyter Notebook";
+      description = "Jupyter Notebook";
+      icon = "";
+      default_app = "";
+      allow_creation = true;
+    }
+  ];
+in {
+  options.modules.software.collabora = {
+    enable = lib.mkEnableOption "Collabora Online";
+  };
+
+  config = lib.mkIf config.modules.software.collabora.enable {
+    services.collabora-online = {
+      enable = true;
+      port = collaboraPort;
+      aliasGroups = [
+        {
+          host = wopiUrl;
+          aliases = [
+            "https://${hostname}"
+            "https://${hostname}:443"
+            "https://homelab:${toString wopiPort}"
+            "https://.*.ts.net:${toString wopiPort}"
+            "http://.*.ts.net:${toString wopiPort}"
+            "http://${hostname}:${toString wopiPort}"
+            "http://homelab:${toString wopiPort}"
+            "http://127.0.0.1:${toString wopiPort}"
+            "http://localhost:${toString wopiPort}"
+            "http://100.*:${toString wopiPort}"
+            "https://100.*:${toString wopiPort}"
+          ];
+        }
+      ];
+      extraArgs = [
+        "--o:storage.wopi.alias_groups[@mode]=groups"
+        "--o:storage.wopi.alias_groups.group[0].host=${wopiUrl}"
+        "--o:storage.wopi.alias_groups.group[0].host[@allow]=true"
+        "--o:storage.wopi.alias_groups.group[0].alias[0]=https://${hostname}"
+        "--o:storage.wopi.alias_groups.group[0].alias[1]=https://${hostname}:443"
+        "--o:storage.wopi.alias_groups.group[0].alias[2]=https://homelab:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[3]=https://.*.ts.net:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[4]=http://.*.ts.net:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[5]=http://${hostname}:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[6]=http://homelab:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[7]=http://127.0.0.1:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[8]=http://localhost:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[9]=http://100.*:${toString wopiPort}"
+        "--o:storage.wopi.alias_groups.group[0].alias[10]=https://100.*:${toString wopiPort}"
+      ];
+
+      settings = {
+        server_name = "${hostname}:${toString collaboraPort}";
+
+        ssl = {
+          enable = false;
+          termination = true;
+        };
+
+        net = {
+          proto = "IPv4";
+          listen = "loopback";
+          frame_ancestors = hostname;
+          post_allow.host = [
+            "127\\.0\\.0\\.1"
+          ];
+        };
+
+        storage.wopi = {
+          "@allow" = true;
+          alias_groups."@mode" = "groups";
+        };
+      };
+    };
+
+    services.opencloud = lib.mkIf config.modules.software.opencloud.enable {
+      environment = {
+        OC_INSECURE = "true";
+        OC_ADD_RUN_SERVICES = "collaboration";
+        PROXY_CSP_CONFIG_FILE_LOCATION = "/etc/opencloud/csp.yaml";
+        FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR = "eu.opencloud.api.collaboration.${collaboraAppName}";
+        MICRO_REGISTRY = "nats-js-kv";
+        MICRO_REGISTRY_ADDRESS = "127.0.0.1:9233";
+        COLLABORATION_WOPI_SRC = wopiUrl;
+        COLLABORATION_APP_NAME = collaboraAppName;
+        COLLABORATION_APP_PRODUCT = "Collabora";
+        COLLABORATION_APP_ADDR = collaboraUrl;
+        COLLABORATION_APP_ICON = "${collaboraUrl}/favicon.ico";
+        COLLABORATION_CS3API_DATAGATEWAY_INSECURE = "true";
+      };
+
+      settings = {
+        app-registry.app_registry.mimetypes = collaboraMimeTypes;
+        csp.directives = {
+          child-src = ["'self'"];
+          connect-src = [
+            "'self'"
+            "blob:"
+            "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"
+          ];
+          default-src = ["'none'"];
+          font-src = ["'self'"];
+          frame-ancestors = ["'self'"];
+          frame-src = [
+            "'self'"
+            "blob:"
+            "https://embed.diagrams.net/"
+            "${collaboraUrl}/"
+          ];
+          img-src = [
+            "'self'"
+            "data:"
+            "blob:"
+            "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"
+            "${collaboraUrl}/"
+          ];
+          manifest-src = ["'self'"];
+          media-src = ["'self'"];
+          object-src = [
+            "'self'"
+            "blob:"
+          ];
+          script-src = [
+            "'self'"
+            "'unsafe-inline'"
+          ];
+          style-src = [
+            "'self'"
+            "'unsafe-inline'"
+          ];
+        };
+      };
+    };
+
+    systemd.services.opencloud = lib.mkIf config.modules.software.opencloud.enable {
+      after = ["coolwsd.service"];
+      wants = ["coolwsd.service"];
+    };
+
+    systemd.services.tailscale-serve-collabora = lib.mkIf config.modules.software.tailscale.enable {
+      description = "Publish Collabora Online via Tailscale Serve";
+      after = ["network-online.target" "tailscaled.service" "coolwsd.service"];
+      wants = ["network-online.target" "tailscaled.service" "coolwsd.service"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString collaboraPort} http://127.0.0.1:${toString collaboraPort}";
+        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString collaboraPort} off";
+      };
+    };
+
+    systemd.services.tailscale-serve-opencloud-collaboration = lib.mkIf (config.modules.software.tailscale.enable && config.modules.software.opencloud.enable) {
+      description = "Publish OpenCloud Collaboration WOPI via Tailscale Serve";
+      after = ["network-online.target" "tailscaled.service" "opencloud.service"];
+      wants = ["network-online.target" "tailscaled.service" "opencloud.service"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString wopiPort} http://127.0.0.1:${toString wopiPort}";
+        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString wopiPort} off";
+      };
+    };
+  };
+}

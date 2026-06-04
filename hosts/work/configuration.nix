@@ -82,7 +82,6 @@
 
   environment.systemPackages = (with pkgs; [
     unstable.bruno
-    unstable.obsidian
     keepassxc
     vscode-with-extensions
     gh

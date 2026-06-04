@@ -1,5 +1,6 @@
 {
   imports = [
+    ./collabora.nix
     ./displaylink.nix
     ./docker.nix
     ./couchdb.nix
@@ -8,6 +9,7 @@
     ./git.nix
     ./immich.nix
     ./noisetorch.nix
+    ./obsidian.nix
     ./vscode.nix
     ./tailscale.nix
     ./vencord.nix

@@ -2,6 +2,7 @@
   hostVariables,
   pkgs,
   config,
+  inputs,
   ...
 }: {
   imports = [
@@ -79,7 +80,7 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = (with pkgs; [
     unstable.bruno
     unstable.obsidian
     keepassxc
@@ -100,6 +101,8 @@
         "--ozone-platform=wayland"
       ];
     })
+  ]) ++ [
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.copilot-cli
   ];
 
   # agenix Secrets aktivieren

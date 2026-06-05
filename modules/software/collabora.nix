@@ -28,8 +28,10 @@
     collaboraUrl
     collaboraTailscaleIpUrl
   ];
-  wopiUrl = "https://${hostname}:${toString wopiPort}";
+  wopiUrl = "http://127.0.0.1:${toString wopiPort}";
+  wopiPublicUrl = "https://${hostname}:${toString wopiPort}";
   wopiAliases = [
+    wopiPublicUrl
     "https://${hostname}"
     "https://${hostname}:443"
     "https://homelab:${toString wopiPort}"
@@ -188,6 +190,7 @@ in {
         COLLABORATION_APP_PRODUCT = "Collabora";
         COLLABORATION_APP_ADDR = collaboraUrl;
         COLLABORATION_APP_ICON = "${collaboraUrl}/favicon.ico";
+        COLLABORATION_APP_PROOF_DISABLE = "true";
         COLLABORATION_CS3API_DATAGATEWAY_INSECURE = "true";
       };
 
@@ -237,8 +240,12 @@ in {
     };
 
     systemd.services.opencloud = lib.mkIf config.modules.software.opencloud.enable {
-      after = ["coolwsd.service"];
-      wants = ["coolwsd.service"];
+      after =
+        ["coolwsd.service"]
+        ++ lib.optionals config.modules.software.tailscale.enable ["tailscale-serve-collabora.service"];
+      wants =
+        ["coolwsd.service"]
+        ++ lib.optionals config.modules.software.tailscale.enable ["tailscale-serve-collabora.service"];
     };
 
     systemd.services.tailscale-serve-collabora = lib.mkIf config.modules.software.tailscale.enable {
@@ -251,19 +258,6 @@ in {
         RemainAfterExit = true;
         ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString collaboraPort} http://127.0.0.1:${toString collaboraPort}";
         ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString collaboraPort} off";
-      };
-    };
-
-    systemd.services.tailscale-serve-opencloud-collaboration = lib.mkIf (config.modules.software.tailscale.enable && config.modules.software.opencloud.enable) {
-      description = "Publish OpenCloud Collaboration WOPI via Tailscale Serve";
-      after = ["network-online.target" "tailscaled.service" "opencloud.service"];
-      wants = ["network-online.target" "tailscaled.service" "opencloud.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString wopiPort} http://127.0.0.1:${toString wopiPort}";
-        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString wopiPort} off";
       };
     };
   };

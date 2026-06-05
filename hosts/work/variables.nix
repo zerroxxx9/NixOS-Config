@@ -19,6 +19,7 @@ in
             obsidian = true;
             display-link = false;
             tailscale = true;
+            vscode = true;
           };
         gui =
           default.modules.gui

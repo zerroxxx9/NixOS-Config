@@ -6,8 +6,52 @@
   collaboraPort = 9980;
   wopiPort = 9300;
   hostname = "homelab.tail11bba0.ts.net";
+  serverTailscaleIp = "100.73.190.127";
+  clientTailscaleIps = [
+    "100.124.232.93"
+    "100.107.214.63"
+    serverTailscaleIp
+  ];
+  ipRegex = ip: lib.replaceStrings ["."] ["\\."] ip;
+  ipv4MappedRegex = ip: "::ffff:${ipRegex ip}";
+  postAllowHosts =
+    [
+      "127\\.0\\.0\\.1"
+      "::ffff:127\\.0\\.0\\.1"
+      "::1"
+    ]
+    ++ map ipRegex clientTailscaleIps
+    ++ map ipv4MappedRegex clientTailscaleIps;
   collaboraUrl = "https://${hostname}:${toString collaboraPort}";
+  collaboraTailscaleIpUrl = "https://${serverTailscaleIp}:${toString collaboraPort}";
+  collaboraUrls = [
+    collaboraUrl
+    collaboraTailscaleIpUrl
+  ];
   wopiUrl = "https://${hostname}:${toString wopiPort}";
+  wopiAliases = [
+    "https://${hostname}"
+    "https://${hostname}:443"
+    "https://homelab:${toString wopiPort}"
+    "https://.*\\.ts\\.net:${toString wopiPort}"
+    "http://.*\\.ts\\.net:${toString wopiPort}"
+    "http://${hostname}:${toString wopiPort}"
+    "http://homelab:${toString wopiPort}"
+    "http://127.0.0.1:${toString wopiPort}"
+    "http://localhost:${toString wopiPort}"
+    "https://${serverTailscaleIp}"
+    "https://${serverTailscaleIp}:443"
+    "https://${serverTailscaleIp}:${toString wopiPort}"
+    "http://${serverTailscaleIp}:${toString wopiPort}"
+  ];
+  frameAncestorOrigins = [
+    "https://${hostname}"
+    "https://${hostname}:443"
+    "https://${serverTailscaleIp}"
+    "https://${serverTailscaleIp}:443"
+  ];
+  frameAncestors = lib.concatStringsSep " " frameAncestorOrigins;
+  contentSecurityFrameAncestors = lib.concatStringsSep " " (["'self'"] ++ frameAncestorOrigins);
   collaboraAppName = "CollaboraOnline";
   collaboraMimeTypes = [
     {
@@ -104,36 +148,8 @@ in {
       aliasGroups = [
         {
           host = wopiUrl;
-          aliases = [
-            "https://${hostname}"
-            "https://${hostname}:443"
-            "https://homelab:${toString wopiPort}"
-            "https://.*.ts.net:${toString wopiPort}"
-            "http://.*.ts.net:${toString wopiPort}"
-            "http://${hostname}:${toString wopiPort}"
-            "http://homelab:${toString wopiPort}"
-            "http://127.0.0.1:${toString wopiPort}"
-            "http://localhost:${toString wopiPort}"
-            "http://100.*:${toString wopiPort}"
-            "https://100.*:${toString wopiPort}"
-          ];
+          aliases = wopiAliases;
         }
-      ];
-      extraArgs = [
-        "--o:storage.wopi.alias_groups[@mode]=groups"
-        "--o:storage.wopi.alias_groups.group[0].host=${wopiUrl}"
-        "--o:storage.wopi.alias_groups.group[0].host[@allow]=true"
-        "--o:storage.wopi.alias_groups.group[0].alias[0]=https://${hostname}"
-        "--o:storage.wopi.alias_groups.group[0].alias[1]=https://${hostname}:443"
-        "--o:storage.wopi.alias_groups.group[0].alias[2]=https://homelab:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[3]=https://.*.ts.net:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[4]=http://.*.ts.net:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[5]=http://${hostname}:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[6]=http://homelab:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[7]=http://127.0.0.1:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[8]=http://localhost:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[9]=http://100.*:${toString wopiPort}"
-        "--o:storage.wopi.alias_groups.group[0].alias[10]=https://100.*:${toString wopiPort}"
       ];
 
       settings = {
@@ -147,10 +163,9 @@ in {
         net = {
           proto = "IPv4";
           listen = "loopback";
-          frame_ancestors = hostname;
-          post_allow.host = [
-            "127\\.0\\.0\\.1"
-          ];
+          content_security_policy = "frame-ancestors ${contentSecurityFrameAncestors};";
+          frame_ancestors = frameAncestors;
+          post_allow.host = postAllowHosts;
         };
 
         storage.wopi = {
@@ -188,19 +203,21 @@ in {
           default-src = ["'none'"];
           font-src = ["'self'"];
           frame-ancestors = ["'self'"];
-          frame-src = [
-            "'self'"
-            "blob:"
-            "https://embed.diagrams.net/"
-            "${collaboraUrl}/"
-          ];
-          img-src = [
-            "'self'"
-            "data:"
-            "blob:"
-            "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"
-            "${collaboraUrl}/"
-          ];
+          frame-src =
+            [
+              "'self'"
+              "blob:"
+              "https://embed.diagrams.net/"
+            ]
+            ++ map (url: "${url}/") collaboraUrls;
+          img-src =
+            [
+              "'self'"
+              "data:"
+              "blob:"
+              "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"
+            ]
+            ++ map (url: "${url}/") collaboraUrls;
           manifest-src = ["'self'"];
           media-src = ["'self'"];
           object-src = [

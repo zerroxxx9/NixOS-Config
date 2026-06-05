@@ -2,6 +2,7 @@
   hostVariables,
   pkgs,
   config,
+  lib,
   ...
 }: {
   imports = [
@@ -21,6 +22,8 @@
   virtualisation.virtualbox.host.enable = true;
 
   services.resolved.enable = true;
+  # Keep resolv.conf useful for tools that read it directly and reject 127.0.0.53.
+  environment.etc."resolv.conf".source = lib.mkForce "/run/systemd/resolve/resolv.conf";
 
   age.identityPaths = ["/var/lib/agenix/desktop-agenix"];
 

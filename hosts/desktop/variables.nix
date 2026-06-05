@@ -21,6 +21,7 @@ in
             tailscale = true;
             vencord = true;
             spicetify = true;
+            vscode = true;
           };
         gui =
           default.modules.gui

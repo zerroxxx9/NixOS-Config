@@ -9,6 +9,8 @@
 }: let
   inherit (lib) mkDefault;
 
+  cfg = config.modules.software.vscode;
+
   pkgs-ext = import inputs.nixpkgs {
     inherit system;
     config.allowUnfree = true;
@@ -51,34 +53,37 @@
     "workbench.iconTheme" = "material-icon-theme";
   };
 in {
-  options.default-extensions.enable = lib.mkOption {
-    type = lib.types.bool;
-    description = "Whether to install the default extensions.";
-    default = true;
+  options.modules.software.vscode = {
+    enable = lib.mkEnableOption "vscode";
+
+    default-extensions.enable = lib.mkOption {
+      type = lib.types.bool;
+      description = "Whether to install the default extensions.";
+      default = true;
+    };
+
+    extensions = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = [];
+      description = "List of VS Code extensions to install.";
+    };
+
+    settings = lib.mkOption {
+      type = lib.types.attrsOf lib.types.anything;
+      default = {};
+      description = "VS Code settings to merge with defaults.";
+    };
   };
 
-  # Additional settings
-  options.extensions = lib.mkOption {
-    type = lib.types.listOf lib.types.package;
-    default = [];
-    description = "List of VS Code extensions to install.";
-  };
-  options.settings = lib.mkOption {
-    type = lib.types.attrsOf lib.types.anything;
-    default = {};
-    description = "VS Code settings to merge with defaults.";
-  };
-
-  # config
-  config = {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       (unstable.vscode-with-extensions.override {
         vscodeExtensions =
-          lib.optionals config.default-extensions.enable defaultExtensions
-          ++ config.extensions;
+          lib.optionals cfg.default-extensions.enable defaultExtensions
+          ++ cfg.extensions;
       })
     ];
 
-    home-manager.users.${hostVariables.username}.home.file.".config/Code/User/settings.json".text = builtins.toJSON (lib.recursiveUpdate defaultSettings config.settings);
+    home-manager.users.${hostVariables.username}.home.file.".config/Code/User/settings.json".text = builtins.toJSON (lib.recursiveUpdate defaultSettings cfg.settings);
   };
 }

@@ -35,6 +35,7 @@
       opencloud = false;
       paperless-ngx = false;
       spicetify = false;
+      sunshine = false;
     };
     security = {
       yubikey = false;

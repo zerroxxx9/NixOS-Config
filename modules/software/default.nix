@@ -16,5 +16,6 @@
     ./opencloud.nix
     ./paperless-ngx.nix
     ./spicetify.nix
+    ./sunshine.nix
   ];
 }

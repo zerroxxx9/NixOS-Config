@@ -29,6 +29,7 @@
   modules.software.vencord.enable = lib.attrByPath ["modules" "software" "vencord"] false hostVariables;
   modules.software.paperless-ngx.enable = lib.attrByPath ["modules" "software" "paperless-ngx"] false hostVariables;
   modules.software.spicetify.enable = lib.attrByPath ["modules" "software" "spicetify"] false hostVariables;
+  modules.software.sunshine.enable = lib.attrByPath ["modules" "software" "sunshine"] false hostVariables;
   modules.software.vscode.enable = lib.attrByPath ["modules" "software" "vscode"] false hostVariables;
   modules.system.bootanimation.enable = lib.attrByPath ["modules" "systemSettings" "bootanimation"] false hostVariables;
   modules.system.gaming.enable = lib.attrByPath ["modules" "systemSettings" "gaming"] false hostVariables;

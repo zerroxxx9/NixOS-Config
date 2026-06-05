@@ -21,6 +21,7 @@ in
             tailscale = true;
             vencord = true;
             spicetify = true;
+            sunshine = true;
             vscode = true;
           };
         gui =

@@ -95,6 +95,10 @@
         modules = [./hosts/desktop];
         hostVariables = import ./hosts/desktop/variables.nix;
       };
+      thinkpad = mkNixosConfiguration {
+        modules = [./hosts/thinkpad];
+        hostVariables = import ./hosts/thinkpad/variables.nix;
+      };
     };
     overlays = import ./overlays.nix inputs;
   };

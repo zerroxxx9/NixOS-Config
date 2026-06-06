@@ -1,0 +1,55 @@
+let
+  default = import ./../../variables/defaultVariables.nix;
+in
+  default
+  // {
+    host = "thinkpad";
+    modules =
+      default.modules
+      // {
+        driver =
+          default.modules.driver
+          // {
+            amdgpu = true;
+          };
+        software =
+          default.modules.software
+          // {
+            noisetorch = true;
+            obsidian = true;
+            display-link = false;
+            tailscale = true;
+            vencord = true;
+            spicetify = true;
+            sunshine = false;
+            vscode = true;
+          };
+        gui =
+          default.modules.gui
+          // {
+            gnome = true;
+            hyprland = false;
+          };
+        security =
+          default.modules.security
+          // {
+            yubikey = false;
+            agenix = false;
+          };
+      };
+    git =
+      default.git
+      // {
+        includes = [
+          {
+            path = "~/Dev/.gitconfig";
+            condition = "gitdir:~/Dev/";
+          }
+        ];
+      };
+    gnome =
+      default.gnome
+      // {
+        idle-delay = 300;
+      };
+  }

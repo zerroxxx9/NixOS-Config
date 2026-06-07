@@ -128,6 +128,33 @@
     sqlmap
     nmap
     thc-hydra
+    wireshark
+    tcpdump
+    netcat-openbsd
+    socat
+    openvpn
+    wireguard-tools
+    proxychains-nixpkgs
+    subfinder
+    httpx
+    rustscan
+    nikto
+    wpscan
+    bloodhound
+    bloodhound-py
+    john
+    hashcat
+    hashcat-utils
+    wordlists
+    binwalk
+    exiftool
+    steghide
+    yara
+    gitleak
+    syft
+    grype
+    metasploit
+    exploitdb
 
     (unstable.brave.override {
       commandLineArgs = [

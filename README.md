@@ -1,75 +1,110 @@
 # NixOS Multi-Host Configuration
 
-This repository contains my modular NixOS system configuration, powered by [Nix Flakes](https://nixos.wiki/wiki/Flakes) and [Home Manager](https://nix-community.github.io/home-manager/).
+Personal NixOS dotfiles for multiple machines, built with [Nix Flakes](https://nixos.wiki/wiki/Flakes), [Home Manager](https://nix-community.github.io/home-manager/), and a small set of host-specific module flags.
 
-## Features
+The main branch of this configuration currently tracks NixOS `25.11` and Home Manager `release-25.11`.
 
-- Flake-based for reproducibility
-- Modular configuration per host
-- Includes Home Manager for user-level setup
-- Centralized `variables.nix` for system flags and module toggles
-- agenix-ready secret workflow with host SSH keys and optional YubiKey admin decrypt
-- hyprland & gnome setup
+## What is included
 
----
+- Flake-based NixOS systems with shared base configuration
+- Host-specific configuration under `./hosts/<host>/`
+- Home Manager integration for the configured user
+- Toggleable modules for console, drivers, GUI, software, security, and system settings
+- `agenix` support for encrypted secrets
+- Stable `nixpkgs` plus an `unstable` overlay for selected packages
+- `nh` configured to use this repository as the system flake
+- A minimal Raspberry Pi configuration path for `armv6l-linux`
 
-## Getting Started
+## Hosts
 
-### 1. Clone into `.dotfiles`
+Registered hosts live in `flake.nix`:
+
+| Host | Notes |
+| --- | --- |
+| `work` | Main workstation profile |
+| `desktop` | Desktop profile |
+| `thinkpad` | Laptop profile |
+| `homelab` | Headless/server-style profile |
+| `wsl` | NixOS-WSL profile |
+| `raspberry-pi` | Minimal Raspberry Pi profile |
+
+Each host imports the shared configuration and customizes behavior through `hosts/<host>/variables.nix`.
+
+## Repository layout
+
+```text
+.
+|-- flake.nix
+|-- configuration.nix
+|-- home.nix
+|-- hosts/
+|   |-- desktop/
+|   |-- homelab/
+|   |-- raspberry-pi/
+|   |-- thinkpad/
+|   |-- work/
+|   `-- wsl/
+|-- modules/
+|   |-- console/
+|   |-- driver/
+|   |-- gui/
+|   |-- security/
+|   |-- software/
+|   `-- system/
+|-- secrets/
+`-- variables/
+```
+
+## Getting started
+
+Clone the repository to the expected location:
 
 ```bash
 git clone https://github.com/zerroxxx9/NixOS-dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
-### 2. Use an existing host
-
-Edit:
-
-```nix
-./hosts/{work,wsl,homelab,desktop}/variables.nix
-```
-
-Then run:
+Build and switch to one of the registered hosts:
 
 ```bash
 sudo nixos-rebuild switch --flake ~/.dotfiles#work
 ```
 
-For later rebuilds:
+After the configuration is active, these aliases are available:
 
 ```bash
+rebuild     # sudo nixos-rebuild switch --flake /home/<user>/.dotfiles#<host>
+switchnix   # nh os switch -H <host> /home/<user>/.dotfiles
+update      # nix flake update --flake /home/<user>/.dotfiles
+nixfmt      # alejandra ./
+```
+
+## Updating
+
+Update flake inputs:
+
+```bash
+nix flake update --flake ~/.dotfiles
+```
+
+Then switch the system:
+
+```bash
+sudo nixos-rebuild switch --flake ~/.dotfiles#work
+```
+
+or, once aliases are available:
+
+```bash
+update
 rebuild
 ```
 
-or
-```bash
-switch
-```
+## Host variables
 
-> `rebuild` and `switch` is an alias for `nixos-rebuild` with predefined arguments.
+Defaults live in `variables/defaultVariables.nix`. Host files should import those defaults and override only the values they need.
 
-### 3. Secrets with agenix
-
-The encrypted secret workflow lives in [./secrets/README.md](./secrets/README.md).
-The short version:
-
-- commit encrypted `*.age` files
-- commit public recipients under `./secrets/recipients/`
-- keep private SSH keys and YubiKey identity files outside the repo
-
----
-
-## ? Adding a New Host
-
-1. Create a new folder in `./hosts/`, e.g. `home-pc`
-2. Add these files:
-    - `configuration.nix`
-    - `default.nix`
-    - `hardware-configuration.nix`
-    - `variables.nix`
-
-3. Your `variables.nix` should follow this structure:
+Example:
 
 ```nix
 let
@@ -77,7 +112,9 @@ let
 in
   default
   // {
-    host = "work";
+    host = "home-pc";
+    system = "x86_64-linux";
+
     modules =
       default.modules
       // {
@@ -86,88 +123,129 @@ in
           // {
             amdgpu = true;
           };
-        software =
-          default.modules.software
-          // {
-            noisetorch = true;
-            display-link = false;
-            tailscale = true;
-          };
+
         gui =
           default.modules.gui
           // {
-            hyprland = true;
+            gnome = true;
+            hyprland = false;
           };
+
+        software =
+          default.modules.software
+          // {
+            docker = true;
+            tailscale = true;
+          };
+
         security =
           default.modules.security
           // {
-            yubikey = true;
             agenix = true;
+            yubikey = false;
           };
       };
-    git =
-      default.git
-      // {
-        includes = [
-          {
-            path = "~/Dev/.gitconfig";
-            condition = "gitdir:~/Dev/";
-          }
-        ];
-      };
-    gnome =
-      default.gnome
-      // {
-        idle-delay = 300;
-      };
   }
-
 ```
 
-4. Finally, register the host in your `flake.nix`:
+Important top-level values:
+
+- `username`: Linux user managed by Home Manager
+- `host`: flake host name and alias target
+- `system`: target system architecture
+- `buildSystem`: optional build platform, used by the minimal Raspberry Pi config
+- `stateVersion`: NixOS/Home Manager state version
+- `modules`: feature flags consumed by `configuration.nix`
+- `git`: Git identity, extra config, LFS setting, and conditional includes
+- `gnome`: GNOME favorites and idle delay settings
+
+## Module flags
+
+The shared `configuration.nix` reads feature flags with `lib.attrByPath`, so missing flags fall back to `false`. Still, host files should merge from `default.modules` to keep intent clear.
+
+Current module groups:
+
+- `console`: `fish`, `alacritty`
+- `driver`: `amdgpu`, `nvidia`
+- `gui`: `gnome`, `hyprland`
+- `software`: `collabora`, `display-link`, `docker`, `couchdb`, `fail2ban`, `flatpak`, `git`, `immich`, `noisetorch`, `obsidian`, `opencloud`, `paperless-ngx`, `spicetify`, `sunshine`, `tailscale`, `vencord`, `vscode`
+- `security`: `agenix`, `yubikey`
+- `systemSettings`: `bootanimation`, `gaming`
+
+## Adding a new host
+
+1. Create a new folder under `./hosts/`, for example `./hosts/home-pc/`.
+2. Add the host files:
+   - `default.nix`
+   - `configuration.nix`
+   - `hardware-configuration.nix` when needed
+   - `variables.nix`
+3. Import `variables/defaultVariables.nix` in the host `variables.nix` and override only host-specific values.
+4. Register the host in `flake.nix`.
+
+Example `flake.nix` entry:
 
 ```nix
-nixosConfigurations = {
-  home-pc = mkNixosConfiguration {
-    modules = [ ./hosts/home-pc ];
-    hostVariables = import ./hosts/home-pc/variables.nix;
-  };
+home-pc = mkNixosConfiguration {
+  modules = [./hosts/home-pc];
+  hostVariables = import ./hosts/home-pc/variables.nix;
 };
 ```
 
----
+For a minimal host similar to `raspberry-pi`, use `mkMinimalNixosConfiguration` instead.
 
-## ?? Troubleshooting & Known Issues
+## Secrets
 
-### ? `attribute 'xyz' missing`
+Secrets are managed with `agenix`. See [secrets/README.md](./secrets/README.md) for the detailed workflow.
 
-Ensure that your `variables.nix` file contains all required attributes. Use a central default like:
+Short version:
 
-```nix
-let default = import ../../variables/defaultVariables.nix; in
-default // { ... }
-```
+- Commit encrypted `*.age` files.
+- Commit public recipients under `./secrets/recipients/`.
+- Keep private SSH keys and YubiKey identity files outside this repository.
 
-This ensures every module gets all expected keys.
+## Formatting
 
-### ?? Module flags not working
-
-Make sure you?re not accidentally shadowing or omitting expected fields:
-
-- Use `default.modules // { ... }` instead of `{}` when overriding
-- Use `lib.attrByPath` or `lib.getAttrFromPath` for optional flags
-
----
-
-### ?? Flake not updating correctly
-
-Run:
+Format Nix files with:
 
 ```bash
-nix flake update
-rebuild switch --flake .#your-host
+alejandra ./
 ```
 
-If you're using `nix-direnv`, reload the shell with `direnv reload`.
+or, once aliases are available:
 
----
+```bash
+nixfmt
+```
+
+## Troubleshooting
+
+### `attribute 'xyz' missing`
+
+Make sure the host `variables.nix` imports and merges `variables/defaultVariables.nix`:
+
+```nix
+let
+  default = import ../../variables/defaultVariables.nix;
+in
+  default // { ... }
+```
+
+### Module flag is ignored
+
+Check that the flag path matches the path read in `configuration.nix`. For example, `modules.software.display-link` is intentionally spelled with a hyphen.
+
+### Flake input update did not apply
+
+Update the lock file and rebuild the selected host:
+
+```bash
+nix flake update --flake ~/.dotfiles
+sudo nixos-rebuild switch --flake ~/.dotfiles#work
+```
+
+If `nix-direnv` is in use, reload the shell:
+
+```bash
+direnv reload
+```

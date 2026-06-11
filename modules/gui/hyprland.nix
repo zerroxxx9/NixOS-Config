@@ -15,6 +15,8 @@
   matugenHyprColors = "${matugenCacheDir}/hypr/colors.conf";
   matugenQsColors = "${matugenCacheDir}/qs_colors.json";
   matugenSwayosdCss = "${matugenCacheDir}/swayosd.css";
+  matugenDiscordCss = "${matugenCacheDir}/discord.css";
+  matugenSpicetifyCss = "${matugenCacheDir}/spicetify.css";
   matugenCavaColors = "${homeDir}/.config/cava/colors";
   quickshellWithQtModules = pkgs.symlinkJoin {
     name = "quickshell-with-qt-modules";
@@ -68,10 +70,27 @@
 
         cat >> $out/quickshell/wallpaper/matugen_reload.sh <<'EOF'
 
-    if command -v hyprctl >/dev/null 2>&1; then
-        hyprctl reload >/dev/null 2>&1 || true
-    fi
-    EOF
+# Force Vesktop/Vencord to re-read the live theme after Matugen updates.
+# The timestamp avoids Chromium caching file:// imports and the wallpaper image.
+vesktop_theme_dir="$HOME/.config/vesktop/themes"
+vesktop_live_theme="$vesktop_theme_dir/zerrox-live.css"
+vesktop_theme_stamp="$(date +%s%N)"
+
+mkdir -p "$vesktop_theme_dir"
+cat > "$vesktop_live_theme" <<EOT
+@import url('file://$HOME/.config/vesktop/themes/zerrox.css?v=$vesktop_theme_stamp');
+@import url('file://$HOME/.cache/matugen/discord.css?v=$vesktop_theme_stamp');
+
+:root {
+  --background-image: url('file://$HOME/.cache/quickshell/wallpaper_picker/current_wallpaper.png?v=$vesktop_theme_stamp') !important;
+  --background-image-fallback: url('file://$HOME/.dotfiles/assets/wallpaper/5.jpg?v=$vesktop_theme_stamp') !important;
+}
+EOT
+
+if command -v hyprctl >/dev/null 2>&1; then
+    hyprctl reload >/dev/null 2>&1 || true
+fi
+EOF
 
         perl -0pi -e '
           s/\n\s*Rectangle \{\n\s*property bool isHovered: helpMouse\.containsMouse.*?\n\s*\}\n(?=\s*Rectangle \{\n\s*property bool isHovered: searchMouse\.containsMouse)//s;
@@ -392,12 +411,22 @@ in {
         [templates.swayosd]
         input_path = "${homeDir}/.config/matugen/templates/swayosd.css.template"
         output_path = "${matugenSwayosdCss}"
+
+        [templates.discord]
+        input_path = "${homeDir}/.config/matugen/templates/discord.css.template"
+        output_path = "${matugenDiscordCss}"
+
+        [templates.spicetify]
+        input_path = "${homeDir}/.config/matugen/templates/spicetify.css.template"
+        output_path = "${matugenSpicetifyCss}"
       '';
       xdg.configFile."matugen/templates/alacritty.toml.template".source = ./matugen/templates/alacritty.toml.template;
       xdg.configFile."matugen/templates/cava-colors.ini.template".source = ./matugen/templates/cava-colors.ini.template;
+      xdg.configFile."matugen/templates/discord.css.template".source = ./matugen/templates/discord.css.template;
       xdg.configFile."matugen/templates/gtk.css.template".source = ./matugen/templates/gtk.css.template;
       xdg.configFile."matugen/templates/hyprland.conf.template".source = ./matugen/templates/hyprland.conf.template;
       xdg.configFile."matugen/templates/qs_colors.json.template".source = ./matugen/templates/qs_colors.json.template;
+      xdg.configFile."matugen/templates/spicetify.css.template".source = ./matugen/templates/spicetify.css.template;
       xdg.configFile."matugen/templates/swayosd.css.template".source = ./matugen/templates/swayosd.css.template;
       xdg.configFile."swayosd/style.css" = {
         source = config.lib.file.mkOutOfStoreSymlink matugenSwayosdCss;
@@ -424,9 +453,11 @@ in {
 
         install_if_missing ${./matugen/fallback/alacritty.toml} "${matugenAlacritty}"
         install_if_missing ${./matugen/fallback/cava-colors.ini} "${matugenCavaColors}"
+        install_if_missing ${./matugen/fallback/discord.css} "${matugenDiscordCss}"
         install_if_missing ${./matugen/fallback/gtk.css} "${matugenGtkCss}"
         install_if_missing ${./matugen/fallback/hyprland.conf} "${matugenHyprColors}"
         install_if_missing ${./matugen/fallback/qs_colors.json} "${matugenQsColors}"
+        install_if_missing ${./matugen/fallback/spicetify.css} "${matugenSpicetifyCss}"
         install_if_missing ${./matugen/fallback/swayosd.css} "${matugenSwayosdCss}"
       '';
 

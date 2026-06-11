@@ -1,0 +1,67 @@
+:root {
+  --base: {{colors.surface_container_lowest.default.hex}} !important;
+  --mantle: {{colors.surface_container_low.default.hex}} !important;
+  --crust: {{colors.surface.default.hex}} !important;
+  --surface0: {{colors.surface_container.default.hex}} !important;
+  --surface1: {{colors.surface_container_high.default.hex}} !important;
+  --surface2: {{colors.surface_container_highest.default.hex}} !important;
+  --overlay0: {{colors.outline_variant.default.hex}} !important;
+  --overlay1: {{colors.outline.default.hex}} !important;
+  --overlay2: {{colors.on_surface_variant.default.hex}} !important;
+  --text-color: {{colors.on_surface.default.hex}} !important;
+  --subtext0: {{colors.on_surface_variant.default.hex}} !important;
+  --subtext1: {{colors.outline.default.hex}} !important;
+  --background-solid: var(--base) !important;
+  --background-solid-dark: var(--mantle) !important;
+  --background-solid-darker: var(--crust) !important;
+  --accent: {{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}} !important;
+  --accent-alt: {{colors.secondary.default.red}}, {{colors.secondary.default.green}}, {{colors.secondary.default.blue}} !important;
+  --md-black: {{colors.surface.default.red}}, {{colors.surface.default.green}}, {{colors.surface.default.blue}} !important;
+  --dm-white: {{colors.on_surface.default.red}}, {{colors.on_surface.default.green}}, {{colors.on_surface.default.blue}} !important;
+  --accentcolor: var(--accent) !important;
+  --vaccentcolor-hover: rgb(var(--accent)) !important;
+  --vaccentcolor-active: rgb(var(--accent)) !important;
+  --bd-blue: rgb(var(--accent)) !important;
+}
+
+:not(div[class*="userProfile"][class*="unThemed"]).theme-dark,
+:not(div[class*="userProfile"]).theme-light,
+div[class*="userProfile"][class*="unThemed"].theme-light {
+  --background-primary: rgba(var(--md-black), 0.55) !important;
+  --background-mobile-primary: var(--background-primary) !important;
+  --background-secondary: rgba(var(--md-black), 0.45) !important;
+  --background-mobile-secondary: var(--background-secondary) !important;
+  --background-secondary-alt: rgba(var(--md-black), 0.75) !important;
+  --background-tertiary: rgba(var(--md-black), 0.35) !important;
+  --background-floating: rgba(var(--md-black), 0.82) !important;
+  --background-accent: rgba(var(--md-black), 0.65) !important;
+  --background-message-hover: rgba(var(--md-black), 0.40) !important;
+  --bg-base-primary: rgba(var(--md-black), 0.55) !important;
+  --bg-base-secondary: rgba(var(--md-black), 0.45) !important;
+  --bg-base-tertiary: rgba(var(--md-black), 0.35) !important;
+  --background-base-lowest: transparent !important;
+  --background-base-lower: rgba(var(--md-black), 0.35) !important;
+  --background-base-low: rgba(var(--md-black), 0.45) !important;
+  --background-base-subtle: rgba(var(--md-black), 0.55) !important;
+  --background-surface-high: rgba(var(--md-black), 0.65) !important;
+  --background-surface-higher: rgba(var(--md-black), 0.72) !important;
+  --background-surface-highest: rgba(var(--md-black), 0.82) !important;
+  --activity-card-background: rgba(var(--dm-white), 0.05) !important;
+  --background-modifier-hover: rgba(var(--md-black), 0.30) !important;
+  --background-modifier-active: rgba(var(--md-black), 0.30) !important;
+  --background-modifier-selected: rgba(var(--md-black), 0.60) !important;
+  --channels-default: rgba(var(--dm-white), 0.35) !important;
+  --header-primary: var(--text-color) !important;
+  --header-secondary: rgba(var(--dm-white), 0.62) !important;
+  --text-normal: rgba(var(--dm-white), 0.72) !important;
+  --text-muted: var(--subtext0) !important;
+  --interactive-muted: rgba(var(--dm-white), 0.15) !important;
+  --interactive-normal: rgba(var(--dm-white), 0.55) !important;
+  --interactive-hover: rgba(var(--dm-white), 0.80) !important;
+  --interactive-active: var(--text-color) !important;
+  --deprecated-card-bg: rgba(var(--dm-white), 0.05) !important;
+  --text-link: rgb(var(--accent)) !important;
+  --focus-primary: rgb(var(--accent)) !important;
+  --modal-background: var(--background-solid) !important;
+  --modal-footer-background: var(--background-solid-darker) !important;
+}

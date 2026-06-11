@@ -98,6 +98,16 @@
     ];
   };
 
+  systemd.services.enable-wake-on-lan = {
+    description = "enable wakeonlan";
+    wantedBy = ["multi-user.target"];
+    after = [ "network.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.ethtool}/sbin/ethtool -s enp9s0 wol g";
+    };
+  };
+
   systemd.tmpfiles.rules = [
     "d /home/${hostVariables.username}/Dev 0755 ${hostVariables.username}"
     "d /home/${hostVariables.username}/Documents/Berufsschule 0755 ${hostVariables.username}"
@@ -128,6 +138,7 @@
     qemu
     virt-manager
     virt-viewer
+    ethtool
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

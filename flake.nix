@@ -74,6 +74,25 @@
           inherit hostVariables inputs system;
         };
       };
+    mkMinimalNixosConfiguration = {
+      modules ? [],
+      hostVariables,
+    }: let
+      system = hostVariables.buildSystem or hostVariables.system;
+    in
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules =
+          modules
+          ++ [
+            {
+              nixpkgs.buildPlatform = system;
+            }
+          ];
+        specialArgs = {
+          inherit hostVariables inputs system;
+        };
+      };
   in {
     nixosConfigurations = {
       work = mkNixosConfiguration {
@@ -98,6 +117,10 @@
       thinkpad = mkNixosConfiguration {
         modules = [./hosts/thinkpad];
         hostVariables = import ./hosts/thinkpad/variables.nix;
+      };
+      raspberry-pi = mkMinimalNixosConfiguration {
+        modules = [./hosts/raspberry-pi];
+        hostVariables = import ./hosts/raspberry-pi/variables.nix;
       };
     };
     overlays = import ./overlays.nix inputs;

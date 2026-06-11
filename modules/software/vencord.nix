@@ -5,6 +5,74 @@
   hostVariables,
   ...
 }: let
+  homeDir = "/home/${hostVariables.username}";
+  matugenDiscordCss = "${homeDir}/.cache/matugen/discord.css";
+  vesktopThemeDir = "${homeDir}/.config/vesktop/themes";
+  liveThemeCss = "${vesktopThemeDir}/zerrox-live.css";
+  liveThemeContent = ''
+    @import url('./zerrox.css');
+    @import url('file://${matugenDiscordCss}');
+
+    :root {
+      --background-image: url('file://${homeDir}/.cache/quickshell/wallpaper_picker/current_wallpaper.png') !important;
+      --background-image-fallback: url('file://${homeDir}/.dotfiles/assets/wallpaper/5.jpg') !important;
+    }
+  '';
+  wallpaper = name: "file://${homeDir}/.dotfiles/assets/wallpaper/${name}";
+  discordVariant = {
+    wallpaperName,
+    base,
+    mantle,
+    crust,
+    text,
+    subtext0,
+    subtext1,
+    surface0,
+    surface1,
+    surface2,
+    overlay0,
+    overlay1,
+    overlay2,
+    crustRgb,
+    textRgb,
+    accent,
+    accentAlt,
+  }: ''
+    @import url('./zerrox.css');
+
+    :root {
+      --background-image: url('${wallpaper wallpaperName}');
+      --background-image-fallback: url('${wallpaper wallpaperName}');
+      --base: ${base};
+      --mantle: ${mantle};
+      --crust: ${crust};
+      --surface0: ${surface0};
+      --surface1: ${surface1};
+      --surface2: ${surface2};
+      --overlay0: ${overlay0};
+      --overlay1: ${overlay1};
+      --overlay2: ${overlay2};
+      --text-color: ${text};
+      --subtext0: ${subtext0};
+      --subtext1: ${subtext1};
+      --background-solid: var(--base);
+      --background-solid-dark: var(--mantle);
+      --background-solid-darker: var(--crust);
+      --background-overlay: rgba(${crustRgb}, 0.58);
+      --background-overlay-strong: rgba(${crustRgb}, 0.78);
+      --accent: ${accent};
+      --accent-alt: ${accentAlt};
+      --md-black: ${crustRgb};
+      --dm-white: ${textRgb};
+      --accentcolor: var(--accent);
+      --vaccentcolor-hover: rgb(var(--accent));
+      --vaccentcolor-active: rgb(var(--accent));
+    }
+
+    button {
+      --accentcolor: var(--accent-alt);
+    }
+  '';
   colors = {
     base = "#1e1e2e";
     mantle = "#181825";
@@ -59,6 +127,7 @@ in {
             @import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700&display=swap');
 @import url('https://mwittrien.github.io/BetterDiscordAddons/Themes/BlurpleRecolor/BlurpleRecolor.css');
 @import url('https://discord-custom-covers.github.io/usrbg/dist/usrbg.css');
+@import url('file://${matugenDiscordCss}');
 
 button {
 	--accentcolor: var(--accent-alt);
@@ -72,8 +141,8 @@ button {
 	--font-display: var(--font-primary) !important;
 	/* Dark Matter Variables */
 	--avatar-size: 32px;
-	--background-image: url('https://i.imgur.com/7SbtKvw.png');
-	--background-image-fallback: url('file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg');
+	--background-image: url('file://${homeDir}/.cache/quickshell/wallpaper_picker/current_wallpaper.png');
+	--background-image-fallback: url('file://${homeDir}/.dotfiles/assets/wallpaper/5.jpg');
 	--home-image: url('https://i.imgur.com/233d55Y.gif');
 	--base: ${colors.base};
 	--mantle: ${colors.mantle};
@@ -940,11 +1009,111 @@ li[class^="card-"]>div[class^="container-"] {
 }
           '';
 
+          themes."zerrox-orbit" = discordVariant {
+            wallpaperName = "planets.jpg";
+            base = "#05090a";
+            mantle = "#0b1210";
+            crust = "#020405";
+            text = "#e2ece8";
+            subtext0 = "#aebdb5";
+            subtext1 = "#c6d2ca";
+            surface0 = "#13201b";
+            surface1 = "#1e3128";
+            surface2 = "#2f4738";
+            overlay0 = "#506657";
+            overlay1 = "#758875";
+            overlay2 = "#aebdb5";
+            crustRgb = "2, 4, 5";
+            textRgb = "226, 236, 232";
+            accent = "92, 154, 110";
+            accentAlt = "215, 171, 72";
+          };
+
+          themes."zerrox-moon" = discordVariant {
+            wallpaperName = "moon.jpg";
+            base = "#060913";
+            mantle = "#0d1428";
+            crust = "#03050b";
+            text = "#e7ecff";
+            subtext0 = "#aeb8d0";
+            subtext1 = "#c8d2eb";
+            surface0 = "#17213d";
+            surface1 = "#22305a";
+            surface2 = "#334578";
+            overlay0 = "#4f6091";
+            overlay1 = "#7886ad";
+            overlay2 = "#aeb8d0";
+            crustRgb = "3, 5, 11";
+            textRgb = "231, 236, 255";
+            accent = "74, 120, 255";
+            accentAlt = "185, 197, 218";
+          };
+
+          themes."zerrox-fuji" = discordVariant {
+            wallpaperName = "fuji.jpg";
+            base = "#101817";
+            mantle = "#162321";
+            crust = "#0a0f0e";
+            text = "#e4eee8";
+            subtext0 = "#b9c8c0";
+            subtext1 = "#d1ddd6";
+            surface0 = "#22312f";
+            surface1 = "#314542";
+            surface2 = "#49625d";
+            overlay0 = "#617c75";
+            overlay1 = "#8aa39a";
+            overlay2 = "#b9c8c0";
+            crustRgb = "10, 15, 14";
+            textRgb = "228, 238, 232";
+            accent = "121, 190, 175";
+            accentAlt = "238, 168, 126";
+          };
+
+          themes."zerrox-waves" = discordVariant {
+            wallpaperName = "waves.jpg";
+            base = "#120b2a";
+            mantle = "#1b103d";
+            crust = "#080513";
+            text = "#f0e9ff";
+            subtext0 = "#c5b7df";
+            subtext1 = "#ded1f6";
+            surface0 = "#28185a";
+            surface1 = "#3a2278";
+            surface2 = "#4f2fa0";
+            overlay0 = "#704fc0";
+            overlay1 = "#9b7ee0";
+            overlay2 = "#c5b7df";
+            crustRgb = "8, 5, 19";
+            textRgb = "240, 233, 255";
+            accent = "184, 77, 245";
+            accentAlt = "42, 205, 226";
+          };
+
+          themes."zerrox-blackdots" = discordVariant {
+            wallpaperName = "blackdots.jpg";
+            base = "#090909";
+            mantle = "#111111";
+            crust = "#030303";
+            text = "#e8e8e8";
+            subtext0 = "#b8b8b8";
+            subtext1 = "#d0d0d0";
+            surface0 = "#191919";
+            surface1 = "#252525";
+            surface2 = "#343434";
+            overlay0 = "#555555";
+            overlay1 = "#808080";
+            overlay2 = "#b8b8b8";
+            crustRgb = "3, 3, 3";
+            textRgb = "232, 232, 232";
+            accent = "168, 168, 168";
+            accentAlt = "96, 96, 96";
+          };
+
           settings = {
             autoUpdate = false;
             autoUpdateNotification = false;
             disableMinSize = true;
-            enabledThemes = ["zerrox.css"];
+            enabledThemes = ["zerrox-live.css"];
             notifyAboutUpdates = false;
             useQuickCss = false;
 
@@ -1004,6 +1173,13 @@ li[class^="card-"]>div[class^="container-"] {
           };
         };
       };
+
+      home.activation.ensureVesktopLiveTheme = ''
+        mkdir -p "${vesktopThemeDir}"
+        cat > "${liveThemeCss}" <<'EOF'
+${liveThemeContent}
+EOF
+      '';
     };
   };
 }

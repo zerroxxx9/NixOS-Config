@@ -38,6 +38,23 @@
     busybox
   ];
 
+  systemd.services.daily-reboot = {
+    description = "Reboot the homelab host";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.systemd}/bin/systemctl reboot";
+    };
+  };
+
+  systemd.timers.daily-reboot = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "00:00";
+      AccuracySec = "1s";
+      Persistent = false;
+    };
+  };
+
   modules.security.agenix.secrets.tailscaleAuthKey = true;
 
   modules.software.tailscale =

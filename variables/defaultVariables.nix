@@ -37,6 +37,7 @@
       spicetify = false;
       sunshine = false;
       mealie = false;
+      freshrss = false;
     };
     security = {
       yubikey = false;

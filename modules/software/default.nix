@@ -18,5 +18,6 @@
     ./spicetify.nix
     ./sunshine.nix
     ./mealie.nix
+    ./freshrss.nix
   ];
 }

@@ -48,6 +48,7 @@ in
             vscode = false;
             fail2ban = true;
             mealie = true;
+            freshrss = true;
           };
         systemSettings =
           default.modules.systemSettings

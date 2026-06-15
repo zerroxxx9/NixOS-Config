@@ -17,5 +17,6 @@
     ./paperless-ngx.nix
     ./spicetify.nix
     ./sunshine.nix
+    ./mealie.nix
   ];
 }

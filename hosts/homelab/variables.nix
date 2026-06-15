@@ -47,6 +47,7 @@ in
             paperless-ngx = true;
             vscode = false;
             fail2ban = true;
+            mealie = true;
           };
         systemSettings =
           default.modules.systemSettings

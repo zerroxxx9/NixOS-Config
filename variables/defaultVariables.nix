@@ -36,6 +36,7 @@
       paperless-ngx = false;
       spicetify = false;
       sunshine = false;
+      mealie = false;
     };
     security = {
       yubikey = false;

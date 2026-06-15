@@ -36,6 +36,7 @@
     unzip
     zip
     busybox
+    wakeonlan
   ];
 
   systemd.services.daily-reboot = {

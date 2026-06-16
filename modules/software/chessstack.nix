@@ -79,8 +79,12 @@ in {
     ];
 
     systemd.services.podman-chessstack = {
-      after = ["postgresql.service"];
-      wants = ["postgresql.service"];
+      after =
+        ["postgresql.service"]
+        ++ lib.optionals (builtins.hasAttr "chessstack-env" config.age.secrets) ["agenix.service"];
+      wants =
+        ["postgresql.service"]
+        ++ lib.optionals (builtins.hasAttr "chessstack-env" config.age.secrets) ["agenix.service"];
     };
 
     systemd.services.tailscale-serve-chessstack = lib.mkIf config.modules.software.tailscale.enable {

@@ -20,6 +20,7 @@
     };
     software = {
       collabora = false;
+      chessstack = false;
       display-link = true;
       docker = true;
       couchdb = false;

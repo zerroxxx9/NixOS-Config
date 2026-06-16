@@ -11,12 +11,14 @@
   tailscaleAuthKeyFile = ../../secrets/tailscale-authkey.age;
   wifiPasswordsFile = ../../secrets/wifi-passwords.age;
   copilotApiKeyFile = ../../secrets/copilot-api-key.age;
+  chessstackEnvFile = ../../secrets/chessstack-env.age;
   braveBookmarksFile = ../../secrets/brave-bookmarks.age;
   desktopBookmarksFile = ../../secrets/desktop-bookmarks.age;
 
   hasTailscaleAuthKey = builtins.pathExists tailscaleAuthKeyFile;
   hasWifiPasswords = builtins.pathExists wifiPasswordsFile;
   hasCopilotApiKey = builtins.pathExists copilotApiKeyFile;
+  hasChessstackEnv = builtins.pathExists chessstackEnvFile;
   hasBraveBookmarks = builtins.pathExists braveBookmarksFile;
   hasDesktopBookmarks = builtins.pathExists desktopBookmarksFile;
   hasConfiguredBookmarks =
@@ -26,6 +28,7 @@
     (cfg.secrets.tailscaleAuthKey && hasTailscaleAuthKey)
     || (cfg.secrets.wifiPasswords && hasWifiPasswords)
     || (cfg.secrets.copilotApiKey && hasCopilotApiKey)
+    || (cfg.secrets.chessstackEnv && hasChessstackEnv)
     || hasConfiguredBookmarks;
   bookmarksSecretPath =
     if cfg.secrets.desktopBookmarks
@@ -52,6 +55,12 @@ in {
         type = lib.types.bool;
         default = false;
         description = "Deploy GitHub Copilot API key.";
+      };
+
+      chessstackEnv = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Deploy the Chessstack environment secret.";
       };
 
       braveBookmarks = lib.mkOption {
@@ -92,6 +101,15 @@ in {
         Create it from the repo root with:
           RULES=secrets/secrets.nix agenix -e secrets/copilot-api-key.age
       ''
+      ++ lib.optional (cfg.secrets.chessstackEnv && !hasChessstackEnv) ''
+        modules.security.agenix.secrets.chessstackEnv is enabled, but secrets/chessstack-env.age is missing.
+        Create it from the repo root with:
+          RULES=secrets/secrets.nix agenix -e secrets/chessstack-env.age
+        Expected keys:
+          DATABASE_URL=postgresql://chessstack@host.containers.internal:5432/chessstack
+          DEFAULT_USERNAME=<admin username>
+          DEFAULT_PASSWORD=<admin password>
+      ''
       ++ lib.optional (cfg.secrets.braveBookmarks && !hasBraveBookmarks) ''
         modules.security.agenix.secrets.braveBookmarks is enabled, but secrets/brave-bookmarks.age is missing.
         Create it from the repo root with:
@@ -126,6 +144,12 @@ in {
       file = copilotApiKeyFile;
       owner = hostVariables.username;
       mode = "0400";
+    };
+
+    age.secrets.chessstack-env = lib.mkIf (cfg.secrets.chessstackEnv && hasChessstackEnv) {
+      file = chessstackEnvFile;
+      owner = "root";
+      mode = "0600";
     };
 
     age.secrets.brave-bookmarks = lib.mkIf (cfg.secrets.braveBookmarks && hasBraveBookmarks) {

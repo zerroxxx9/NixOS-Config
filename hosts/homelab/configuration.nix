@@ -57,6 +57,7 @@
   };
 
   modules.security.agenix.secrets.tailscaleAuthKey = true;
+  modules.security.agenix.secrets.chessstackEnv = true;
 
   modules.software.tailscale =
     {

@@ -35,6 +35,7 @@ in
           default.modules.software
           // {
             collabora = true;
+            chessstack = true;
             display-link = false;
             docker = true;
             couchdb = true;

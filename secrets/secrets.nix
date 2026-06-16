@@ -61,6 +61,7 @@ in {
   # `agenix -e secrets/<name>.age` from the repo root, so include the `secrets/`
   # prefix in rule keys.
   "secrets/tailscale-authkey.age".publicKeys = adminRecipients ++ [homelabHost];
+  "secrets/chessstack-env.age".publicKeys = adminRecipients ++ [homelabHost];
   "secrets/wifi-passwords.age".publicKeys = adminRecipients ++ [workHost];
   "secrets/copilot-api-key.age".publicKeys = adminRecipients ++ [workHost];
   "secrets/brave-bookmarks.age".publicKeys = adminRecipients ++ [workHost];

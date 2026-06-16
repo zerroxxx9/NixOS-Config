@@ -19,7 +19,7 @@ in {
 
     host = lib.mkOption {
       type = lib.types.str;
-      default = "homelab.tail11bba0.ts.net";
+      default = "homelab-1.tail11bba0.ts.net";
       description = "Tailscale hostname used to reach Chessstack.";
     };
 

@@ -1,5 +1,8 @@
-{ lib, config, ... }:
-let
+{
+  lib,
+  config,
+  ...
+}: let
   mealiePort = 9000;
 in {
   options.modules.software.mealie = {
@@ -13,16 +16,16 @@ in {
       port = mealiePort;
 
       settings = {
-        BASE_URL = "https://homelab.tail11bba0.ts.net:${toString mealiePort}";
+        BASE_URL = "https://homelab-1.tail11bba0.ts.net:${toString mealiePort}";
         CHECK_FOR_UPDATES = "false";
       };
     };
 
     systemd.services.tailscale-serve-mealie = {
       description = "Publish Mealie via Tailscale Serve";
-      after = [ "network-online.target" "tailscaled.service" "mealie.service" ];
-      wants = [ "network-online.target" "tailscaled.service" "mealie.service" ];
-      wantedBy = [ "multi-user.target" ];
+      after = ["network-online.target" "tailscaled.service" "mealie.service"];
+      wants = ["network-online.target" "tailscaled.service" "mealie.service"];
+      wantedBy = ["multi-user.target"];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

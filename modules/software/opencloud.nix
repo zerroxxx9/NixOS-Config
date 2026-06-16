@@ -1,5 +1,8 @@
-{ lib, config, ... }:
 {
+  lib,
+  config,
+  ...
+}: {
   options.modules.software.opencloud = {
     enable = lib.mkEnableOption "opencloud";
   };
@@ -9,14 +12,14 @@
       enable = true;
       address = "127.0.0.1";
       port = 9200;
-      url = "https://homelab.tail11bba0.ts.net";
+      url = "https://homelab-1.tail11bba0.ts.net";
     };
 
     systemd.services.tailscale-serve-opencloud = {
       description = "Publish OpenCloud via Tailscale Serve";
-      after = [ "network-online.target" "tailscaled.service" "opencloud.service" ];
-      wants = [ "network-online.target" "tailscaled.service" "opencloud.service" ];
-      wantedBy = [ "multi-user.target" ];
+      after = ["network-online.target" "tailscaled.service" "opencloud.service"];
+      wants = ["network-online.target" "tailscaled.service" "opencloud.service"];
+      wantedBy = ["multi-user.target"];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

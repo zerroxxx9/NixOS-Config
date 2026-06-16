@@ -1,5 +1,8 @@
-{ lib, config, ... }:
 {
+  lib,
+  config,
+  ...
+}: {
   options.modules.software.immich = {
     enable = lib.mkEnableOption "immich";
   };
@@ -12,15 +15,15 @@
 
       settings = {
         newVersionCheck.enabled = false;
-        server.externalDomain = "https://homelab.tail11bba0.ts.net:2283";
+        server.externalDomain = "https://homelab-1.tail11bba0.ts.net:2283";
       };
     };
 
     systemd.services.tailscale-serve-immich = {
       description = "Publish Immich via Tailscale Serve";
-      after = [ "network-online.target" "tailscaled.service" "immich-server.service" ];
-      wants = [ "network-online.target" "tailscaled.service" "immich-server.service" ];
-      wantedBy = [ "multi-user.target" ];
+      after = ["network-online.target" "tailscaled.service" "immich-server.service"];
+      wants = ["network-online.target" "tailscaled.service" "immich-server.service"];
+      wantedBy = ["multi-user.target"];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

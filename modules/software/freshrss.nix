@@ -73,7 +73,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.freshrss = {
       enable = true;
-      baseUrl = "https://homelab.tail11bba0.ts.net:${toString freshrssPort}";
+      baseUrl = "https://homelab-1.tail11bba0.ts.net:${toString freshrssPort}";
       authType = "none";
     };
 
@@ -84,7 +84,7 @@ in {
           port = freshrssPort;
         }
       ];
-      serverAliases = ["homelab.tail11bba0.ts.net"];
+      serverAliases = ["homelab-1.tail11bba0.ts.net"];
     };
 
     systemd.services.tailscale-serve-freshrss = lib.mkIf config.modules.software.tailscale.enable {

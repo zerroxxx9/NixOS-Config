@@ -5,7 +5,7 @@
 }: let
   collaboraPort = 9980;
   wopiPort = 9300;
-  hostname = "homelab.tail11bba0.ts.net";
+  hostname = "homelab-1.tail11bba0.ts.net";
   serverTailscaleIp = "100.73.190.127";
   clientTailscaleIps = [
     "100.124.232.93"

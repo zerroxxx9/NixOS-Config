@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  pkgs,
   ...
 }: let
   cfg = config.services.homelab.chessstack;
@@ -54,7 +55,10 @@ in {
     };
 
     virtualisation = {
-      podman.enable = true;
+      podman = {
+        enable = true;
+        extraPackages = [pkgs.slirp4netns];
+      };
       oci-containers = {
         backend = "podman";
         containers.chessstack = {
@@ -79,12 +83,9 @@ in {
     ];
 
     systemd.services.podman-chessstack = {
-      after =
-        ["postgresql.service"]
-        ++ lib.optionals (builtins.hasAttr "chessstack-env" config.age.secrets) ["agenix.service"];
-      wants =
-        ["postgresql.service"]
-        ++ lib.optionals (builtins.hasAttr "chessstack-env" config.age.secrets) ["agenix.service"];
+      after = ["postgresql.service"];
+      wants = ["postgresql.service"];
+      unitConfig.ConditionPathExists = envFile;
     };
 
     systemd.services.tailscale-serve-chessstack = lib.mkIf config.modules.software.tailscale.enable {

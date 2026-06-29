@@ -4,7 +4,7 @@
   system = "x86_64-linux";
   osLanguage = "en_US.UTF-8";
   keyboardLayout = "de_DE.UTF-8";
-  stateVersion = "25.11";
+  stateVersion = "26.05";
   modules = {
     console = {
       fish = true;

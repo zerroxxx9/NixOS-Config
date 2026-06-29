@@ -24,7 +24,7 @@ in
         gui =
           default.modules.gui
           // {
-            hyprland = true;
+            hyprland = false;
           };
         security =
           default.modules.security

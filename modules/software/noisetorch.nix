@@ -12,7 +12,7 @@
     environment.systemPackages = with pkgs; [
       noisetorch
       pavucontrol
-      helvum
+      crosspipe
       qpwgraph
     ];
   };

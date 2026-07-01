@@ -31,6 +31,7 @@
       neovim = true;
       noisetorch = true;
       obsidian = false;
+      osu = false;
       vscode = false;
       vencord = false;
       tailscale = false;

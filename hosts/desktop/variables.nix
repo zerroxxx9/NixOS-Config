@@ -17,6 +17,7 @@ in
           // {
             noisetorch = true;
             obsidian = true;
+            osu = true;
             display-link = false;
             tailscale = true;
             vencord = true;
@@ -28,7 +29,7 @@ in
           default.modules.gui
           // {
             gnome = true;
-            hyprland = true;
+            hyprland = false;
           };
         security =
           default.modules.security

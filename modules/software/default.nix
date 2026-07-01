@@ -12,6 +12,7 @@
     ./neovim.nix
     ./noisetorch.nix
     ./obsidian.nix
+    ./osu.nix
     ./vscode.nix
     ./tailscale.nix
     ./vencord.nix

@@ -139,6 +139,11 @@
     virt-manager
     virt-viewer
     ethtool
+    lutris
+    winetricks
+    wineWowPackages.staging
+    protonup-qt
+    mangohud
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

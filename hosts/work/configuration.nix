@@ -80,29 +80,31 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = (with pkgs; [
-    unstable.bruno
-    keepassxc
-    vscode-with-extensions
-    gh
-    zip
-    unzip
-    burpsuite
-    libreoffice-qt
-    chromium
-    element-desktop
-    busybox
-    pnpm
-    nodejs_24
-    (unstable.brave.override {
-      commandLineArgs = [
-        "--enable-features=UseOzonePlatform"
-        "--ozone-platform=wayland"
-      ];
-    })
-  ]) ++ [
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.copilot-cli
-  ];
+  environment.systemPackages =
+    (with pkgs; [
+      unstable.bruno
+      keepassxc
+      vscode-with-extensions
+      gh
+      zip
+      unzip
+      burpsuite
+      libreoffice-qt
+      chromium
+      element-desktop
+      busybox
+      pnpm
+      nodejs_24
+      (unstable.brave.override {
+        commandLineArgs = [
+          "--enable-features=UseOzonePlatform"
+          "--ozone-platform=wayland"
+        ];
+      })
+    ])
+    ++ [
+      inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.copilot-cli
+    ];
 
   # agenix Secrets aktivieren
   modules.security.agenix.secrets = {

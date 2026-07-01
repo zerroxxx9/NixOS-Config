@@ -8,6 +8,10 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     llm-agents.url = "github:numtide/llm-agents.nix";
+    nixvim = {
+      url = "github:nix-community/nixvim/nixos-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager?ref=release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -61,6 +65,7 @@
             ./configuration.nix
             ./modules
             home-manager.nixosModules.home-manager
+            inputs.nixvim.nixosModules.nixvim
             inputs.agenix.nixosModules.default
             {
               nixpkgs.overlays = [

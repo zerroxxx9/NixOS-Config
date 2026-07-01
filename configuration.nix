@@ -34,6 +34,7 @@
   modules.software.mealie.enable = lib.attrByPath ["modules" "software" "mealie"] false hostVariables;
   modules.software.freshrss.enable = lib.attrByPath ["modules" "software" "freshrss"] false hostVariables;
   modules.software.neovim.enable = lib.attrByPath ["modules" "software" "neovim"] false hostVariables;
+  modules.software.nixvim.enable = lib.attrByPath ["modules" "software" "nixvim"] false hostVariables;
   modules.software.noisetorch.enable = lib.attrByPath ["modules" "software" "noisetorch"] false hostVariables;
   modules.software.obsidian.enable = lib.attrByPath ["modules" "software" "obsidian"] false hostVariables;
   modules.software.opencloud.enable = lib.attrByPath ["modules" "software" "opencloud"] false hostVariables;

@@ -21,5 +21,6 @@
     ./sunshine.nix
     ./mealie.nix
     ./freshrss.nix
+    ./nixvim.nix
   ];
 }

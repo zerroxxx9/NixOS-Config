@@ -28,7 +28,6 @@
       flatpak = false;
       git = true;
       immich = false;
-      neovim = false;
       nixvim = true;
       noisetorch = true;
       obsidian = false;

@@ -37,6 +37,7 @@
   modules.software.nixvim.enable = lib.attrByPath ["modules" "software" "nixvim"] false hostVariables;
   modules.software.noisetorch.enable = lib.attrByPath ["modules" "software" "noisetorch"] false hostVariables;
   modules.software.obsidian.enable = lib.attrByPath ["modules" "software" "obsidian"] false hostVariables;
+  modules.software.osu.enable = lib.attrByPath ["modules" "software" "osu"] false hostVariables;
   modules.software.opencloud.enable = lib.attrByPath ["modules" "software" "opencloud"] false hostVariables;
   modules.software.tailscale.enable = lib.attrByPath ["modules" "software" "tailscale"] false hostVariables;
   modules.software.vencord.enable = lib.attrByPath ["modules" "software" "vencord"] false hostVariables;

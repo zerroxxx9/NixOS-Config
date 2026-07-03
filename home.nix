@@ -1,6 +1,7 @@
 {hostVariables, ...}: {
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
+  home-manager.backupFileExtension = "hm-backup";
   home-manager.users.${hostVariables.username} = {
     # basic home-manager config
     home.username = "${hostVariables.username}";

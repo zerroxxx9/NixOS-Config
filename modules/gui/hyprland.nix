@@ -14,6 +14,15 @@
   hyprRgb = color: "rgb(${stripHash color})";
   hyprRgba = color: alpha: "rgba(${stripHash color}${alpha})";
   hexA = color: alpha: "${color}${alpha}";
+  setHyprpaperWallpapers = pkgs.writeShellApplication {
+    name = "set-hyprpaper-wallpapers";
+    runtimeInputs = [pkgs.hyprland];
+    text = ''
+      sleep 0.5
+      hyprctl hyprpaper wallpaper "DP-1,${wallpaperPath}" || true
+      hyprctl hyprpaper wallpaper "DP-2,${wallpaperPath}" || true
+    '';
+  };
 in {
   options.modules.gui.hyprland = {
     enable = lib.mkEnableOption "hyprland";
@@ -27,7 +36,6 @@ in {
 
     services.displayManager.gdm = {
       enable = lib.mkDefault true;
-      wayland = lib.mkDefault true;
     };
     services.displayManager.defaultSession = lib.mkDefault "hyprland";
 
@@ -78,12 +86,11 @@ in {
 
       wayland.windowManager.hyprland = {
         enable = true;
+        configType = "hyprlang";
         systemd.enable = true;
         settings = {
           monitor = [",preferred,auto,1"];
           exec-once = [
-            "hyprpaper"
-            "waybar"
             "mako"
           ];
           general = {
@@ -92,10 +99,12 @@ in {
             border_size = 2;
             "col.active_border" = "${hyprRgb colors.accentBlue} ${hyprRgb colors.muted} 45deg";
             "col.inactive_border" = hyprRgb colors.bg2;
-            "col.group_border_active" = "${hyprRgb colors.accentRed} ${hyprRgb colors.accentBlue} 45deg";
-            "col.group_border" = hyprRgb colors.overlay;
             resize_on_border = true;
             layout = "dwindle";
+          };
+          group = {
+            "col.border_active" = "${hyprRgb colors.accentRed} ${hyprRgb colors.accentBlue} 45deg";
+            "col.border_inactive" = hyprRgb colors.overlay;
           };
           decoration = {
             rounding = radius;
@@ -130,7 +139,6 @@ in {
             disable_splash_rendering = true;
           };
           dwindle = {
-            pseudotile = true;
             preserve_split = true;
           };
           input = {
@@ -202,7 +210,7 @@ in {
           }
 
           window#waybar {
-            background: ${hexA colors.bg1 "ee"};
+            background: ${colors.bg1};
             color: ${colors.fg};
             border-bottom: 1px solid ${colors.surface};
           }
@@ -456,10 +464,14 @@ in {
         enable = true;
         settings = {
           preload = [wallpaperPath];
-          wallpaper = [",${wallpaperPath}"];
+          wallpaper = [
+            "DP-1,${wallpaperPath}"
+            "DP-2,${wallpaperPath}"
+          ];
           splash = false;
         };
       };
+      systemd.user.services.hyprpaper.Service.ExecStartPost = "${lib.getExe setHyprpaperWallpapers}";
 
       gtk = {
         enable = true;

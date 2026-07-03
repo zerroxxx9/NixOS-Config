@@ -3,206 +3,17 @@
   lib,
   config,
   hostVariables,
-  inputs,
   ...
 }: let
   cfg = config.modules.gui.hyprland;
-  homeDir = "/home/${hostVariables.username}";
-  wallpaperDir = "/home/${hostVariables.username}/.dotfiles/assets/wallpaper";
-  matugenCacheDir = "${homeDir}/.cache/matugen";
-  matugenAlacritty = "${matugenCacheDir}/alacritty.toml";
-  matugenGtkCss = "${matugenCacheDir}/gtk.css";
-  matugenHyprColors = "${matugenCacheDir}/hypr/colors.conf";
-  matugenQsColors = "${matugenCacheDir}/qs_colors.json";
-  matugenSwayosdCss = "${matugenCacheDir}/swayosd.css";
-  matugenDiscordCss = "${matugenCacheDir}/discord.css";
-  matugenSpicetifyCss = "${matugenCacheDir}/spicetify.css";
-  matugenCavaColors = "${homeDir}/.config/cava/colors";
-  quickshellWithQtModules = pkgs.symlinkJoin {
-    name = "quickshell-with-qt-modules";
-    paths = [pkgs.quickshell];
-    nativeBuildInputs = [pkgs.makeWrapper];
-    postBuild = let
-      qtQmlModules = lib.makeSearchPath "lib/qt-6/qml" [
-        pkgs.qt6.qt5compat
-        pkgs.qt6.qtmultimedia
-        pkgs.qt6.qtwebengine
-        pkgs.qt6.qtwebsockets
-      ];
-      qtPlugins = lib.makeSearchPath "lib/qt-6/plugins" [
-        pkgs.qt6.qt5compat
-        pkgs.qt6.qtmultimedia
-        pkgs.qt6.qtwebengine
-        pkgs.qt6.qtwebsockets
-      ];
-    in ''
-      wrapProgram $out/bin/quickshell \
-        --prefix QML2_IMPORT_PATH : ${qtQmlModules} \
-        --prefix QT_PLUGIN_PATH : ${qtPlugins}
-      wrapProgram $out/bin/qs \
-        --prefix QML2_IMPORT_PATH : ${qtQmlModules} \
-        --prefix QT_PLUGIN_PATH : ${qtPlugins}
-    '';
-  };
-  hyprlandScripts = pkgs.runCommand "hyprland-scripts" {nativeBuildInputs = [pkgs.perl];} ''
-        cp -R ${inputs.ilyamiro-dots}/config/sessions/hyprland/scripts $out
-        chmod -R u+w $out
-        cp ${./hyprland/ilyamiro/scripts/quickshell/applauncher/app_fetcher.py} $out/quickshell/applauncher/app_fetcher.py
-        cp ${./hyprland/ilyamiro/scripts/quickshell/applauncher/appLauncher.qml} $out/quickshell/applauncher/appLauncher.qml
-
-        perl -0pi -e 's|\$HOME/Pictures/Wallpapers|\$HOME/.dotfiles/assets/wallpaper|g; s|\$HOME/\.dotfiles/assets/wallpapers|\$HOME/.dotfiles/assets/wallpaper|g' $out/qs_manager.sh
-
-        substituteInPlace $out/quickshell/Config.qml \
-          --replace-fail 'readonly property string weatherEnvPath: qsScriptsDir + "/calendar/.env"' \
-          'readonly property string weatherEnvPath: homeDir + "/.config/quickshell/hyprland-weather.env"'
-
-        perl -0pi -e 's|homeDir \+ "/Pictures/Wallpapers"|homeDir + "/.dotfiles/assets/wallpaper"|g' $out/quickshell/Config.qml
-
-        substituteInPlace $out/quickshell/calendar/weather.sh \
-          --replace-fail 'ENV_FILE="$(dirname "$0")/.env"' \
-          'ENV_FILE="''${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/hyprland-weather.env"'
-
-        perl -0pi -e 's|Quickshell\.env\("HOME"\) \+ "/Pictures/Wallpapers"|Quickshell.env("HOME") + "/.dotfiles/assets/wallpaper"|g' $out/quickshell/wallpaper/WallpaperPicker.qml
-
-        substituteInPlace $out/quickshell/MatugenColors.qml \
-          --replace-fail 'command: ["cat", "/tmp/qs_colors.json"]' \
-          'command: ["cat", Quickshell.env("HOME") + "/.cache/matugen/qs_colors.json"]'
-
-        cat >> $out/quickshell/wallpaper/matugen_reload.sh <<'EOF'
-
-# Force Vesktop/Vencord to re-read the live theme after Matugen updates.
-# The timestamp avoids Chromium caching file:// imports and the wallpaper image.
-vesktop_theme_dir="$HOME/.config/vesktop/themes"
-vesktop_live_theme="$vesktop_theme_dir/zerrox-live.css"
-vesktop_theme_stamp="$(date +%s%N)"
-
-mkdir -p "$vesktop_theme_dir"
-cat > "$vesktop_live_theme" <<EOT
-@import url('file://$HOME/.config/vesktop/themes/zerrox.css?v=$vesktop_theme_stamp');
-@import url('file://$HOME/.cache/matugen/discord.css?v=$vesktop_theme_stamp');
-
-:root {
-  --background-image: url('file://$HOME/.cache/quickshell/wallpaper_picker/current_wallpaper.png?v=$vesktop_theme_stamp') !important;
-  --background-image-fallback: url('file://$HOME/.dotfiles/assets/wallpaper/5.jpg?v=$vesktop_theme_stamp') !important;
-}
-EOT
-
-if command -v hyprctl >/dev/null 2>&1; then
-    hyprctl reload >/dev/null 2>&1 || true
-fi
-EOF
-
-        perl -0pi -e '
-          s/\n\s*Rectangle \{\n\s*property bool isHovered: helpMouse\.containsMouse.*?\n\s*\}\n(?=\s*Rectangle \{\n\s*property bool isHovered: searchMouse\.containsMouse)//s;
-          s/\n\s*Rectangle \{\n\s*property bool isHovered: settingsMouse\.containsMouse.*?\n\s*\}\n(?=\s*Rectangle \{\n\s*id: updateButton)//s;
-          s/\n\s*Rectangle \{\n\s*id: updateButton.*?\n\s*\}\n(?=\s*\}\n\s*\}\n\s*Rectangle \{\n\s*id: workspacesBox)/\n/s;
-        ' $out/quickshell/TopBar.qml
-
-        rm -rf $out/quickshell/calendar/schedule
-        rm -f $out/quickshell/wallpaper/ddg_search.sh
-        rm -f $out/quickshell/wallpaper/get_ddg_links.py
-
-        perl -0pi -e '
-          s/property real targetMasterHeight: window\.scheduleModuleExists \? Math\.round\(750 \* window\.sf\) : Math\.round\(510 \* window\.sf\)/property real targetMasterHeight: Math.round(510 * window.sf)/;
-          s/property real centerOffset: window\.scheduleModuleExists \? Math\.round\(-100 \* window\.sf\) : 0/property real centerOffset: 0/;
-          s/command: \["bash", "-c", "\[ -f .*?schedule_manager\.sh.*?\|\| echo 0"\]/command: ["bash", "-c", "echo 0"]/;
-          s/command: \["bash", window\.scriptsDir \+ "\/schedule\/schedule_manager\.sh"\]/command: ["bash", "-c", "true"]/;
-          s/running: window\.scheduleModuleExists; repeat: true/running: false; repeat: false/;
-        ' $out/quickshell/calendar/CalendarPopup.qml
-
-        perl -0pi -e '
-          s/,\n\s*\{ name: "Search", hex: "", label: "Search" \}\s*//;
-          s/\n\s*if \(window\.currentFilter === "Search" && window\.hasSearched\) \{.*?\n\s*const originalFile/\n        const originalFile/s;
-          s/function triggerOnlineSearch\(\) \{.*?\n    \}\n\n    readonly property string homeDir/function triggerOnlineSearch() {\n        window.currentFilter = "All";\n        window.hasSearched = false;\n        window.isOnlineSearch = false;\n    }\n\n    readonly property string homeDir/s;
-          s/onIsSearchPausedChanged: \{.*?\n    \}/onIsSearchPausedChanged: {}/s;
-          s/visible: window\.currentFilter === "Search" && window\.hasSearched/visible: false/g;
-          s/width: window\.currentFilter === "Search" \? window\.s\(360\) : window\.s\(44\)/width: 0/g;
-          s/Component\.onCompleted: \{.*?\n    \}\n\n    Component\.onDestruction: \{.*?\n    \}/Component.onCompleted: {\n        window.currentFilter = "All";\n        window.hasSearched = false;\n        window.isOnlineSearch = false;\n        window.loadMonitors();\n        view.forceActiveFocus();\n        window.processMarkers();\n        window.triggerColorExtraction();\n    }\n\n    Component.onDestruction: {\n        window.hasSearched = false;\n    }/s;
-        ' $out/quickshell/wallpaper/WallpaperPicker.qml
-
-        perl -0pi -e '
-          s/command: \["bash", "-c", "c[u]rl -m 5 -s (?:\\.|[^"])*"\]/command: ["bash", "-c", "true"]/g;
-          s/command: \["bash", "-c", "c[u]rl -m 60 .*?window\.videoUrl\]/command: ["bash", "-c", "true"]/s;
-          s/property string videoResolveScript: `.*?`\n\n    Process \{\n        id: videoResolveProcess/property string videoResolveScript: `\nprint("")\n`\n\n    Process {\n        id: videoResolveProcess/s;
-          s/property string fetchScript: `.*?`\n\n    Process \{\n        id: commitFetchProcess/property string fetchScript: `\nprint("Remote update checks disabled. Use nix flake update and rebuild.")\n`\n\n    Process {\n        id: commitFetchProcess/s;
-          s/\n\s*let cmd = "if command -v kitty.*?curl.*?";\n\s*Quickshell\.execDetached\(\["bash", "-c", cmd\]\);/\n                            Quickshell.execDetached(["notify-send", "Updater disabled", "Use nix flake update and rebuild from your dotfiles."]);/sg;
-         ' $out/quickshell/updater/UpdaterPopup.qml $out/quickshell/guide/GuidePopup.qml
-  '';
-  hyprlandConfig = pkgs.runCommand "hyprland-config" {} ''
-    cp -R ${./hyprland/ilyamiro/config} $out
-    chmod -R u+w $out
-    if ! grep -q '^env = WALLPAPER_DIR,' "$out/env.conf"; then
-      printf '\nenv = WALLPAPER_DIR,${wallpaperDir}\n' >> "$out/env.conf"
-    fi
-  '';
-  catppuccinGtk = pkgs.catppuccin-gtk.override {
-    accents = ["blue"];
-    size = "standard";
-    tweaks = ["normal"];
-    variant = "mocha";
-  };
-  catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
-  gtkFileManagerCss = ''
-    @import url("file://${matugenGtkCss}");
-
-    window,
-    dialog,
-    filechooser,
-    placessidebar,
-    .nautilus-window {
-      background-color: @window_bg_color;
-      color: @window_fg_color;
-    }
-
-    headerbar,
-    .titlebar {
-      background-color: @headerbar_bg_color;
-      color: @headerbar_fg_color;
-      box-shadow: none;
-      border-bottom: 1px solid alpha(@outline_color, 0.65);
-    }
-
-    placessidebar,
-    placessidebar list,
-    .sidebar {
-      background-color: @sidebar_bg_color;
-      color: @sidebar_fg_color;
-    }
-
-    placessidebar row {
-      border-radius: 8px;
-      margin: 2px 6px;
-      padding: 4px 8px;
-    }
-
-    placessidebar row:hover {
-      background-color: alpha(@card_bg_color, 0.55);
-    }
-
-    placessidebar row:selected {
-      background-color: alpha(@accent_bg_color, 0.24);
-      color: @window_fg_color;
-    }
-
-    pathbar button,
-    button.path-bar,
-    button.flat {
-      border-radius: 8px;
-    }
-
-    button.suggested-action,
-    button.default {
-      background: @accent_bg_color;
-      color: @accent_fg_color;
-    }
-
-    entry,
-    searchbar,
-    .view {
-      background-color: @view_bg_color;
-      color: @view_fg_color;
-    }
-  '';
+  colors = config.modules.gui.palette;
+  wallpaper = ../../assets/wallpaper/zvetru.jpg;
+  wallpaperPath = "${wallpaper}";
+  radius = 8;
+  stripHash = color: lib.removePrefix "#" color;
+  hyprRgb = color: "rgb(${stripHash color})";
+  hyprRgba = color: alpha: "rgba(${stripHash color}${alpha})";
+  hexA = color: alpha: "${color}${alpha}";
 in {
   options.modules.gui.hyprland = {
     enable = lib.mkEnableOption "hyprland";
@@ -222,41 +33,28 @@ in {
 
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
-      WALLPAPER_DIR = wallpaperDir;
+      WALLPAPER = wallpaperPath;
     };
 
     environment.systemPackages = with pkgs; [
       bibata-cursors
-      bluez
       brightnessctl
       cliphist
-      curl
-      ffmpeg
-      gnome-console
-      gpu-screen-recorder
       grim
       hypridle
-      imagemagick
-      inotify-tools
-      iw
-      jq
+      hyprlock
+      hyprpaper
+      kitty
       libnotify
-      lm_sensors
-      matugen
-      mpvpaper
-      networkmanager_dmenu
+      mako
+      networkmanagerapplet
+      pamixer
+      pavucontrol
       playerctl
-      python3
-      quickshellWithQtModules
-      rofi
-      satty
       slurp
-      socat
-      swww
-      swayosd
-      wl-screenrec
+      waybar
       wl-clipboard
-      zbar
+      wofi
     ];
 
     xdg.portal = {
@@ -264,101 +62,440 @@ in {
       extraPortals = [pkgs.xdg-desktop-portal-hyprland];
     };
 
-    hardware.bluetooth.enable = true;
-    services.blueman.enable = true;
-
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
-    home-manager.users.${hostVariables.username} = {
-      lib,
-      config,
-      ...
-    }: {
-      imports = [
-        ./hyprland/ilyamiro/hypridle.nix
+    home-manager.users.${hostVariables.username} = {lib, ...}: {
+      home.packages = with pkgs; [
+        acpi
+        alsa-utils
+        bibata-cursors
+        papirus-icon-theme
       ];
+
+      home.sessionVariables = {
+        WALLPAPER = wallpaperPath;
+      };
 
       wayland.windowManager.hyprland = {
         enable = true;
         systemd.enable = true;
-        extraConfig = ''
-          source = ${./hyprland/ilyamiro/hyprland.conf}
+        settings = {
+          monitor = [",preferred,auto,1"];
+          exec-once = [
+            "hyprpaper"
+            "waybar"
+            "mako"
+          ];
+          general = {
+            gaps_in = 5;
+            gaps_out = 10;
+            border_size = 2;
+            "col.active_border" = "${hyprRgb colors.accentBlue} ${hyprRgb colors.muted} 45deg";
+            "col.inactive_border" = hyprRgb colors.bg2;
+            "col.group_border_active" = "${hyprRgb colors.accentRed} ${hyprRgb colors.accentBlue} 45deg";
+            "col.group_border" = hyprRgb colors.overlay;
+            resize_on_border = true;
+            layout = "dwindle";
+          };
+          decoration = {
+            rounding = radius;
+            active_opacity = 0.96;
+            inactive_opacity = 0.92;
+            shadow = {
+              enabled = true;
+              range = 18;
+              render_power = 3;
+              color = hyprRgba colors.black "99";
+            };
+            blur = {
+              enabled = true;
+              size = 6;
+              passes = 2;
+              vibrancy = 0.12;
+            };
+          };
+          animations = {
+            enabled = true;
+            bezier = ["easeOut,0.16,1,0.3,1"];
+            animation = [
+              "windows,1,3,easeOut,popin 85%"
+              "border,1,4,easeOut"
+              "fade,1,3,easeOut"
+              "workspaces,1,4,easeOut,slide"
+            ];
+          };
+          misc = {
+            background_color = hyprRgb colors.black;
+            disable_hyprland_logo = true;
+            disable_splash_rendering = true;
+          };
+          dwindle = {
+            pseudotile = true;
+            preserve_split = true;
+          };
+          input = {
+            kb_layout = "us";
+            follow_mouse = 1;
+            touchpad.natural_scroll = true;
+          };
+          bind = [
+            "SUPER, Return, exec, kitty"
+            "SUPER, D, exec, wofi --show drun"
+            "SUPER, Q, killactive"
+            "SUPER, F, fullscreen"
+            "SUPER SHIFT, L, exec, hyprlock"
+          ];
+        };
+      };
+
+      programs.waybar = {
+        enable = true;
+        systemd.enable = true;
+        settings.mainBar = {
+          layer = "top";
+          position = "top";
+          height = 34;
+          spacing = 8;
+          modules-left = ["hyprland/workspaces"];
+          modules-center = ["clock"];
+          modules-right = ["tray" "network" "pulseaudio" "battery"];
+          "hyprland/workspaces" = {
+            format = "{icon}";
+            persistent-workspaces."*" = 5;
+          };
+          clock = {
+            format = "{:%a %d %b  %H:%M}";
+            tooltip-format = "{:%A, %d %B %Y}";
+          };
+          network = {
+            format-wifi = "{essid}";
+            format-ethernet = "wired";
+            format-disconnected = "offline";
+            tooltip-format = "{ifname}: {ipaddr}";
+          };
+          pulseaudio = {
+            format = "{icon} {volume}%";
+            format-muted = "muted";
+            format-icons.default = ["vol"];
+            on-click = "pavucontrol";
+          };
+          battery = {
+            states = {
+              warning = 30;
+              critical = 15;
+            };
+            format = "{capacity}%";
+            format-charging = "{capacity}%";
+          };
+          tray = {
+            icon-size = 16;
+            spacing = 8;
+          };
+        };
+        style = ''
+          * {
+            border: none;
+            border-radius: 0;
+            font-family: "Inter", "DejaVu Sans", sans-serif;
+            font-size: 13px;
+            min-height: 0;
+          }
+
+          window#waybar {
+            background: ${hexA colors.bg1 "ee"};
+            color: ${colors.fg};
+            border-bottom: 1px solid ${colors.surface};
+          }
+
+          #workspaces button {
+            color: ${colors.muted};
+            background: transparent;
+            padding: 0 10px;
+            margin: 5px 1px 4px;
+            border-radius: ${toString radius}px;
+            border-bottom: 2px solid transparent;
+          }
+
+          #workspaces button.active {
+            color: ${colors.fgBright};
+            background: ${colors.bg2};
+            border-bottom-color: ${colors.accentBlue};
+          }
+
+          #workspaces button.urgent {
+            color: ${colors.fgBright};
+            background: ${colors.accentRed};
+          }
+
+          #clock,
+          #battery,
+          #network,
+          #pulseaudio,
+          #tray {
+            color: ${colors.fg};
+            background: ${colors.bg2};
+            margin: 5px 0 4px;
+            padding: 0 10px;
+            border-radius: ${toString radius}px;
+          }
+
+          #clock {
+            color: ${colors.fgBright};
+            background: ${colors.surface};
+          }
+
+          #battery.warning {
+            color: ${colors.accentYellow};
+          }
+
+          #battery.critical {
+            color: ${colors.fgBright};
+            background: ${colors.accentRed};
+          }
+
+          #network.disconnected {
+            color: ${colors.accentRed};
+          }
+
+          #pulseaudio.muted {
+            color: ${colors.overlay};
+          }
+
+          #tray > .needs-attention {
+            color: ${colors.accentRed};
+          }
         '';
       };
-      xdg.configFile."hypr/hyprland.conf".force = true;
 
-      home.packages = with pkgs; [
-        acpi
-        alsa-utils
-        bc
-        cava
-        fd
-        fortune
-        catppuccinGtk
-        gtk3
-        ladspaPlugins
-        ladspa-sdk
-        pamixer
-        pavucontrol
-        pulseaudio
-        qt6.qt5compat
-        qt6.qtmultimedia
-        qt6.qtwebengine
-        qt6.qtwebsockets
-        papirus-icon-theme
-        ripgrep
-        tree
-      ];
+      programs.kitty = {
+        enable = true;
+        settings = {
+          background = colors.black;
+          foreground = colors.fg;
+          cursor = colors.accentBlue;
+          selection_background = colors.surface;
+          selection_foreground = colors.fgBright;
+          active_tab_background = colors.bg2;
+          active_tab_foreground = colors.fgBright;
+          inactive_tab_background = colors.bg1;
+          inactive_tab_foreground = colors.muted;
+          tab_bar_background = colors.black;
+          tab_bar_style = "powerline";
+          window_padding_width = 8;
+          confirm_os_window_close = 0;
+          color0 = colors.black;
+          color1 = colors.accentRed;
+          color2 = colors.green;
+          color3 = colors.accentYellow;
+          color4 = colors.accentBlue;
+          color5 = colors.magenta;
+          color6 = colors.cyan;
+          color7 = colors.subtle;
+          color8 = colors.bg2;
+          color9 = colors.accentRed;
+          color10 = colors.green;
+          color11 = colors.accentYellow;
+          color12 = colors.accentBlue;
+          color13 = colors.magenta;
+          color14 = colors.cyan;
+          color15 = colors.fgBright;
+        };
+      };
 
-      programs.alacritty.settings = {
-        import = [matugenAlacritty];
-        colors = lib.mkForce {};
+      programs.wofi = {
+        enable = true;
+        settings = {
+          show = "drun";
+          allow_images = true;
+          insensitive = true;
+          width = 560;
+          height = 420;
+          prompt = "";
+        };
+        style = ''
+          * {
+            font-family: "Inter", "DejaVu Sans", sans-serif;
+            font-size: 14px;
+            color: ${colors.fg};
+          }
+
+          window {
+            background: ${hexA colors.bg1 "e6"};
+            border: 1px solid ${colors.surface};
+            border-radius: ${toString radius}px;
+          }
+
+          #input {
+            background: ${colors.bg2};
+            color: ${colors.fg};
+            border: 1px solid ${colors.accentBlue};
+            border-radius: ${toString radius}px;
+            margin: 12px;
+            padding: 8px 10px;
+          }
+
+          #inner-box {
+            margin: 0 12px 12px;
+          }
+
+          #entry {
+            background: transparent;
+            border-left: 3px solid transparent;
+            border-radius: ${toString radius}px;
+            padding: 8px;
+          }
+
+          #entry:selected {
+            background: ${colors.surface};
+            border-left-color: ${colors.accentBlue};
+          }
+
+          #entry:selected #text {
+            color: ${colors.fgBright};
+          }
+
+          #text {
+            color: ${colors.fg};
+          }
+        '';
+      };
+
+      services.mako = {
+        enable = true;
+        settings = {
+          background-color = hexA colors.bg2 "f2";
+          text-color = colors.fg;
+          border-color = colors.accentBlue;
+          border-size = 1;
+          border-radius = radius;
+          padding = "10,12";
+          margin = "10";
+          default-timeout = 6000;
+          "urgency=low" = {
+            background-color = hexA colors.bg2 "cc";
+            text-color = colors.muted;
+            border-color = colors.overlay;
+          };
+          "urgency=critical" = {
+            text-color = colors.fgBright;
+            border-color = colors.accentRed;
+            default-timeout = 0;
+          };
+        };
+      };
+
+      programs.hyprlock = {
+        enable = true;
+        settings = {
+          background = [
+            {
+              path = wallpaperPath;
+              blur_passes = 2;
+              blur_size = 6;
+              brightness = 0.58;
+            }
+          ];
+          label = [
+            {
+              text = "$TIME";
+              color = hyprRgba colors.fgBright "ff";
+              font_size = 72;
+              position = "0, 80";
+              halign = "center";
+              valign = "center";
+            }
+            {
+              text = "cmd[update:60000] date +'%A, %d %B'";
+              color = hyprRgba colors.muted "ff";
+              font_size = 18;
+              position = "0, 20";
+              halign = "center";
+              valign = "center";
+            }
+          ];
+          input-field = [
+            {
+              size = "280, 48";
+              position = "0, -70";
+              halign = "center";
+              valign = "center";
+              outer_color = hyprRgba colors.accentBlue "ff";
+              inner_color = hyprRgba colors.bg2 "e6";
+              font_color = hyprRgba colors.fg "ff";
+              fail_color = hyprRgba colors.accentRed "ff";
+              placeholder_text = "<span foreground='${colors.subtle}'>Password</span>";
+              rounding = radius;
+            }
+          ];
+        };
+      };
+
+      services.hypridle = {
+        enable = true;
+        settings = {
+          general = {
+            lock_cmd = "pidof hyprlock || hyprlock";
+            before_sleep_cmd = "loginctl lock-session";
+            after_sleep_cmd = "hyprctl dispatch dpms on";
+          };
+          listener = [
+            {
+              timeout = 300;
+              on-timeout = "loginctl lock-session";
+            }
+            {
+              timeout = 420;
+              on-timeout = "hyprctl dispatch dpms off";
+              on-resume = "hyprctl dispatch dpms on";
+            }
+          ];
+        };
+      };
+
+      services.hyprpaper = {
+        enable = true;
+        settings = {
+          preload = [wallpaperPath];
+          wallpaper = [",${wallpaperPath}"];
+          splash = false;
+        };
       };
 
       gtk = {
         enable = true;
         theme = {
-          package = lib.mkDefault catppuccinGtk;
-          name = lib.mkDefault catppuccinThemeName;
+          package = lib.mkDefault pkgs.adw-gtk3;
+          name = lib.mkDefault "adw-gtk3-dark";
         };
         iconTheme = {
           package = lib.mkDefault pkgs.papirus-icon-theme;
           name = lib.mkDefault "Papirus-Dark";
         };
-        gtk3.extraCss = lib.mkDefault gtkFileManagerCss;
-        gtk4.extraCss = lib.mkDefault gtkFileManagerCss;
+        gtk3.extraCss = lib.mkDefault ''
+          @define-color accent_color ${colors.accentBlue};
+          @define-color window_bg_color ${colors.bg1};
+          @define-color window_fg_color ${colors.fg};
+          @define-color view_bg_color ${colors.bg2};
+          @define-color view_fg_color ${colors.fg};
+          @define-color headerbar_bg_color ${colors.bg1};
+          @define-color headerbar_fg_color ${colors.fgBright};
+        '';
+        gtk4.extraCss = lib.mkDefault ''
+          @define-color accent_color ${colors.accentBlue};
+          @define-color window_bg_color ${colors.bg1};
+          @define-color window_fg_color ${colors.fg};
+          @define-color view_bg_color ${colors.bg2};
+          @define-color view_fg_color ${colors.fg};
+          @define-color headerbar_bg_color ${colors.bg1};
+          @define-color headerbar_fg_color ${colors.fgBright};
+        '';
       };
 
-      dconf.settings = {
-        "org/gnome/desktop/interface" = {
-          color-scheme = lib.mkDefault "prefer-dark";
-          gtk-theme = lib.mkDefault catppuccinThemeName;
-          icon-theme = lib.mkDefault "Papirus-Dark";
-        };
-        "org/gtk/gtk4/settings/file-chooser" = {
-          show-hidden = lib.mkDefault true;
-          sort-directories-first = lib.mkDefault true;
-          view-type = lib.mkDefault "list";
-        };
-        "org/gtk/settings/file-chooser" = {
-          show-hidden = lib.mkDefault true;
-          sort-directories-first = lib.mkDefault true;
-        };
-        "org/gnome/nautilus/preferences" = {
-          default-folder-viewer = lib.mkDefault "list-view";
-          migrated-gtk-settings = lib.mkDefault true;
-          search-filter-time-type = lib.mkDefault "last_modified";
-          show-create-link = lib.mkDefault true;
-        };
-        "org/gnome/nautilus/list-view" = {
-          default-visible-columns = lib.mkDefault [
-            "name"
-            "size"
-            "type"
-            "date_modified"
-          ];
-          default-zoom-level = lib.mkDefault "small";
-        };
+      dconf.settings."org/gnome/desktop/interface" = {
+        color-scheme = lib.mkDefault "prefer-dark";
+        gtk-theme = lib.mkDefault "adw-gtk3-dark";
+        icon-theme = lib.mkDefault "Papirus-Dark";
+        cursor-theme = lib.mkDefault "Bibata-Modern-Ice";
       };
 
       home.pointerCursor = {
@@ -369,102 +506,12 @@ in {
         size = 24;
       };
 
-      services.swayosd = {
-        enable = true;
-        topMargin = 0.9;
-        stylePath = "/home/${hostVariables.username}/.config/swayosd/style.css";
-      };
-
       services.gnome-keyring = {
         enable = true;
         components = ["secrets"];
       };
 
-      xdg.configFile."hypr/colors.conf" = {
-        source = config.lib.file.mkOutOfStoreSymlink matugenHyprColors;
-        force = true;
-      };
-      xdg.configFile."matugen/config.toml".text = ''
-        [config]
-        reload_apps = false
-
-        [templates.quickshell]
-        input_path = "${homeDir}/.config/matugen/templates/qs_colors.json.template"
-        output_path = "${matugenQsColors}"
-
-        [templates.alacritty]
-        input_path = "${homeDir}/.config/matugen/templates/alacritty.toml.template"
-        output_path = "${matugenAlacritty}"
-
-        [templates.cava]
-        input_path = "${homeDir}/.config/matugen/templates/cava-colors.ini.template"
-        output_path = "${matugenCavaColors}"
-
-        [templates.gtk]
-        input_path = "${homeDir}/.config/matugen/templates/gtk.css.template"
-        output_path = "${matugenGtkCss}"
-
-        [templates.hyprland]
-        input_path = "${homeDir}/.config/matugen/templates/hyprland.conf.template"
-        output_path = "${matugenHyprColors}"
-
-        [templates.swayosd]
-        input_path = "${homeDir}/.config/matugen/templates/swayosd.css.template"
-        output_path = "${matugenSwayosdCss}"
-
-        [templates.discord]
-        input_path = "${homeDir}/.config/matugen/templates/discord.css.template"
-        output_path = "${matugenDiscordCss}"
-
-        [templates.spicetify]
-        input_path = "${homeDir}/.config/matugen/templates/spicetify.css.template"
-        output_path = "${matugenSpicetifyCss}"
-      '';
-      xdg.configFile."matugen/templates/alacritty.toml.template".source = ./matugen/templates/alacritty.toml.template;
-      xdg.configFile."matugen/templates/cava-colors.ini.template".source = ./matugen/templates/cava-colors.ini.template;
-      xdg.configFile."matugen/templates/discord.css.template".source = ./matugen/templates/discord.css.template;
-      xdg.configFile."matugen/templates/gtk.css.template".source = ./matugen/templates/gtk.css.template;
-      xdg.configFile."matugen/templates/hyprland.conf.template".source = ./matugen/templates/hyprland.conf.template;
-      xdg.configFile."matugen/templates/qs_colors.json.template".source = ./matugen/templates/qs_colors.json.template;
-      xdg.configFile."matugen/templates/spicetify.css.template".source = ./matugen/templates/spicetify.css.template;
-      xdg.configFile."matugen/templates/swayosd.css.template".source = ./matugen/templates/swayosd.css.template;
-      xdg.configFile."swayosd/style.css" = {
-        source = config.lib.file.mkOutOfStoreSymlink matugenSwayosdCss;
-        force = true;
-      };
-
-      services.easyeffects.enable = true;
-
-      home.sessionVariables.WALLPAPER_DIR = wallpaperDir;
-
-      home.file.".config/hypr/scripts".source = hyprlandScripts;
-
-      xdg.configFile."quickshell/qs-hyprview".source = inputs.qs-hyprview;
-      xdg.configFile."hypr/config".source = hyprlandConfig;
-      xdg.configFile."hypr/templates".source =
-        inputs.ilyamiro-dots + "/config/sessions/hyprland/templates";
-
-      home.activation.ensureMatugenFallbacks = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
-        install_if_missing() {
-          if [ ! -s "$2" ]; then
-            install -Dm0644 "$1" "$2"
-          fi
-        }
-
-        install_if_missing ${./matugen/fallback/alacritty.toml} "${matugenAlacritty}"
-        install_if_missing ${./matugen/fallback/cava-colors.ini} "${matugenCavaColors}"
-        install_if_missing ${./matugen/fallback/discord.css} "${matugenDiscordCss}"
-        install_if_missing ${./matugen/fallback/gtk.css} "${matugenGtkCss}"
-        install_if_missing ${./matugen/fallback/hyprland.conf} "${matugenHyprColors}"
-        install_if_missing ${./matugen/fallback/qs_colors.json} "${matugenQsColors}"
-        install_if_missing ${./matugen/fallback/spicetify.css} "${matugenSpicetifyCss}"
-        install_if_missing ${./matugen/fallback/swayosd.css} "${matugenSwayosdCss}"
-      '';
-
-      home.activation.removeLegacyIlyamiroCopies = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
-        rm -rf "$HOME/.config/hypr/config"
-        rm -rf "$HOME/.config/hypr/templates"
-      '';
+      xdg.configFile."hypr/source-wallpaper.jpg".source = wallpaper;
     };
   };
 }

@@ -5,29 +5,27 @@
   hostVariables,
   ...
 }: let
-  catppuccinGtk = pkgs.catppuccin-gtk.override {
-    accents = ["blue"];
-    size = "standard";
-    tweaks = ["normal"];
-    variant = "mocha";
-  };
-  catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
+  colors = config.modules.gui.palette;
+  gtkTheme = pkgs.adw-gtk3;
+  gtkThemeName = "adw-gtk3-dark";
+  wallpaper = ../../assets/wallpaper/zvetru.jpg;
   gtkFileManagerCss = ''
-    @define-color accent_color #89b4fa;
-    @define-color accent_bg_color #89b4fa;
-    @define-color accent_fg_color #11111b;
-    @define-color window_bg_color #1e1e2e;
-    @define-color window_fg_color #cdd6f4;
-    @define-color view_bg_color #181825;
-    @define-color view_fg_color #cdd6f4;
-    @define-color headerbar_bg_color #181825;
-    @define-color headerbar_fg_color #cdd6f4;
-    @define-color sidebar_bg_color #11111b;
-    @define-color sidebar_fg_color #bac2de;
-    @define-color card_bg_color #313244;
-    @define-color card_fg_color #cdd6f4;
-    @define-color popover_bg_color #181825;
-    @define-color popover_fg_color #cdd6f4;
+    @define-color accent_color ${colors.accentBlue};
+    @define-color accent_bg_color ${colors.accentBlue};
+    @define-color accent_fg_color ${colors.black};
+    @define-color window_bg_color ${colors.bg1};
+    @define-color window_fg_color ${colors.fg};
+    @define-color view_bg_color ${colors.bg2};
+    @define-color view_fg_color ${colors.fg};
+    @define-color headerbar_bg_color ${colors.bg1};
+    @define-color headerbar_fg_color ${colors.fgBright};
+    @define-color sidebar_bg_color ${colors.black};
+    @define-color sidebar_fg_color ${colors.subtle};
+    @define-color card_bg_color ${colors.surface};
+    @define-color card_fg_color ${colors.fg};
+    @define-color popover_bg_color ${colors.bg2};
+    @define-color popover_fg_color ${colors.fg};
+    @define-color outline_color ${colors.overlay};
 
     window,
     dialog,
@@ -43,7 +41,7 @@
       background-color: @headerbar_bg_color;
       color: @headerbar_fg_color;
       box-shadow: none;
-      border-bottom: 1px solid alpha(#45475a, 0.65);
+      border-bottom: 1px solid alpha(@outline_color, 0.65);
     }
 
     placessidebar,
@@ -60,12 +58,12 @@
     }
 
     placessidebar row:hover {
-      background-color: alpha(#45475a, 0.55);
+      background-color: alpha(@outline_color, 0.55);
     }
 
     placessidebar row:selected {
-      background-color: alpha(#89b4fa, 0.24);
-      color: #cdd6f4;
+      background-color: alpha(@accent_bg_color, 0.24);
+      color: @window_fg_color;
     }
 
     pathbar button,
@@ -76,8 +74,8 @@
 
     button.suggested-action,
     button.default {
-      background: #89b4fa;
-      color: #11111b;
+      background: @accent_bg_color;
+      color: @accent_fg_color;
     }
 
     entry,
@@ -106,7 +104,7 @@ in {
       gnomeExtensions.user-themes
       gnomeExtensions.system-monitor
       gnomeExtensions.clipboard-history
-      catppuccinGtk
+      gtkTheme
       papirus-icon-theme
     ];
 
@@ -131,16 +129,16 @@ in {
           clock-show-weekday = true;
           show-battery-percentage = true;
           color-scheme = "prefer-dark";
-          gtk-theme = catppuccinThemeName;
+          gtk-theme = gtkThemeName;
           icon-theme = "Papirus-Dark";
         };
         "org/gnome/desktop/background" = {
-          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
-          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
+          picture-uri = "file://${wallpaper}";
+          picture-uri-dark = "file://${wallpaper}";
           picture-options = "zoom"; # scaled, none, centred, zoom, streched, wallpaper, spanned
         };
         "org/gnome/shell/extensions/user-theme" = {
-          name = catppuccinThemeName;
+          name = gtkThemeName;
         };
         "org/gnome/shell/extensions/dash-to-dock" = {
           dock-position = "BOTTOM";
@@ -239,8 +237,8 @@ in {
       gtk = {
         enable = true;
         theme = {
-          package = catppuccinGtk;
-          name = catppuccinThemeName;
+          package = gtkTheme;
+          name = gtkThemeName;
         };
         iconTheme = {
           package = pkgs.papirus-icon-theme;

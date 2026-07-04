@@ -50,14 +50,17 @@ in {
               halign = "center";
               valign = "center";
               outline_thickness = 2;
-              outer_color = hyprRgba colors.accentBlue "ff";
-              inner_color = hyprRgba colors.bg2 "e6";
+              outer_color = hyprRgba colors.fg "33";
+              inner_color = hyprRgba colors.black "00";
               font_color = hyprRgba colors.fg "ff";
               fail_color = hyprRgba colors.accentRed "ff";
-              rounding = radius;
-              dots_size = 1;
-              dots_spacing = 1;
+              rounding = 100;
+              dots_center = true;
+              dots_size = 0.4;
               dots_text_format = "*";
+              animation = "fade, 1, 1.8, linear";
+              blur_passes = 2;
+              blur_size = 8;
             }
           ];
         };

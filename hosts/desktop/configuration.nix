@@ -144,6 +144,7 @@
     wineWowPackages.staging
     protonup-qt
     mangohud
+    fastfetch
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

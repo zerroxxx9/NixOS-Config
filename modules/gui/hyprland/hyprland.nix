@@ -71,7 +71,7 @@ in {
             preserve_split = true;
           };
           input = {
-            kb_layout = "us";
+            kb_layout = "de";
             follow_mouse = 1;
             touchpad.natural_scroll = true;
           };

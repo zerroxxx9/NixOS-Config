@@ -39,12 +39,15 @@ in {
             color: ${colors.fg};
             border: 1px solid ${colors.accentBlue};
             border-radius: ${toString radius}px;
-            margin: 12px;
+            margin-top: 35px;
+            margin-left: 35px;
+            margin-right: 35px;
+            margin-bottom: 10px;
             padding: 8px 10px;
           }
 
           #inner-box {
-            margin: 0 12px 12px;
+            margin: 5px 35px 35px;
           }
 
           #entry {

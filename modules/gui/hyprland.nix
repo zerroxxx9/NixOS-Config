@@ -17,6 +17,7 @@ in {
     ./hyprland/hyprpaper.nix
     ./hyprland/kitty.nix
     ./hyprland/mako.nix
+    ./hyprland/scrolloverview.nix
     ./hyprland/waybar.nix
     ./hyprland/wofi.nix
   ];

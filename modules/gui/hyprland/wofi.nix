@@ -7,7 +7,27 @@
   cfg = config.modules.gui.hyprland;
   colors = config.modules.gui.palette;
   radius = 8;
-  hexA = color: alpha: "${color}${alpha}";
+  hexDigit = {
+    "0" = 0;
+    "1" = 1;
+    "2" = 2;
+    "3" = 3;
+    "4" = 4;
+    "5" = 5;
+    "6" = 6;
+    "7" = 7;
+    "8" = 8;
+    "9" = 9;
+    a = 10;
+    b = 11;
+    c = 12;
+    d = 13;
+    e = 14;
+    f = 15;
+  };
+  hexPairToInt = pair: (hexDigit.${builtins.substring 0 1 pair} * 16) + hexDigit.${builtins.substring 1 1 pair};
+  rgbComponent = color: offset: hexPairToInt (builtins.substring offset 2 (lib.removePrefix "#" color));
+  gtkRgba = color: alpha: "rgba(${toString (rgbComponent color 0)}, ${toString (rgbComponent color 2)}, ${toString (rgbComponent color 4)}, ${alpha})";
 in {
   config = lib.mkIf cfg.enable {
     home-manager.users.${hostVariables.username} = {
@@ -28,14 +48,21 @@ in {
             color: ${colors.fg};
           }
 
-          window {
-            background: ${hexA colors.bg1 "e6"};
+          window,
+          #window {
+            background-color: ${gtkRgba colors.bg1 "0.72"};
             border: 1px solid ${colors.surface};
             border-radius: ${toString radius}px;
           }
 
+          #outer-box,
+          #inner-box,
+          #scroll {
+            background-color: transparent;
+          }
+
           #input {
-            background: ${colors.bg2};
+            background-color: ${gtkRgba colors.bg2 "0.78"};
             color: ${colors.fg};
             border: 1px solid ${colors.accentBlue};
             border-radius: ${toString radius}px;
@@ -51,14 +78,14 @@ in {
           }
 
           #entry {
-            background: transparent;
+            background-color: transparent;
             border-left: 3px solid transparent;
             border-radius: ${toString radius}px;
             padding: 8px;
           }
 
           #entry:selected {
-            background: ${colors.surface};
+            background-color: ${gtkRgba colors.surface "0.78"};
             border-left-color: ${colors.accentBlue};
           }
 

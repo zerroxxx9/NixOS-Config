@@ -145,6 +145,7 @@
     protonup-qt
     mangohud
     fastfetch
+    geary
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

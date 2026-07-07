@@ -33,6 +33,10 @@
       url = "github:dom0/qs-hyprview";
       flake = false;
     };
+    hyprland-scroll-overview = {
+      url = "github:yayuuu/hyprland-scroll-overview";
+      flake = false;
+    };
 
     agenix = {
       url = "github:ryantm/agenix";

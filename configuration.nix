@@ -44,6 +44,7 @@
   modules.software.spicetify.enable = lib.attrByPath ["modules" "software" "spicetify"] false hostVariables;
   modules.software.sunshine.enable = lib.attrByPath ["modules" "software" "sunshine"] false hostVariables;
   modules.software.vscode.enable = lib.attrByPath ["modules" "software" "vscode"] false hostVariables;
+  modules.software.zed.enable = lib.attrByPath ["modules" "software" "zed"] false hostVariables;
   modules.system.bootanimation.enable = lib.attrByPath ["modules" "systemSettings" "bootanimation"] false hostVariables;
   modules.system.gaming.enable = lib.attrByPath ["modules" "systemSettings" "gaming"] false hostVariables;
 

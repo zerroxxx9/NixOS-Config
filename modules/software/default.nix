@@ -22,5 +22,6 @@
     ./mealie.nix
     ./freshrss.nix
     ./nixvim.nix
+    ./zed.nix
   ];
 }

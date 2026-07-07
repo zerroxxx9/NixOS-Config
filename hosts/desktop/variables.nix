@@ -24,6 +24,7 @@ in
             spicetify = true;
             sunshine = true;
             vscode = true;
+            zed = true;
           };
         gui =
           default.modules.gui

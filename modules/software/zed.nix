@@ -40,14 +40,14 @@
           git_panel = {
             dock = "left";
           };
-          base_keymap = "vscode";
+          base_keymap = "VSCode";
           icon_theme = {
             mode = "dark";
             light = "Zed (Default)";
             dark = "Material Icon Theme";
           };
-          ui_font_size = 18.0;
-          buffer_font_size = 17.0;
+          ui_font_size = 15.0;
+          buffer_font_size = 13.0;
           theme = {
             mode = "dark";
             light = "One Light";

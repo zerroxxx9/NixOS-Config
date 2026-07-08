@@ -15,11 +15,12 @@ in
         software =
           default.modules.software
           // {
-            noisetorch = true;
+            noisetorch = false;
             obsidian = true;
             display-link = false;
             tailscale = true;
             vscode = true;
+            zed = true;
           };
         gui =
           default.modules.gui

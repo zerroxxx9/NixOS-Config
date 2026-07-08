@@ -80,6 +80,7 @@
       "vesktop.desktop"
       "spotify.desktop"
       "virtualbox.desktop"
+      "dev.zed.Zed.desktop"
     ];
     idle-delay = 0;
   };

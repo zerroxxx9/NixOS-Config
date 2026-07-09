@@ -2,11 +2,19 @@
   config,
   lib,
   hostVariables,
+  pkgs,
   ...
 }: {
   options.modules.software.zed.enable = lib.mkEnableOption "zed-editor";
 
   config = lib.mkIf config.modules.software.zed.enable {
+    programs.nix-ld.enable = true;
+
+    environment.systemPackages = with pkgs; [
+      nil
+      nixd
+    ];
+
     home-manager.users.${hostVariables.username} = {
       programs.zed-editor = {
         enable = true;
@@ -18,6 +26,13 @@
           "xml"
         ];
         userSettings = {
+          disable_ai = true;
+          proxy = "";
+          agent_servers = {
+            "claude-acp" = {
+              type = "registry";
+            };
+          };
           autosave = {
             after_delay = {
               milliseconds = 1000;
@@ -36,18 +51,20 @@
           };
           agent = {
             dock = "right";
+            favorite_models = [];
+            model_parameters = [];
           };
           git_panel = {
             dock = "left";
           };
-          base_keymap = "VSCode";
+          base_keymap = "JetBrains";
           icon_theme = {
             mode = "dark";
             light = "Zed (Default)";
             dark = "Material Icon Theme";
           };
-          ui_font_size = 15.0;
-          buffer_font_size = 13.0;
+          ui_font_size = 18.0;
+          buffer_font_size = 17.0;
           theme = {
             mode = "dark";
             light = "One Light";
@@ -58,6 +75,32 @@
             nix = true;
           };
           load_direnv = "shell_hook";
+          languages = {
+            TypeScript = {
+              format_on_save = "on";
+              formatter = [
+                {code_action = "source.fixAll.eslint";}
+              ];
+            };
+            JavaScript = {
+              format_on_save = "on";
+              formatter = [
+                {code_action = "source.fixAll.eslint";}
+              ];
+            };
+            TSX = {
+              format_on_save = "on";
+              formatter = [
+                {code_action = "source.fixAll.eslint";}
+              ];
+            };
+            JSX = {
+              format_on_save = "on";
+              formatter = [
+                {code_action = "source.fixAll.eslint";}
+              ];
+            };
+          };
         };
       };
     };

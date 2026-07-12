@@ -31,6 +31,8 @@
   modules.software.flatpak.enable = lib.attrByPath ["modules" "software" "flatpak"] false hostVariables;
   modules.software.git.enable = lib.attrByPath ["modules" "software" "git"] false hostVariables;
   modules.software.immich.enable = lib.attrByPath ["modules" "software" "immich"] false hostVariables;
+  modules.software.librewolf.enable = lib.attrByPath ["modules" "software" "librewolf"] false hostVariables;
+  modules.software.lmstudio.enable = lib.attrByPath ["modules" "software" "lmstudio"] false hostVariables;
   modules.software.mealie.enable = lib.attrByPath ["modules" "software" "mealie"] false hostVariables;
   modules.software.freshrss.enable = lib.attrByPath ["modules" "software" "freshrss"] false hostVariables;
   modules.software.nixvim.enable = lib.attrByPath ["modules" "software" "nixvim"] false hostVariables;

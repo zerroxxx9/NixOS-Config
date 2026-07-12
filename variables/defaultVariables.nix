@@ -28,6 +28,8 @@
       flatpak = false;
       git = true;
       immich = false;
+      librewolf = false;
+      lmstudio = false;
       nixvim = true;
       noisetorch = true;
       obsidian = false;

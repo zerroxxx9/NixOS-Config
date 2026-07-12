@@ -9,6 +9,8 @@
     ./flatpak.nix
     ./git.nix
     ./immich.nix
+    ./lm-studio.nix
+    ./librewolf.nix
     ./noisetorch.nix
     ./obsidian.nix
     ./osu.nix

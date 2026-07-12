@@ -18,6 +18,7 @@ in
             noisetorch = true;
             obsidian = true;
             display-link = false;
+            lmstudio = true;
             tailscale = true;
             vencord = true;
             spicetify = true;

@@ -19,12 +19,14 @@ in
             obsidian = true;
             osu = true;
             display-link = false;
+            lmstudio = true;
             tailscale = true;
             vencord = true;
             spicetify = true;
             sunshine = true;
             vscode = true;
             zed = true;
+            librewolf = true;
           };
         gui =
           default.modules.gui

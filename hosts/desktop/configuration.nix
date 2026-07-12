@@ -15,13 +15,29 @@
 
   networking = {
     hostName = hostVariables.host;
-    networkmanager.enable = true;
-    nameservers = ["1.1.1.1" "1.0.0.1"];
+    networkmanager = {
+      enable = true;
+      dns = "systemd-resolved";
+    };
+    nameservers = ["1.1.1.1#cloudflare-dns.com" "1.0.0.1#cloudflare-dns.com"];
   };
 
   virtualisation.virtualbox.host.enable = true;
 
-  services.resolved.enable = true;
+  services.resolved = {
+    enable = true;
+    settings.Resolve = {
+      DNS = ["1.1.1.1#cloudflare-dns.com" "1.0.0.1#cloudflare-dns.com"];
+      DNSSEC = "true";
+      Domains = ["~."];
+      FallbackDNS = ["1.1.1.1" "1.0.0.1"];
+      DNSOverTLS = "yes";
+    };
+  };
+  services.cloudflare-warp = {
+    enable = false; # set true to activate the WireGuard tunnel
+    openFirewall = true;
+  };
   # Keep resolv.conf useful for tools that read it directly and reject 127.0.0.53.
   environment.etc."resolv.conf".source = lib.mkForce "/run/systemd/resolve/resolv.conf";
 
@@ -101,7 +117,7 @@
   systemd.services.enable-wake-on-lan = {
     description = "enable wakeonlan";
     wantedBy = ["multi-user.target"];
-    after = [ "network.target" ];
+    after = ["network.target"];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.ethtool}/sbin/ethtool -s enp9s0 wol g";
@@ -138,6 +154,7 @@
     qemu
     virt-manager
     virt-viewer
+    cloudflare-warp
     ethtool
     lutris
     winetricks

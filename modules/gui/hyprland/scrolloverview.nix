@@ -64,7 +64,7 @@ in {
               enabled = false;
               range = 50;
               render_power = 3;
-              color = "rgba(1a1a1aee)";
+              color = "0xee1a1a1a";
             };
           };
 

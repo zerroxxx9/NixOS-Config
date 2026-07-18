@@ -28,8 +28,8 @@ in
         gui =
           default.modules.gui
           // {
-            gnome = true;
-            hyprland = false;
+            gnome = false;
+            hyprland = true;
           };
         security =
           default.modules.security

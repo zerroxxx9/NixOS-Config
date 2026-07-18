@@ -17,6 +17,7 @@ in {
     ./hyprland/hyprpaper.nix
     ./hyprland/kitty.nix
     ./hyprland/mako.nix
+    ./hyprland/qs-hyprview.nix
     ./hyprland/scrolloverview.nix
     ./hyprland/waybar.nix
     ./hyprland/wofi.nix
@@ -96,6 +97,7 @@ in {
       };
 
       xdg.configFile."hypr/source-wallpaper.jpg".source = wallpaper;
+      xdg.configFile."hypr/hyprland.conf".force = true;
     };
   };
 }

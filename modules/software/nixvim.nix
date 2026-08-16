@@ -18,7 +18,7 @@ in {
 
     copilot = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
       description = "Enable GitHub Copilot integration for nvim-cmp.";
     };
   };
@@ -70,6 +70,7 @@ in {
         mouse = "a";
         clipboard = "unnamedplus";
         wrap = false;
+        foldlevelstart = 99;
         swapfile = false;
         backup = false;
         writebackup = false;

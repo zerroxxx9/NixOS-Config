@@ -37,6 +37,7 @@
     zip
     busybox
     wakeonlan
+    claude-code
   ];
 
   systemd.services.daily-reboot = {

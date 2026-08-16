@@ -157,10 +157,9 @@
     cloudflare-warp
     ethtool
     lutris
-    winetricks
-    wineWowPackages.staging
-    protonup-qt
-    mangohud
+    geary
+    thunderbird
+    claude-code
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

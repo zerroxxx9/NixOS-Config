@@ -21,6 +21,7 @@ in
             display-link = false;
             lmstudio = true;
             tailscale = true;
+            tor = true;
             vencord = true;
             spicetify = true;
             sunshine = true;

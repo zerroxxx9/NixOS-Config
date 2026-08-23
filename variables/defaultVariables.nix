@@ -37,6 +37,7 @@
       vscode = false;
       vencord = false;
       tailscale = false;
+      tor = false;
       opencloud = false;
       paperless-ngx = false;
       spicetify = false;

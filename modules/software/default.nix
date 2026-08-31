@@ -25,5 +25,6 @@
     ./freshrss.nix
     ./nixvim.nix
     ./zed.nix
+    ./zellij.nix
   ];
 }

@@ -44,6 +44,7 @@
       mealie = false;
       freshrss = false;
       zed = false;
+      zellij = true;
     };
     security = {
       yubikey = false;

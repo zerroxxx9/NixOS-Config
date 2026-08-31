@@ -35,7 +35,6 @@
       Status = "locked";
     }) {
       "browser.display.use_document_fonts" = 0;
-      "browser.privatebrowsing.autostart" = true;
       "browser.safebrowsing.downloads.remote.enabled" = false;
       "dom.battery.enabled" = false;
       "dom.event.clipboardevents.enabled" = false;
@@ -71,7 +70,6 @@
       "privacy.query_stripping.enabled" = true;
       "privacy.query_stripping.enabled.pbmode" = true;
       "privacy.resistFingerprinting" = true;
-      "privacy.resistFingerprinting.letterboxing" = true;
       "privacy.sanitize.sanitizeOnShutdown" = true;
       "signon.autofillForms" = false;
       "signon.formlessCapture.enabled" = false;
@@ -94,7 +92,6 @@
     "browser.newtabpage.activity-stream.feeds.telemetry" = false;
     "browser.newtabpage.activity-stream.telemetry" = false;
     "browser.pagethumbnails.capturing_disabled" = true;
-    "browser.privatebrowsing.autostart" = true;
     "browser.safebrowsing.downloads.remote.enabled" = false;
     "browser.search.suggest.enabled" = false;
     "browser.sessionstore.privacy_level" = 2;
@@ -195,7 +192,52 @@
   defaultProfileSettings = {
     "extensions.autoDisableScopes" = 0;
     "extensions.update.enabled" = false;
+    "privacy.userContext.enabled" = true;
+    "privacy.userContext.ui.enabled" = true;
   };
+
+  # Overlay for profiles that should stay logged in across restarts
+  # (defaultSettings otherwise wipes cookies/history/sessions on every close).
+  persistentProfileSettings = {
+    "privacy.sanitize.sanitizeOnShutdown" = false;
+    "privacy.clearOnShutdown.history" = false;
+    "privacy.sanitize.clearOnShutdown.cache" = false;
+    "privacy.sanitize.clearOnShutdown.cookies" = false;
+    "privacy.sanitize.clearOnShutdown.downloads" = false;
+    "privacy.sanitize.clearOnShutdown.formdata" = false;
+    "privacy.sanitize.clearOnShutdown.history" = false;
+    "privacy.sanitize.clearOnShutdown.offlineApps" = false;
+    "privacy.sanitize.clearOnShutdown.sessions" = false;
+    "privacy.sanitize.clearOnShutdown.siteSettings" = false;
+  };
+
+  # Letterboxing pads the content area to fixed-size buckets to resist
+  # window-size fingerprinting; that's worth keeping in anon/persona but
+  # just leaves black bars around the real-identity profile's window.
+  noLetterboxingSettings = {
+    "privacy.resistFingerprinting.letterboxing" = false;
+  };
+
+  # Routes a profile through the local Tor SOCKS5 client (see modules/software/tor.nix).
+  torProxySettings = {
+    "network.proxy.type" = 1;
+    "network.proxy.socks" = "127.0.0.1";
+    "network.proxy.socks_port" = 9050;
+    "network.proxy.socks_version" = 5;
+    "network.proxy.socks_remote_dns" = true;
+    "network.proxy.no_proxies_on" = "";
+  };
+
+  commonExtensionPackages =
+    [
+      (mkFetchedFirefoxExtension {
+        name = "adnauseam";
+        addonId = "nixos@adnauseam";
+        url = "https://addons.mozilla.org/firefox/downloads/file/4821708/adnauseam-3.28.6.xpi";
+        hash = "sha256-LCtX46Kfk5FHVht/KATCiSheelBcwuqLqwuLJOTHCOQ=";
+      })
+    ]
+    ++ cfg.extensions;
 
   userChrome = ''
     :root {
@@ -338,7 +380,7 @@ in {
           darkreader
         ]
       '';
-      description = "LibreWolf extension packages to install into the default profile.";
+      description = "LibreWolf extension packages to install into every profile.";
     };
 
     extensionSettings = lib.mkOption {
@@ -400,6 +442,15 @@ in {
               default_area = "navbar";
               private_browsing = true;
             };
+            "@testpilot-containers" = {
+              install_url = "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi";
+              installation_mode = "force_installed";
+              default_area = "navbar";
+              private_browsing = true;
+            };
+            "nixos@adnauseam" = {
+              private_browsing = true;
+            };
           };
           OfferToSaveLogins = false;
           PasswordManagerEnabled = false;
@@ -413,31 +464,74 @@ in {
           "privacy.trackingprotection.socialtracking.enabled" = true;
         };
 
-        profiles.default = {
+        profiles.work = {
           id = 0;
-          name = "default";
+          name = "work";
+          path = "default"; # keep the existing ~/.librewolf/default data
           isDefault = true;
 
-          settings = defaultSettings // defaultProfileSettings // cfg.settings;
+          settings = defaultSettings // defaultProfileSettings // persistentProfileSettings // noLetterboxingSettings // cfg.settings;
+
+          containersForce = true;
+          containers = {
+            Personal = {
+              id = 1;
+              color = "blue";
+              icon = "fingerprint";
+            };
+            Work = {
+              id = 2;
+              color = "orange";
+              icon = "briefcase";
+            };
+            Banking = {
+              id = 3;
+              color = "green";
+              icon = "dollar";
+            };
+            Shopping = {
+              id = 4;
+              color = "pink";
+              icon = "cart";
+            };
+          };
 
           extensions = {
-            packages =
-              [
-                (mkFetchedFirefoxExtension {
-                  name = "adnauseam";
-                  addonId = "nixos@adnauseam";
-                  url = "https://addons.mozilla.org/firefox/downloads/file/4821708/adnauseam-3.28.6.xpi";
-                  hash = "sha256-LCtX46Kfk5FHVht/KATCiSheelBcwuqLqwuLJOTHCOQ=";
-                })
+            packages = commonExtensionPackages;
+            settings = cfg.extensionSettings;
+          };
 
-                # Extension placeholders:
-                # TrackMeNot is no longer available from AMO, so keep it out
-                # unless you have a trusted source archive and a pinned hash.
-                # pkgs.nur.repos.rycee.firefox-addons.ublock-origin
-                # pkgs.nur.repos.rycee.firefox-addons.bitwarden
-                # pkgs.nur.repos.rycee.firefox-addons.darkreader
-              ]
-              ++ cfg.extensions;
+          userChrome = lib.optionalString cfg.customTheme.enable userChrome;
+          userContent = lib.optionalString cfg.customTheme.enable userContent;
+        };
+
+        profiles.anon = {
+          id = 1;
+          name = "anon";
+          isDefault = false;
+
+          # Keeps defaultSettings' sanitize-on-shutdown behavior: throwaway,
+          # wiped every close.
+          settings = defaultSettings // defaultProfileSettings // torProxySettings // cfg.settings;
+
+          extensions = {
+            packages = commonExtensionPackages;
+            settings = cfg.extensionSettings;
+          };
+
+          userChrome = lib.optionalString cfg.customTheme.enable userChrome;
+          userContent = lib.optionalString cfg.customTheme.enable userContent;
+        };
+
+        profiles.persona = {
+          id = 2;
+          name = "persona";
+          isDefault = false;
+
+          settings = defaultSettings // defaultProfileSettings // persistentProfileSettings // torProxySettings // cfg.settings;
+
+          extensions = {
+            packages = commonExtensionPackages;
             settings = cfg.extensionSettings;
           };
 
@@ -452,6 +546,23 @@ in {
           "text/html" = "librewolf.desktop";
           "x-scheme-handler/http" = "librewolf.desktop";
           "x-scheme-handler/https" = "librewolf.desktop";
+        };
+      };
+
+      xdg.desktopEntries = {
+        "librewolf-anon" = {
+          name = "LibreWolf (Anon)";
+          genericName = "Web Browser";
+          exec = "librewolf -P anon --no-remote %U";
+          icon = "librewolf";
+          categories = ["Network" "WebBrowser"];
+        };
+        "librewolf-persona" = {
+          name = "LibreWolf (Persona)";
+          genericName = "Web Browser";
+          exec = "librewolf -P persona --no-remote %U";
+          icon = "librewolf";
+          categories = ["Network" "WebBrowser"];
         };
       };
     };

@@ -16,6 +16,7 @@
     ./osu.nix
     ./vscode.nix
     ./tailscale.nix
+    ./tor.nix
     ./vencord.nix
     ./opencloud.nix
     ./paperless-ngx.nix

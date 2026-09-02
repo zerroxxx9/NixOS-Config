@@ -24,6 +24,7 @@
       display-link = true;
       docker = true;
       couchdb = false;
+      ctf = false;
       fail2ban = false;
       flatpak = false;
       git = true;

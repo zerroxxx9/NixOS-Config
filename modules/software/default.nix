@@ -2,6 +2,7 @@
   imports = [
     ./collabora.nix
     ./chessstack.nix
+    ./ctf.nix
     ./displaylink.nix
     ./docker.nix
     ./couchdb.nix

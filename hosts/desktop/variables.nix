@@ -15,6 +15,7 @@ in
         software =
           default.modules.software
           // {
+            ctf = true;
             noisetorch = true;
             obsidian = true;
             osu = true;

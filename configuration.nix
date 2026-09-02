@@ -27,6 +27,7 @@
   modules.software.displaylink.enable = lib.attrByPath ["modules" "software" "display-link"] false hostVariables;
   modules.software.docker.enable = lib.attrByPath ["modules" "software" "docker"] false hostVariables;
   modules.software.couchdb.enable = lib.attrByPath ["modules" "software" "couchdb"] false hostVariables;
+  modules.software.ctf.enable = lib.attrByPath ["modules" "software" "ctf"] false hostVariables;
   modules.software.fail2ban.enable = lib.attrByPath ["modules" "software" "fail2ban"] false hostVariables;
   modules.software.flatpak.enable = lib.attrByPath ["modules" "software" "flatpak"] false hostVariables;
   modules.software.git.enable = lib.attrByPath ["modules" "software" "git"] false hostVariables;

@@ -13,6 +13,14 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # NTFS 1TB HDD (Toshiba HDWD110), auto-mounted for the desktop user
+  boot.supportedFilesystems = ["ntfs"];
+  fileSystems."/mnt/hdd" = {
+    device = "/dev/disk/by-uuid/6E5873AB58737127";
+    fsType = "ntfs3";
+    options = ["rw" "uid=1000" "gid=100" "windows_names" "nofail" "force"];
+  };
+
   networking = {
     hostName = hostVariables.host;
     networkmanager = {

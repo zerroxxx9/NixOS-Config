@@ -135,8 +135,8 @@ in {
           icon-theme = "Papirus-Dark";
         };
         "org/gnome/desktop/background" = {
-          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
-          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/5.jpg";
+          picture-uri = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/1756527463892669.jpg";
+          picture-uri-dark = "file:///home/${hostVariables.username}/.dotfiles/assets/wallpaper/1756527463892669.jpg";
           picture-options = "zoom"; # scaled, none, centred, zoom, streched, wallpaper, spanned
         };
         "org/gnome/shell/extensions/user-theme" = {

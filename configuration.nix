@@ -49,6 +49,7 @@
   modules.software.sunshine.enable = lib.attrByPath ["modules" "software" "sunshine"] false hostVariables;
   modules.software.vscode.enable = lib.attrByPath ["modules" "software" "vscode"] false hostVariables;
   modules.software.zed.enable = lib.attrByPath ["modules" "software" "zed"] false hostVariables;
+  modules.software.zellij.enable = lib.attrByPath ["modules" "software" "zellij"] false hostVariables;
   modules.system.bootanimation.enable = lib.attrByPath ["modules" "systemSettings" "bootanimation"] false hostVariables;
   modules.system.gaming.enable = lib.attrByPath ["modules" "systemSettings" "gaming"] false hostVariables;
 

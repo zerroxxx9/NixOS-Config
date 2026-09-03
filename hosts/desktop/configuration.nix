@@ -194,4 +194,12 @@
       size = 8192;
     }
   ];
+
+  boot.supportedFilesystems = ["ntfs"];
+
+  fileSystems."/mnt/hdd" = {
+    device = "/dev/disk/by-uuid/6E5873AB58737127";
+    fsType = "ntfs3";
+    options = ["defaults" "uid=1000" "gid=100" "nofail"];
+  };
 }

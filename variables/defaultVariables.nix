@@ -22,6 +22,7 @@
       collabora = false;
       chessstack = false;
       display-link = true;
+      distrobox = false;
       docker = true;
       couchdb = false;
       ctf = false;

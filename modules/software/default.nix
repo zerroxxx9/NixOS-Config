@@ -4,6 +4,7 @@
     ./chessstack.nix
     ./ctf.nix
     ./displaylink.nix
+    ./distrobox.nix
     ./docker.nix
     ./couchdb.nix
     ./fail2ban.nix

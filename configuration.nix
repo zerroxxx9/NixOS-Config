@@ -25,6 +25,7 @@
   modules.software.collabora.enable = lib.attrByPath ["modules" "software" "collabora"] false hostVariables;
   services.homelab.chessstack.enable = lib.attrByPath ["modules" "software" "chessstack"] false hostVariables;
   modules.software.displaylink.enable = lib.attrByPath ["modules" "software" "display-link"] false hostVariables;
+  modules.software.distrobox.enable = lib.attrByPath ["modules" "software" "distrobox"] false hostVariables;
   modules.software.docker.enable = lib.attrByPath ["modules" "software" "docker"] false hostVariables;
   modules.software.couchdb.enable = lib.attrByPath ["modules" "software" "couchdb"] false hostVariables;
   modules.software.ctf.enable = lib.attrByPath ["modules" "software" "ctf"] false hostVariables;

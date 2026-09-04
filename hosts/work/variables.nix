@@ -18,6 +18,7 @@ in
             noisetorch = false;
             obsidian = true;
             display-link = false;
+            distrobox = true;
             tailscale = true;
             vscode = true;
             zed = true;

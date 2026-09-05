@@ -15,6 +15,7 @@ in
         software =
           default.modules.software
           // {
+            distrobox = true;
             ctf = true;
             noisetorch = true;
             obsidian = true;

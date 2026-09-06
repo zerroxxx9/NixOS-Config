@@ -17,6 +17,7 @@
     gui = {
       gnome = true;
       hyprland = false;
+      noctalia = false;
     };
     software = {
       collabora = false;
@@ -70,6 +71,16 @@
       name = "zerroxxx9";
     };
     includes = [];
+  };
+  hyprland = {
+    monitors = [
+      {
+        output = "";
+        mode = "preferred";
+        position = "auto";
+        scale = "auto";
+      }
+    ];
   };
   gnome = {
     fav-icon = [

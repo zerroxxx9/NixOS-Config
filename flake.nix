@@ -1,7 +1,13 @@
 {
   nixConfig = {
-    extra-substituters = ["https://cache.numtide.com"];
-    extra-trusted-public-keys = ["niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="];
+    extra-substituters = [
+      "https://cache.numtide.com"
+      "https://noctalia.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+    ];
   };
 
   inputs = {
@@ -25,14 +31,8 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ilyamiro-dots = {
-      url = "github:ilyamiro/nixos-configuration";
-      flake = false;
-    };
-    qs-hyprview = {
-      url = "github:dom0/qs-hyprview";
-      flake = false;
-    };
+
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
     agenix = {
       url = "github:ryantm/agenix";

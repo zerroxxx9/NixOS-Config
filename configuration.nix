@@ -8,7 +8,7 @@
     (final: prev: {
       openblas =
         if prev.stdenv.hostPlatform.system == "i686-linux"
-        then prev.openblas.overrideAttrs (_: { doCheck = false; })
+        then prev.openblas.overrideAttrs (_: {doCheck = false;})
         else prev.openblas;
     })
   ];
@@ -22,6 +22,7 @@
   modules.driver.nvidia.enable = lib.attrByPath ["modules" "driver" "nvidia"] false hostVariables;
   modules.gui.gnome.enable = lib.attrByPath ["modules" "gui" "gnome"] false hostVariables;
   modules.gui.hyprland.enable = lib.attrByPath ["modules" "gui" "hyprland"] false hostVariables;
+  modules.gui.noctalia.enable = lib.attrByPath ["modules" "gui" "noctalia"] false hostVariables;
   modules.software.collabora.enable = lib.attrByPath ["modules" "software" "collabora"] false hostVariables;
   services.homelab.chessstack.enable = lib.attrByPath ["modules" "software" "chessstack"] false hostVariables;
   modules.software.displaylink.enable = lib.attrByPath ["modules" "software" "display-link"] false hostVariables;

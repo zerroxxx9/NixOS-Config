@@ -159,22 +159,6 @@
         "type": "github"
       }
     },
-    "ilyamiro-dots": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1788161074,
-        "narHash": "sha256-YsnIoWmhG2QdRPtRwS8+6nDm6RImx4/2znWAqi4klSI=",
-        "owner": "ilyamiro",
-        "repo": "nixos-configuration",
-        "rev": "d8d0d8102dcc895c76c7579ac6df07c549e7881c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ilyamiro",
-        "repo": "nixos-configuration",
-        "type": "github"
-      }
-    },
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -300,6 +284,19 @@
         "type": "github"
       }
     },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1787900134,
+        "narHash": "sha256-5GWj0FI2uOwKNpXkmpWrSFDe1rCaNBCUQ8d+HDtFQPI=",
+        "rev": "83199d0d373dd3ac2b9a1996b1d0263f76ab7a4c",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1063296.83199d0d373d/nixexprs.tar.zst"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
+      }
+    },
     "nixvim": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -323,19 +320,22 @@
         "type": "github"
       }
     },
-    "qs-hyprview": {
-      "flake": false,
+    "noctalia": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
       "locked": {
-        "lastModified": 1787327250,
-        "narHash": "sha256-slTEDoCmqEzL0DkixyNO+RwXNaj8lxL7S2mLcCy3NoY=",
-        "owner": "dom0",
-        "repo": "qs-hyprview",
-        "rev": "1fdea0ac9faea585771d4da3680397e449285706",
+        "lastModified": 1788600693,
+        "narHash": "sha256-rFFsGcRc7B1GdwpFk/2VCSWL+vpMXi8EFgmWuKJd9I0=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "f81c030d6403edeaae1a0953ee60ad43f334e300",
         "type": "github"
       },
       "original": {
-        "owner": "dom0",
-        "repo": "qs-hyprview",
+        "owner": "noctalia-dev",
+        "ref": "cachix",
+        "repo": "noctalia",
         "type": "github"
       }
     },
@@ -343,14 +343,13 @@
       "inputs": {
         "agenix": "agenix",
         "home-manager": "home-manager",
-        "ilyamiro-dots": "ilyamiro-dots",
         "llm-agents": "llm-agents",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixvim": "nixvim",
-        "qs-hyprview": "qs-hyprview",
+        "noctalia": "noctalia",
         "spicetify-nix": "spicetify-nix"
       }
     },

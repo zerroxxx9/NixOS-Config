@@ -4,7 +4,9 @@
   lib,
   hostVariables,
   ...
-}: {
+}: let
+  palette = import ../gui/palette.nix;
+in {
   options.modules.gui.alacritty = {
     enable = lib.mkEnableOption "alacritty";
   };
@@ -28,37 +30,17 @@
           };
           colors = {
             primary = {
-              foreground = "#f8f8f2";
-              background = "#2b3e50";
+              inherit (palette) foreground background;
             };
             cursor = {
-              text = "#2b3e50";
-              cursor = "#f8f8f2";
+              text = palette.background;
+              cursor = palette.foreground;
             };
             selection = {
-              text = "#2b3e50";
-              background = "#f8f8f2";
+              text = palette.background;
+              background = palette.foreground;
             };
-            normal = {
-              black = "#19242f";
-              red = "#e94b35";
-              green = "#199c4b";
-              yellow = "#f0cc04";
-              blue = "#5c98cd";
-              magenta = "#ca94ff";
-              cyan = "#8be0fd";
-              white = "#f8f8f2";
-            };
-            bright = {
-              black = "#2f3943";
-              red = "#ff6541";
-              green = "#72cc5a";
-              yellow = "#ffffa5";
-              blue = "#d6acff";
-              magenta = "#d4a9ff";
-              cyan = "#b9ecfd";
-              white = "#ffffff";
-            };
+            inherit (palette) normal bright;
           };
         };
       };

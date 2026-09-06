@@ -2,7 +2,7 @@
 
 Personal NixOS dotfiles for multiple machines, built with [Nix Flakes](https://nixos.wiki/wiki/Flakes), [Home Manager](https://nix-community.github.io/home-manager/), and a small set of host-specific module flags.
 
-The main branch of this configuration currently tracks NixOS `25.11` and Home Manager `release-25.11`.
+The main branch of this configuration currently tracks NixOS `26.05` and Home Manager `release-26.05`.
 
 ## What is included
 
@@ -128,7 +128,8 @@ in
           default.modules.gui
           // {
             gnome = true;
-            hyprland = false;
+            hyprland = true;
+            noctalia = true;
           };
 
         software =
@@ -158,6 +159,7 @@ Important top-level values:
 - `modules`: feature flags consumed by `configuration.nix`
 - `git`: Git identity, extra config, LFS setting, and conditional includes
 - `gnome`: GNOME favorites and idle delay settings
+- `hyprland`: per-host monitor layout (`monitors`), consumed by `modules/gui/hyprland.nix`
 
 ## Module flags
 
@@ -167,8 +169,8 @@ Current module groups:
 
 - `console`: `fish`, `alacritty`
 - `driver`: `amdgpu`, `nvidia`
-- `gui`: `gnome`, `hyprland`
-- `software`: `collabora`, `display-link`, `docker`, `couchdb`, `fail2ban`, `flatpak`, `git`, `immich`, `noisetorch`, `obsidian`, `opencloud`, `paperless-ngx`, `spicetify`, `sunshine`, `tailscale`, `vencord`, `vscode`
+- `gui`: `gnome`, `hyprland`, `noctalia`
+- `software`: `chessstack`, `collabora`, `ctf`, `display-link`, `distrobox`, `docker`, `couchdb`, `fail2ban`, `flatpak`, `freshrss`, `git`, `immich`, `librewolf`, `lmstudio`, `mealie`, `nixvim`, `noisetorch`, `obsidian`, `opencloud`, `osu`, `paperless-ngx`, `spicetify`, `sunshine`, `tailscale`, `tor`, `vesktop`, `vscode`, `zed`, `zellij`
 - `security`: `agenix`, `yubikey`
 - `systemSettings`: `bootanimation`, `gaming`
 

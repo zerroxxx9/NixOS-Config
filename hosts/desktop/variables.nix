@@ -24,7 +24,7 @@ in
             lmstudio = true;
             tailscale = true;
             tor = true;
-            vencord = true;
+            vesktop = true;
             spicetify = true;
             sunshine = true;
             vscode = true;

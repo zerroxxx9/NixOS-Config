@@ -45,7 +45,7 @@
   modules.software.opencloud.enable = lib.attrByPath ["modules" "software" "opencloud"] false hostVariables;
   modules.software.tailscale.enable = lib.attrByPath ["modules" "software" "tailscale"] false hostVariables;
   modules.software.tor.enable = lib.attrByPath ["modules" "software" "tor"] false hostVariables;
-  modules.software.vencord.enable = lib.attrByPath ["modules" "software" "vencord"] false hostVariables;
+  modules.software.vesktop.enable = lib.attrByPath ["modules" "software" "vesktop"] false hostVariables;
   modules.software.paperless-ngx.enable = lib.attrByPath ["modules" "software" "paperless-ngx"] false hostVariables;
   modules.software.spicetify.enable = lib.attrByPath ["modules" "software" "spicetify"] false hostVariables;
   modules.software.sunshine.enable = lib.attrByPath ["modules" "software" "sunshine"] false hostVariables;

@@ -34,6 +34,7 @@
     ms-vscode.hexeditor
     pkief.material-icon-theme
     github.github-vscode-theme
+    noctalia.noctaliatheme
 
     # nix & flake support
     bbenoist.nix
@@ -49,7 +50,9 @@
     "files.autoSave" = "onFocusChange";
     "git.blame.editorDecoration.enabled" = true;
     "task.allowAutomaticTasks" = "off";
-    "workbench.colorTheme" = "GitHub Dark";
+    # Written from the wallpaper by Noctalia's community vscode template into
+    # the writable extension copy seeded in modules/gui/theming.nix.
+    "workbench.colorTheme" = "NoctaliaTheme";
     "workbench.iconTheme" = "material-icon-theme";
   };
 in {

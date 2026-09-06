@@ -16,9 +16,12 @@
     ];
 
     home-manager.users.${hostVariables.username} = {
-    programs.zellij = {
-      enable = true;
-    };
+      programs.zellij = {
+        enable = true;
+        # Rendered from the wallpaper into ~/.config/zellij/themes/noctalia.kdl
+        # by Noctalia's community zellij template.
+        settings.theme = "noctalia";
+      };
     };
   };
 }

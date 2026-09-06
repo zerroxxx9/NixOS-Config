@@ -12,22 +12,35 @@
     variant = "mocha";
   };
   catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
+  # With wallpaper-driven theming on, these colour definitions come from
+  # Noctalia's gtk3/gtk4 templates instead, regenerated on every palette
+  # change. The import has to stay first: GTK ignores @import once any other
+  # rule has been seen. Without theming, the static Catppuccin values remain.
+  gtkColors =
+    if config.modules.gui.theming.enable
+    then ''
+      @import url("noctalia.css");
+    ''
+    else ''
+      @define-color accent_color #89b4fa;
+      @define-color accent_bg_color #89b4fa;
+      @define-color accent_fg_color #11111b;
+      @define-color window_bg_color #1e1e2e;
+      @define-color window_fg_color #cdd6f4;
+      @define-color view_bg_color #181825;
+      @define-color view_fg_color #cdd6f4;
+      @define-color headerbar_bg_color #181825;
+      @define-color headerbar_fg_color #cdd6f4;
+      @define-color sidebar_bg_color #11111b;
+      @define-color sidebar_fg_color #bac2de;
+      @define-color card_bg_color #313244;
+      @define-color card_fg_color #cdd6f4;
+      @define-color popover_bg_color #181825;
+      @define-color popover_fg_color #cdd6f4;
+    '';
+
   gtkFileManagerCss = ''
-    @define-color accent_color #89b4fa;
-    @define-color accent_bg_color #89b4fa;
-    @define-color accent_fg_color #11111b;
-    @define-color window_bg_color #1e1e2e;
-    @define-color window_fg_color #cdd6f4;
-    @define-color view_bg_color #181825;
-    @define-color view_fg_color #cdd6f4;
-    @define-color headerbar_bg_color #181825;
-    @define-color headerbar_fg_color #cdd6f4;
-    @define-color sidebar_bg_color #11111b;
-    @define-color sidebar_fg_color #bac2de;
-    @define-color card_bg_color #313244;
-    @define-color card_fg_color #cdd6f4;
-    @define-color popover_bg_color #181825;
-    @define-color popover_fg_color #cdd6f4;
+    ${gtkColors}
 
     window,
     dialog,

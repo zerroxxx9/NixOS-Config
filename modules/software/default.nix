@@ -19,7 +19,7 @@
     ./vscode.nix
     ./tailscale.nix
     ./tor.nix
-    ./vencord.nix
+    ./vesktop.nix
     ./opencloud.nix
     ./paperless-ngx.nix
     ./spicetify.nix

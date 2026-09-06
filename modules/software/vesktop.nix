@@ -12,7 +12,7 @@
   hostVariables,
   ...
 }: let
-  cfg = config.modules.software.vencord;
+  cfg = config.modules.software.vesktop;
 
   palette = import ../gui/palette.nix;
   inherit (palette) client;
@@ -28,7 +28,7 @@
       cfg.theme
     };
 in {
-  options.modules.software.vencord = {
+  options.modules.software.vesktop = {
     enable = lib.mkEnableOption "Vesktop, themed by Noctalia, with a Vencord plugin set";
 
     theme = lib.mkOption {

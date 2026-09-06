@@ -20,7 +20,7 @@ in
             display-link = false;
             lmstudio = true;
             tailscale = true;
-            vencord = true;
+            vesktop = true;
             spicetify = true;
             sunshine = false;
             vscode = true;

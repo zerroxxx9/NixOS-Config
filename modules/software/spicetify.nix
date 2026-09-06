@@ -22,7 +22,7 @@ in {
     programs.spicetify = {
       enable = true;
       theme =
-        spicePkgs.themes.dribbblish
+        spicePkgs.themes.nord-dark
         // {
           injectThemeJs = false;
         };

@@ -38,7 +38,7 @@
       obsidian = false;
       osu = false;
       vscode = false;
-      vencord = false;
+      vesktop = false;
       tailscale = false;
       tor = false;
       opencloud = false;

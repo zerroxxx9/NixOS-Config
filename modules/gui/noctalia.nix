@@ -59,6 +59,10 @@ in {
 
             panel.transparency_mode = "soft";
 
+            # Just the search field and its results; the category filter row
+            # (Everything / Recent / Web / ...) is hidden.
+            launcher.categories = false;
+
             animation = {
               enabled = true;
               speed = 1.0;

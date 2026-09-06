@@ -65,10 +65,12 @@
           };
           ui_font_size = 18.0;
           buffer_font_size = 17.0;
+          # Rendered from the wallpaper into ~/.config/zed/themes/noctalia.json
+          # by Noctalia's community zed template; Zed reloads it live.
           theme = {
             mode = "dark";
-            light = "One Light";
-            dark = "Ayu Dark";
+            light = "Noctalia Light";
+            dark = "Noctalia Dark";
           };
           auto_install_extensions = {
             material-icon-theme = true;

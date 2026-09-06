@@ -72,6 +72,7 @@
 
     (mkBind "${mod} + C" (ipc "panel-toggle clipboard"))
     (mkBind "${mod} + W" (ipc "panel-toggle wallpaper"))
+    (mkBind "${mod} + SHIFT + W" (ipc "wallpaper-random"))
     (mkBind "${mod} + S" (ipc "panel-toggle control-center"))
     (mkBind "${mod} + N" (ipc "panel-toggle control-center"))
     (mkBind "${mod} + Q" (ipc "panel-toggle control-center media"))
@@ -104,7 +105,7 @@
       size = [1080 920];
     }
   ];
-  
+
   persistentWorkspaces = lib.optionals noctaliaEnabled (
     map (i: {
       workspace = toString i;
@@ -130,7 +131,13 @@
   };
   catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
 
+  # Colour definitions come from Noctalia's gtk templates, regenerated on
+  # every palette change. Must stay first: GTK ignores @import once any other
+  # rule has been seen.
   gtkFileManagerCss = ''
+    ${lib.optionalString config.modules.gui.theming.enable ''
+      @import url("noctalia.css");
+    ''}
     window,
     dialog,
     filechooser,
@@ -192,7 +199,6 @@ in {
       enable = true;
       xwayland.enable = true;
     };
-.
     services.displayManager.gdm.enable = lib.mkDefault true;
     services.displayManager.defaultSession = lib.mkDefault "hyprland";
 
@@ -238,6 +244,18 @@ in {
         enable = true;
         systemd.enable = true;
         configType = "lua";
+
+        # Border colours follow the wallpaper. Noctalia renders
+        # ~/.config/hypr/noctalia.lua and, finding this require already
+        # present, leaves the read-only hyprland.lua alone. pcall keeps a
+        # missing module (fresh machine, before the first palette) from
+        # taking the whole config down; the static col values above are the
+        # fallback until then.
+        extraConfig = ''
+          pcall(function()
+            require("noctalia").apply_theme()
+          end)
+        '';
 
         settings = {
           monitor = monitors;

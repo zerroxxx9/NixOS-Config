@@ -84,7 +84,7 @@ in {
             capsule_padding = 8.0;
             widget_spacing = 6;
 
-            start = ["launcher" "workspaces" "active_window"];
+            start = ["launcher" "wallpaper" "workspaces" "active_window"];
             center = ["clock" "group:nowplaying"];
             end = [
               "group:tray"
@@ -186,17 +186,38 @@ in {
             ];
           };
 
+          # Colours follow the wallpaper. `Urban` stays defined above as a
+          # fallback, selectable from Settings -> Color Scheme at any time.
           theme = {
             mode = "dark";
-            source = "custom";
+            source = "wallpaper";
+            wallpaper_scheme = "m3-content";
             custom_palette = "Urban";
             pure_black_dark = false;
           };
+
+          # Every app that follows the wallpaper is driven from here. Built-ins
+          # ship with Noctalia; community templates are fetched once from
+          # api.noctalia.dev and cached; user templates live in
+          # modules/gui/theming.nix.
           theme.templates = {
-            enable_builtin_templates = false;
-            builtin_ids = [];
-            enable_community_templates = false;
-            community_ids = [];
+            enable_builtin_templates = true;
+            builtin_ids = [
+              "alacritty"
+              "gtk3"
+              "gtk4"
+              "qt"
+              "hyprland"
+            ];
+            enable_community_templates = true;
+            community_ids = [
+              "discord"
+              "obsidian"
+              "vscode"
+              "zed"
+              "zellij"
+            ];
+            user = config.modules.gui.theming.userTemplates;
           };
 
           wallpaper = {
@@ -204,6 +225,95 @@ in {
             fill_mode = "crop";
             directory = "${homeDir}/.dotfiles/assets/wallpaper";
             default.path = "${homeDir}/.dotfiles/assets/wallpaper/1756527463892669.jpg";
+          };
+
+          # Backdrop: the desktop wallpaper, blurred hard so the clock and the
+          # password row are the only things with edges.
+          lockscreen = {
+            enabled = true;
+            blurred_desktop = false;
+            blur_intensity = 0.8;
+            tint_intensity = 0.15;
+          };
+
+          # Widgets are placed on DP-1 only; DP-2 shows the blurred backdrop
+          # with no chrome. Boxes are in DP-1 logical pixels (3840x2160 @ 1x)
+          # and a widget scales its content to fill its box.
+          lockscreen_widgets = {
+            enabled = true;
+
+            widget = {
+              lock_clock = {
+                type = "clock";
+                output = "DP-1";
+                cx = 1920.0;
+                cy = 800.0;
+                box_width = 1200.0;
+                box_height = 240.0;
+                rotation = 0.0;
+                settings = {
+                  clock_style = "digital";
+                  format = "{:%H:%M}";
+                  center_text = true;
+                  color = "on_surface";
+                  shadow = true;
+                  background = false;
+                };
+              };
+
+              lock_date = {
+                type = "clock";
+                output = "DP-1";
+                cx = 1920.0;
+                cy = 985.0;
+                box_width = 1100.0;
+                box_height = 80.0;
+                rotation = 0.0;
+                settings = {
+                  clock_style = "digital";
+                  format = "{:%A, %-d %B}";
+                  center_text = true;
+                  color = "on_surface_variant";
+                  shadow = true;
+                  background = false;
+                };
+              };
+
+              # Fixed id; noctalia auto-creates one login box per output, so
+              # both are declared here to keep placement and visibility ours.
+              "lockscreen-login-box@DP-1" = {
+                type = "login_box";
+                output = "DP-1";
+                enabled = true;
+                cx = 1920.0;
+                cy = 1230.0;
+                box_width = 560.0;
+                box_height = 70.0;
+                settings = {
+                  layout = "compact";
+                  show_login_button = true;
+                  show_unlock_hint = true;
+                  show_caps_lock = true;
+                  show_keyboard_layout = false;
+                  center_password_text = true;
+                  background_color = "surface_variant";
+                  background_opacity = 0.55;
+                  background_radius = 18.0;
+                  input_opacity = 0.85;
+                  input_radius = 12.0;
+                };
+              };
+
+              "lockscreen-login-box@DP-2" = {
+                type = "login_box";
+                output = "DP-2";
+                enabled = false;
+                cx = 1280.0;
+                cy = 1200.0;
+                box_width = 560.0;
+                box_height = 70.0;
+              };
+            };
           };
           idle.behavior = {
             lock = {

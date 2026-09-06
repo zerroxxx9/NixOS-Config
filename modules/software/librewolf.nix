@@ -240,19 +240,18 @@
     ++ cfg.extensions;
 
   userChrome = ''
+    /* The --lw-* palette is rendered from the active wallpaper into a
+       sibling noctalia.css (modules/gui/theming.nix); userChrome.css itself
+       is a read-only store symlink. Must stay first: Firefox ignores
+       @import after any other rule. Chrome CSS is read once at startup, so
+       a colour change lands on the next browser launch. */
+    @import url("noctalia.css");
+
     :root {
-      --lw-bg: #0b0f14;
-      --lw-bg-elevated: #111821;
-      --lw-bg-hover: #182231;
-      --lw-border: #263241;
-      --lw-text: #dce7ef;
-      --lw-muted: #91a4b7;
-      --lw-accent: #7dd3c7;
-      --lw-accent-strong: #8ab4f8;
       --toolbar-bgcolor: var(--lw-bg) !important;
       --toolbar-color: var(--lw-text) !important;
       --toolbarbutton-hover-background: var(--lw-bg-hover) !important;
-      --toolbarbutton-active-background: #203044 !important;
+      --toolbarbutton-active-background: var(--lw-bg-active) !important;
       --urlbarView-highlight-background: var(--lw-bg-hover) !important;
       --urlbarView-highlight-color: var(--lw-text) !important;
       --tab-border-radius: 6px !important;

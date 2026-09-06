@@ -37,7 +37,12 @@
         programs.oh-my-posh = {
           enable = true;
           enableFishIntegration = true;
-          settings = builtins.fromJSON (builtins.unsafeDiscardStringContext (builtins.readFile ./oh-my-posh/theme/atomic.omp.json));
+          # A mutable file, not a store path: the structural segments are
+          # repainted from the wallpaper on every palette change by the
+          # generator in modules/gui/theming.nix, which seeds it from
+          # ./oh-my-posh/theme/atomic.omp.json and leaves the language
+          # segments on their brand colours.
+          configFile = "/home/${hostVariables.username}/.config/oh-my-posh/noctalia.json";
         };
         programs.atuin = {
           enable = true;

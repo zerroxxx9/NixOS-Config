@@ -36,7 +36,7 @@ in
           default.modules.software
           // {
             collabora = true;
-            chessstack = true;
+            chessstack = false;
             display-link = false;
             docker = true;
             couchdb = true;
@@ -49,7 +49,7 @@ in
             paperless-ngx = true;
             vscode = false;
             fail2ban = true;
-            mealie = true;
+            mealie = false;
             freshrss = true;
           };
         systemSettings =

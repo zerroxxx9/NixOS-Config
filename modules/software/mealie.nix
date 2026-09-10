@@ -4,6 +4,7 @@
   ...
 }: let
   mealiePort = 9000;
+  tsCfg = config.modules.software.tailscale;
 in {
   options.modules.software.mealie = {
     enable = lib.mkEnableOption "mealie";
@@ -16,22 +17,15 @@ in {
       port = mealiePort;
 
       settings = {
-        BASE_URL = "https://homelab-1.tail11bba0.ts.net:${toString mealiePort}";
+        BASE_URL = tsCfg.serve.mealie.url;
         CHECK_FOR_UPDATES = "false";
       };
     };
 
-    systemd.services.tailscale-serve-mealie = {
-      description = "Publish Mealie via Tailscale Serve";
-      after = ["network-online.target" "tailscaled.service" "mealie.service"];
-      wants = ["network-online.target" "tailscaled.service" "mealie.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString mealiePort} http://127.0.0.1:${toString mealiePort}";
-        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString mealiePort} off";
-      };
+    modules.software.tailscale.serve.mealie = {
+      port = mealiePort;
+      target = "http://127.0.0.1:${toString mealiePort}";
+      after = ["mealie.service"];
     };
   };
 }

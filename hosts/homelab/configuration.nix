@@ -26,6 +26,9 @@
     isNormalUser = true;
     description = hostVariables.username;
     extraGroups = ["networkmanager" "wheel"];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDER0VVHXqwWICf8HfG2+vV4VCAspv71m9M8y7bWpLTZ zerrox@desktop"
+    ];
   };
   programs.direnv.enable = true;
   environment.systemPackages = with pkgs; [
@@ -62,6 +65,7 @@
 
   modules.software.tailscale =
     {
+      hostname = "homelab-1.tail11bba0.ts.net";
       exitNode = true;
       subnetRoutes = ["192.168.1.0/24"];
       useSSH = true;

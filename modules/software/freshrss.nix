@@ -6,6 +6,7 @@
 }: let
   freshrssPort = 8000;
   cfg = config.modules.software.freshrss;
+  tsCfg = config.modules.software.tailscale;
   freshrssCfg = config.services.freshrss;
   xmlEscape = lib.replaceStrings ["&" "<" ">" "\"" "'"] ["&amp;" "&lt;" "&gt;" "&quot;" "&apos;"];
   feedOutline = feed: ''
@@ -73,7 +74,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.freshrss = {
       enable = true;
-      baseUrl = "https://homelab-1.tail11bba0.ts.net:${toString freshrssPort}";
+      baseUrl = "https://${tsCfg.hostname}:${toString freshrssPort}";
       authType = "none";
     };
 
@@ -84,20 +85,13 @@ in {
           port = freshrssPort;
         }
       ];
-      serverAliases = ["homelab-1.tail11bba0.ts.net"];
+      serverAliases = [tsCfg.hostname];
     };
 
-    systemd.services.tailscale-serve-freshrss = lib.mkIf config.modules.software.tailscale.enable {
-      description = "Publish FreshRSS via Tailscale Serve";
-      after = ["network-online.target" "tailscaled.service" "nginx.service" "phpfpm-freshrss.service" "freshrss-config.service"];
-      wants = ["network-online.target" "tailscaled.service" "nginx.service" "phpfpm-freshrss.service" "freshrss-config.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString freshrssPort} http://127.0.0.1:${toString freshrssPort}";
-        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString freshrssPort} off";
-      };
+    modules.software.tailscale.serve.freshrss = {
+      port = freshrssPort;
+      target = "http://127.0.0.1:${toString freshrssPort}";
+      after = ["nginx.service" "phpfpm-freshrss.service" "freshrss-config.service"];
     };
 
     systemd.services.freshrss-import-feeds = lib.mkIf (cfg.feeds != []) {

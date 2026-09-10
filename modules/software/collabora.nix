@@ -5,52 +5,33 @@
 }: let
   collaboraPort = 9980;
   wopiPort = 9300;
-  hostname = "homelab-1.tail11bba0.ts.net";
-  serverTailscaleIp = "100.73.190.127";
-  clientTailscaleIps = [
-    "100.124.232.93"
-    "100.107.214.63"
-    serverTailscaleIp
+  tsCfg = config.modules.software.tailscale;
+  hostname = tsCfg.hostname;
+  tailnetIpRegex = "100\\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\\.[0-9]{1,3}\\.[0-9]{1,3}";
+  postAllowHosts = [
+    "127\\.0\\.0\\.1"
+    "::ffff:127\\.0\\.0\\.1"
+    "::1"
+    tailnetIpRegex
+    "::ffff:${tailnetIpRegex}"
   ];
-  ipRegex = ip: lib.replaceStrings ["."] ["\\."] ip;
-  ipv4MappedRegex = ip: "::ffff:${ipRegex ip}";
-  postAllowHosts =
-    [
-      "127\\.0\\.0\\.1"
-      "::ffff:127\\.0\\.0\\.1"
-      "::1"
-    ]
-    ++ map ipRegex clientTailscaleIps
-    ++ map ipv4MappedRegex clientTailscaleIps;
   collaboraUrl = "https://${hostname}:${toString collaboraPort}";
-  collaboraTailscaleIpUrl = "https://${serverTailscaleIp}:${toString collaboraPort}";
-  collaboraUrls = [
-    collaboraUrl
-    collaboraTailscaleIpUrl
-  ];
+  collaboraUrls = [collaboraUrl];
   wopiUrl = "http://127.0.0.1:${toString wopiPort}";
   wopiPublicUrl = "https://${hostname}:${toString wopiPort}";
   wopiAliases = [
     wopiPublicUrl
     "https://${hostname}"
     "https://${hostname}:443"
-    "https://homelab:${toString wopiPort}"
     "https://.*\\.ts\\.net:${toString wopiPort}"
     "http://.*\\.ts\\.net:${toString wopiPort}"
     "http://${hostname}:${toString wopiPort}"
-    "http://homelab:${toString wopiPort}"
     "http://127.0.0.1:${toString wopiPort}"
     "http://localhost:${toString wopiPort}"
-    "https://${serverTailscaleIp}"
-    "https://${serverTailscaleIp}:443"
-    "https://${serverTailscaleIp}:${toString wopiPort}"
-    "http://${serverTailscaleIp}:${toString wopiPort}"
   ];
   frameAncestorOrigins = [
     "https://${hostname}"
     "https://${hostname}:443"
-    "https://${serverTailscaleIp}"
-    "https://${serverTailscaleIp}:443"
   ];
   frameAncestors = lib.concatStringsSep " " frameAncestorOrigins;
   contentSecurityFrameAncestors = lib.concatStringsSep " " (["'self'"] ++ frameAncestorOrigins);
@@ -240,25 +221,14 @@ in {
     };
 
     systemd.services.opencloud = lib.mkIf config.modules.software.opencloud.enable {
-      after =
-        ["coolwsd.service"]
-        ++ lib.optionals config.modules.software.tailscale.enable ["tailscale-serve-collabora.service"];
-      wants =
-        ["coolwsd.service"]
-        ++ lib.optionals config.modules.software.tailscale.enable ["tailscale-serve-collabora.service"];
+      after = ["coolwsd.service"];
+      wants = ["coolwsd.service"];
     };
 
-    systemd.services.tailscale-serve-collabora = lib.mkIf config.modules.software.tailscale.enable {
-      description = "Publish Collabora Online via Tailscale Serve";
-      after = ["network-online.target" "tailscaled.service" "coolwsd.service"];
-      wants = ["network-online.target" "tailscaled.service" "coolwsd.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString collaboraPort} http://127.0.0.1:${toString collaboraPort}";
-        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString collaboraPort} off";
-      };
+    modules.software.tailscale.serve.collabora = {
+      port = collaboraPort;
+      target = "http://127.0.0.1:${toString collaboraPort}";
+      after = ["coolwsd.service"];
     };
   };
 }

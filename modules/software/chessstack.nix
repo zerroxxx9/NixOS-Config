@@ -19,7 +19,8 @@ in {
 
     host = lib.mkOption {
       type = lib.types.str;
-      default = "homelab-1.tail11bba0.ts.net";
+      default = config.modules.software.tailscale.hostname;
+      defaultText = "modules.software.tailscale.hostname";
       description = "Tailscale hostname used to reach Chessstack.";
     };
 
@@ -88,17 +89,10 @@ in {
       unitConfig.ConditionPathExists = envFile;
     };
 
-    systemd.services.tailscale-serve-chessstack = lib.mkIf config.modules.software.tailscale.enable {
-      description = "Publish Chessstack via Tailscale Serve";
-      after = ["network-online.target" "tailscaled.service" "podman-chessstack.service"];
-      wants = ["network-online.target" "tailscaled.service" "podman-chessstack.service"];
-      wantedBy = ["multi-user.target"];
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-        ExecStart = "${config.services.tailscale.package}/bin/tailscale serve --bg --yes --https=${toString cfg.port} http://127.0.0.1:${toString cfg.port}";
-        ExecStop = "${config.services.tailscale.package}/bin/tailscale serve --https=${toString cfg.port} off";
-      };
+    modules.software.tailscale.serve.chessstack = {
+      port = cfg.port;
+      target = "http://127.0.0.1:${toString cfg.port}";
+      after = ["podman-chessstack.service"];
     };
   };
 }

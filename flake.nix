@@ -51,9 +51,13 @@
       hostVariables,
     }: let
       system = hostVariables.system;
+      permittedInsecurePackages = hostVariables.permittedInsecurePackages or [];
       pkgs-config = {
         inherit system;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+          inherit permittedInsecurePackages;
+        };
       };
       pkgs-unstable = import inputs.nixpkgs-unstable pkgs-config;
     in
@@ -68,6 +72,7 @@
             inputs.nixvim.nixosModules.nixvim
             inputs.agenix.nixosModules.default
             {
+              nixpkgs.config.permittedInsecurePackages = permittedInsecurePackages;
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = pkgs-unstable;

@@ -7,6 +7,7 @@ in
     host = "homelab";
     system = "x86_64-linux";
     stateVersion = "25.11";
+    permittedInsecurePackages = ["immich-2.7.5"];
     modules =
       default.modules
       // {

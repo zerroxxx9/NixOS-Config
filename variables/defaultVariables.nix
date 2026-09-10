@@ -5,6 +5,7 @@
   osLanguage = "en_US.UTF-8";
   keyboardLayout = "de_DE.UTF-8";
   stateVersion = "26.05";
+  permittedInsecurePackages = [];
   modules = {
     console = {
       fish = true;

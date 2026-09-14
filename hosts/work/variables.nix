@@ -26,7 +26,9 @@ in
         gui =
           default.modules.gui
           // {
-            hyprland = false;
+            gnome = false;
+            hyprland = true;
+            noctalia = true;
           };
         security =
           default.modules.security
@@ -42,6 +44,18 @@ in
           {
             path = "~/Dev/.gitconfig";
             condition = "gitdir:~/Dev/";
+          }
+        ];
+      };
+    hyprland =
+      default.hyprland
+      // {
+        monitors = [
+          {
+            output = "eDP-1";
+            mode = "preferred";
+            position = "auto";
+            scale = 1;
           }
         ];
       };

@@ -79,8 +79,8 @@
     (mkBind "${mod} + SHIFT + S" (ipc "settings-toggle"))
     (mkBind "ALT + TAB" (ipc "window-switcher"))
 
-    (mkBindOpts "${mod} + L" (ipc "lock") locked)
-    (mkBindOpts "XF86PowerOff" (ipc "lock") locked)
+    (mkBindOpts "${mod} + L" (ipc "session lock") locked)
+    (mkBindOpts "XF86PowerOff" (ipc "session lock") locked)
 
     (mkBindOpts "Insert" (ipc "screenshot-region") locked)
     (mkBindOpts "${mod} + Insert" (ipc "screenshot-fullscreen") locked)
@@ -306,6 +306,7 @@ in {
               kb_rules = "";
               follow_mouse = 1;
               accel_profile = "flat";
+              sensitivity = 1;
               touchpad.natural_scroll = true;
             };
 

@@ -52,9 +52,21 @@ in
       // {
         monitors = [
           {
+            output = "DP-9";
+            mode = "preferred";
+            position = "0x0";
+            scale = 1.5;
+          }
+          {
+            output = "DP-8";
+            mode = "preferred";
+            position = "2560x0";
+            scale = 1.5;
+          }
+          {
             output = "eDP-1";
             mode = "preferred";
-            position = "auto";
+            position = "5120x0";
             scale = 1;
           }
         ];

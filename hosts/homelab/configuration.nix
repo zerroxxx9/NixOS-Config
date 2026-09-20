@@ -60,6 +60,39 @@
     };
   };
 
+  modules.system.nas = {
+    server = "192.168.178.121";
+    shares = {
+      immich = {
+        remotePath = "/mnt/storage/immich";
+        mountPoint = "/mnt/nas/immich";
+      };
+      paperless = {
+        remotePath = "/mnt/storage/paperless";
+        mountPoint = "/mnt/nas/paperless";
+      };
+      opencloud = {
+        remotePath = "/mnt/storage/opencloud";
+        mountPoint = "/mnt/nas/opencloud";
+      };
+      media = {
+        remotePath = "/mnt/storage/media";
+        mountPoint = "/mnt/nas/media";
+        automount = true;
+      };
+    };
+  };
+
+  modules.software.immich.mediaLocation = "/mnt/nas/immich";
+
+  modules.software.opencloud.stateDir = "/mnt/nas/opencloud";
+
+  modules.software.paperless-ngx = {
+    mediaDir = "/mnt/nas/paperless/media";
+    consumptionDir = "/mnt/nas/paperless/consume";
+    consumerPolling = 60;
+  };
+
   modules.security.agenix.secrets.tailscaleAuthKey = true;
   modules.security.agenix.secrets.chessstackEnv = true;
 

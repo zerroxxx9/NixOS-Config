@@ -54,6 +54,7 @@
   modules.software.zellij.enable = lib.attrByPath ["modules" "software" "zellij"] false hostVariables;
   modules.system.bootanimation.enable = lib.attrByPath ["modules" "systemSettings" "bootanimation"] false hostVariables;
   modules.system.gaming.enable = lib.attrByPath ["modules" "systemSettings" "gaming"] false hostVariables;
+  modules.system.nas.enable = lib.attrByPath ["modules" "systemSettings" "nas"] false hostVariables;
 
   modules.security.yubikey.enable = lib.attrByPath ["modules" "security" "yubikey"] false hostVariables;
   modules.security.agenix.enable = lib.attrByPath ["modules" "security" "agenix"] false hostVariables;

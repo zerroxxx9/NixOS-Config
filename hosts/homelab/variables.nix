@@ -7,6 +7,9 @@ in
     host = "homelab";
     system = "x86_64-linux";
     stateVersion = "25.11";
+    # Target disk for the declarative layout in ./disko.nix. Verify with `lsblk`
+    # before reinstalling; can be overridden with `disko-install --disk main <dev>`.
+    diskDevice = "/dev/nvme0n1";
     permittedInsecurePackages = ["immich-2.7.5"];
     modules =
       default.modules
@@ -55,8 +58,9 @@ in
         systemSettings =
           default.modules.systemSettings
           // {
-            bootanimation = true;
+            bootanimation = false;
             gaming = false;
+            nas = true;
             virtualization = false;
           };
       };

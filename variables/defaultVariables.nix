@@ -58,6 +58,7 @@
     systemSettings = {
       bootanimation = true;
       gaming = false;
+      nas = false;
       virtualization = false;
     };
   };

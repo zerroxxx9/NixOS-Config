@@ -5,5 +5,6 @@
     ./gaming.nix
     ./i18n.nix
     ./keybindings.nix
+    ./nas.nix
   ];
 }

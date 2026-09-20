@@ -60,6 +60,23 @@
     };
   };
 
+  systemd.services.wake-nas = {
+    description = "Wake the NAS via WOL";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.wakeonlan}/bin/wakeonlan 00:e0:4c:61:97:a1";
+    };
+  };
+  
+  systemd.timers.wake-nas = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "08:00";
+      AccuracySec = "1s";
+      Persistent = false;
+    };
+  };
+
   modules.system.nas = {
     server = "192.168.178.121";
     shares = {

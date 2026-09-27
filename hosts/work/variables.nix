@@ -50,6 +50,10 @@ in
     hyprland =
       default.hyprland
       // {
+        dockDisplay = {
+          laptop = "eDP-1";
+          dockOutputs = ["DP-9" "DP-8"];
+        };
         monitors = [
           {
             output = "DP-9";

@@ -20,6 +20,53 @@
     ]
     hostVariables;
 
+  # Disables the laptop panel while any docking-station output is present,
+  # and re-enables it otherwise. Hyprland's declarative `monitor` block only
+  # runs once at config load, so this watches socket2 for monitoradded/
+  # monitorremoved and re-applies the state live via `hyprctl keyword`.
+  dockDisplay = lib.attrByPath ["hyprland" "dockDisplay"] null hostVariables;
+
+  dockDisplayScript =
+    if dockDisplay == null
+    then null
+    else
+      pkgs.writeShellScript "hypr-dock-display" ''
+        set -euo pipefail
+
+        laptop_output=${lib.escapeShellArg dockDisplay.laptop}
+        dock_outputs=(${lib.concatMapStringsSep " " lib.escapeShellArg dockDisplay.dockOutputs})
+
+        dock_connected() {
+          local names
+          names=$(hyprctl monitors -j | jq -r '.[].name')
+          for output in "''${dock_outputs[@]}"; do
+            if grep -qx "$output" <<<"$names"; then
+              return 0
+            fi
+          done
+          return 1
+        }
+
+        apply_state() {
+          if dock_connected; then
+            hyprctl keyword monitor "$laptop_output, disable" >/dev/null
+          else
+            hyprctl keyword monitor "$laptop_output, preferred, auto, 1" >/dev/null
+          fi
+        }
+
+        apply_state
+
+        socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+        socat -U UNIX-CONNECT:"$socket" - | while read -r line; do
+          case "$line" in
+          monitoraddedv2* | monitorremovedv2*)
+            apply_state
+            ;;
+          esac
+        done
+      '';
+
   mod = "SUPER";
   terminal = "alacritty";
   noctaliaEnabled = config.modules.gui.noctalia.enable;
@@ -515,6 +562,24 @@ in {
       };
 
       services.easyeffects.enable = true;
+
+      systemd.user.services = lib.optionalAttrs (dockDisplay != null) {
+        hypr-dock-display = {
+          Unit = {
+            Description = "Disable the laptop display while docked, enable it when undocked";
+            PartOf = ["hyprland-session.target"];
+            After = ["hyprland-session.target"];
+          };
+          Service = {
+            Type = "simple";
+            ExecStart = "${dockDisplayScript}";
+            Restart = "on-failure";
+          };
+          Install = {
+            WantedBy = ["hyprland-session.target"];
+          };
+        };
+      };
     };
   };
 }

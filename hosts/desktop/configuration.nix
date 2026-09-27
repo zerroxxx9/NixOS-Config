@@ -168,6 +168,7 @@
     geary
     thunderbird
     claude-code
+    orca-slicer
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

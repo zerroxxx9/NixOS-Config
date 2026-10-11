@@ -317,8 +317,8 @@ in {
           config = {
             general = {
               border_size = 1;
-              gaps_in = 4;
-              gaps_out = 4;
+              gaps_in = 6;
+              gaps_out = 10;
               float_gaps = 6;
               resize_on_border = true;
               extend_border_grab_area = 30;
@@ -330,7 +330,7 @@ in {
             };
 
             decoration = {
-              rounding = 8;
+              rounding = 14;
               rounding_power = 2;
               active_opacity = 1.0;
               inactive_opacity = 1.0;

@@ -365,6 +365,7 @@ in {
               force_default_wallpaper = 0;
             };
 
+            cursor.no_hardware_cursors = true;
             animations.enabled = true;
             dwindle.preserve_split = true;
           };

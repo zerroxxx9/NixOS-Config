@@ -17,11 +17,13 @@ in
           // {
             noisetorch = false;
             obsidian = true;
-            display-link = false;
+            display-link = true;
             distrobox = true;
             tailscale = true;
             vscode = true;
             zed = true;
+            opencloud = true;
+            collabora = true;
           };
         gui =
           default.modules.gui

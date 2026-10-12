@@ -2,6 +2,7 @@
   lib,
   config,
   hostVariables,
+  pkgs,
   inputs,
   ...
 }: let
@@ -34,6 +35,8 @@ in {
     home-manager.users.${hostVariables.username} = {
       imports = [inputs.noctalia.homeModules.default];
 
+      home.packages = [pkgs.rubik];
+
       programs.noctalia = {
         enable = true;
         package = noctaliaPackage;
@@ -50,7 +53,7 @@ in {
 
         settings = {
           shell = {
-            font_family = "JetBrains Mono";
+            font_family = "Rubik";
             settings_show_advanced = true;
             polkit_agent = true;
             clipboard_enabled = true;
@@ -69,55 +72,33 @@ in {
             };
             screen_corners = {
               enabled = true;
-              size = 32;
+              size = 24;
             };
           };
 
+          # Caelestia-style: slim vertical bar on the left, flat icons without
+          # capsule pills, concave corners so it reads as part of a frame.
           bar.main = {
-            position = "top";
-            thickness = 34;
+            position = "left";
+            thickness = 46;
             reserve_space = true;
             radius = 0;
             margin_ends = 0;
             margin_edge = 0;
-            background_opacity = 0.85;
+            background_opacity = 0.9;
             concave_edge_corners = true;
-            capsule = true;
-            capsule_fill = "surface_variant";
-            capsule_opacity = 0.9;
-            capsule_padding = 8.0;
-            widget_spacing = 6;
+            capsule = false;
+            widget_spacing = 10;
 
-            start = ["launcher" "wallpaper" "workspaces" "active_window"];
-            center = ["clock" "group:nowplaying"];
+            start = ["launcher" "workspaces"];
+            center = ["clock"];
             end = [
-              "group:tray"
+              "tray"
               "notifications"
-              "clipboard"
               "network"
               "volume"
-              "brightness"
               "control-center"
               "session"
-            ];
-            capsule_group = [
-              {
-                id = "nowplaying";
-                members = ["media" "audio_visualizer"];
-                fill = "surface_variant";
-                padding = 8.0;
-                opacity = 0.9;
-                widget_spacing = 8;
-              }
-              {
-                id = "tray";
-                members = ["tray" "bluetooth"];
-                fill = "surface_variant";
-                padding = 8.0;
-                opacity = 0.9;
-                accordion = true;
-                accordion_direction = "end";
-              }
             ];
           };
           widget = {
@@ -155,47 +136,14 @@ in {
             };
           };
 
-          dock = {
-            enabled = true;
-            position = "bottom";
-
-            icon_size = 32;
-            item_spacing = 8;
-            main_axis_padding = 10;
-            cross_axis_padding = 8;
-            radius = 18;
-            margin_edge = 6;
-            margin_ends = 0;
-            concave_edge_corners = false;
-            background_opacity = 0.85;
-            shadow = true;
-
-            magnification = true;
-            magnification_scale = 1.45;
-            show_running = true;
-            show_dots = true;
-            show_instance_count = true;
-            reserve_space = true;
-
-            pinned = [
-              "brave-browser"
-              "vesktop"
-              "Alacritty"
-              "code"
-              "dev.zed.Zed"
-              "obsidian"
-              "org.gnome.Nautilus"
-              "spotify"
-              "steam"
-            ];
-          };
+          dock.enabled = false;
 
           # Colours follow the wallpaper. `Urban` stays defined above as a
           # fallback, selectable from Settings -> Color Scheme at any time.
           theme = {
             mode = "dark";
             source = "wallpaper";
-            wallpaper_scheme = "m3-content";
+            wallpaper_scheme = "m3-vibrant";
             custom_palette = "Urban";
             pure_black_dark = false;
           };

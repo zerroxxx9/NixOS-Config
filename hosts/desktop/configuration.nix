@@ -4,7 +4,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   imports = [
     ./hardware-configuration.nix
   ];
@@ -14,11 +15,18 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # NTFS 1TB HDD (Toshiba HDWD110), auto-mounted for the desktop user
-  boot.supportedFilesystems = ["ntfs"];
+  boot.supportedFilesystems = [ "ntfs" ];
   fileSystems."/mnt/hdd" = {
     device = "/dev/disk/by-uuid/6E5873AB58737127";
     fsType = "ntfs3";
-    options = ["rw" "uid=1000" "gid=100" "windows_names" "nofail" "force"];
+    options = [
+      "rw"
+      "uid=1000"
+      "gid=100"
+      "windows_names"
+      "nofail"
+      "force"
+    ];
   };
 
   networking = {
@@ -27,7 +35,10 @@
       enable = true;
       dns = "systemd-resolved";
     };
-    nameservers = ["1.1.1.1#cloudflare-dns.com" "1.0.0.1#cloudflare-dns.com"];
+    nameservers = [
+      "1.1.1.1#cloudflare-dns.com"
+      "1.0.0.1#cloudflare-dns.com"
+    ];
   };
 
   virtualisation.virtualbox.host.enable = true;
@@ -35,10 +46,16 @@
   services.resolved = {
     enable = true;
     settings.Resolve = {
-      DNS = ["1.1.1.1#cloudflare-dns.com" "1.0.0.1#cloudflare-dns.com"];
+      DNS = [
+        "1.1.1.1#cloudflare-dns.com"
+        "1.0.0.1#cloudflare-dns.com"
+      ];
       DNSSEC = "true";
-      Domains = ["~."];
-      FallbackDNS = ["1.1.1.1" "1.0.0.1"];
+      Domains = [ "~." ];
+      FallbackDNS = [
+        "1.1.1.1"
+        "1.0.0.1"
+      ];
       DNSOverTLS = "yes";
     };
   };
@@ -49,7 +66,7 @@
   # Keep resolv.conf useful for tools that read it directly and reject 127.0.0.53.
   environment.etc."resolv.conf".source = lib.mkForce "/run/systemd/resolve/resolv.conf";
 
-  age.identityPaths = ["/var/lib/agenix/desktop-agenix"];
+  age.identityPaths = [ "/var/lib/agenix/desktop-agenix" ];
 
   time.timeZone = "Europe/Berlin";
 
@@ -59,6 +76,9 @@
     variant = "";
   };
   console.keyMap = "de";
+
+  # Logitech G305: configure DPI/polling rate via Piper
+  services.ratbagd.enable = true;
 
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -91,24 +111,30 @@
     # Q9 (0d8c:0135) - prevent suspend that can wedge streaming
     ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0d8c", ATTR{idProduct}=="0135", TEST=="power/control", ATTR{power/control}="on"
   '';
-  boot.kernelParams = ["usbcore.autosuspend=-1"];
+  boot.kernelParams = [ "usbcore.autosuspend=-1" ];
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
 
   xdg.portal = {
     enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gnome];
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
   };
 
   users.users.${hostVariables.username} = {
     isNormalUser = true;
     description = "zerrox";
-    extraGroups = ["networkmanager" "wheel" "vboxusers" "libvirtd" "kvm"];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "vboxusers"
+      "libvirtd"
+      "kvm"
+    ];
   };
 
   programs.direnv.enable = true;
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [biome];
+  programs.nix-ld.libraries = with pkgs; [ biome ];
 
   programs.firefox.enable = true;
   programs.chromium = {
@@ -124,8 +150,8 @@
 
   systemd.services.enable-wake-on-lan = {
     description = "enable wakeonlan";
-    wantedBy = ["multi-user.target"];
-    after = ["network.target"];
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.ethtool}/sbin/ethtool -s enp9s0 wol g";
@@ -169,6 +195,7 @@
     thunderbird
     claude-code
     orca-slicer
+    prusa-slicer
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"

@@ -3,6 +3,7 @@
   lib,
   config,
   hostVariables,
+  inputs,
   ...
 }: let
   cfg = config.modules.gui.hyprland;
@@ -25,6 +26,7 @@
   # runs once at config load, so this watches socket2 for monitoradded/
   # monitorremoved and re-applies the state live via `hyprctl keyword`.
   dockDisplay = lib.attrByPath ["hyprland" "dockDisplay"] null hostVariables;
+  synchronizedWorkspaces = lib.attrByPath ["hyprland" "synchronizedWorkspaces"] null hostVariables;
 
   dockDisplayScript =
     if dockDisplay == null
@@ -67,9 +69,84 @@
         done
       '';
 
+  synchronizedWorkspaceScript =
+    if synchronizedWorkspaces == null
+    then null
+    else
+      pkgs.writeShellScript "hypr-synchronized-workspace" ''
+        set -euo pipefail
+
+        mode="''${1:?expected switch or move}"
+        number="''${2:?expected workspace number}"
+        left=${lib.escapeShellArg synchronizedWorkspaces.left}
+        right=${lib.escapeShellArg synchronizedWorkspaces.right}
+        current=$(hyprctl activeworkspace -j | jq -r '.monitor')
+
+        case "$mode" in
+          switch)
+            hyprctl dispatch "hl.dsp.focus({ monitor = \"$left\" })" >/dev/null
+            hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$number-left\" })" >/dev/null
+            hyprctl dispatch "hl.dsp.focus({ monitor = \"$right\" })" >/dev/null
+            hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$number-right\" })" >/dev/null
+            hyprctl dispatch "hl.dsp.focus({ monitor = \"$current\" })" >/dev/null
+            ;;
+          move)
+            case "$current" in
+              "$left")
+                target="name:$number-left"
+                ;;
+              "$right")
+                target="name:$number-right"
+                ;;
+              *)
+                hyprctl dispatch "hl.dsp.window.move({ workspace = $number, silent = true })" >/dev/null
+                "$0" switch "$number"
+                exit
+                ;;
+            esac
+            hyprctl dispatch "hl.dsp.window.move({ workspace = \"$target\", silent = true })" >/dev/null
+            "$0" switch "$number"
+            ;;
+          *)
+            echo "unknown mode: $mode" >&2
+            exit 2
+            ;;
+        esac
+      '';
+
   mod = "SUPER";
   terminal = "alacritty";
   noctaliaEnabled = config.modules.gui.noctalia.enable;
+  hyprviewEnabled = lib.attrByPath ["modules" "gui" "qs-hyprview"] false hostVariables;
+  hyprviewQuickshell = pkgs.symlinkJoin {
+    name = "quickshell-with-qt5compat";
+    paths = [pkgs.quickshell];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram "$out/bin/quickshell" \
+        --prefix NIXPKGS_QT6_QML_IMPORT_PATH : "${pkgs.qt6.qt5compat}/lib/qt-6/qml"
+    '';
+  };
+  hyprspace = pkgs.gcc14Stdenv.mkDerivation {
+    pname = "Hyprspace";
+    version = "0.1-${builtins.substring 0 7 inputs.hyprspace.rev}";
+    src = inputs.hyprspace;
+    nativeBuildInputs = pkgs.hyprland.nativeBuildInputs;
+    buildInputs = [pkgs.hyprland] ++ pkgs.hyprland.buildInputs;
+    dontUseCmakeConfigure = true;
+    installFlags = ["PREFIX=$(out)"];
+    postInstall = ''
+      mv "$out/lib/Hyprspace.so" "$out/lib/libHyprspace.so"
+    '';
+  };
+  hyprspaceLoadScript = pkgs.writeShellScript "load-hyprspace" ''
+    set -euo pipefail
+
+    if ! hyprctl plugin list | grep -q '^Plugin Hyprspace '; then
+      hyprctl plugin load "${hyprspace}/lib/libHyprspace.so"
+    fi
+    hyprctl reload
+  '';
   ipc = cmd: ''hl.dsp.exec_cmd("noctalia msg ${cmd}")'';
 
   mkBind = keys: dispatcher: {_args = [keys (mkLuaInline dispatcher)];};
@@ -133,6 +210,16 @@
     (mkBindOpts "${mod} + Insert" (ipc "screenshot-fullscreen") locked)
   ];
 
+  overviewBinds =
+    lib.optionals hyprviewEnabled [
+      (mkBind "${mod} + TAB" ''hl.dsp.exec_cmd("${hyprviewQuickshell}/bin/quickshell ipc -c qs-hyprview call expose toggle smartgrid")'')
+    ]
+    ++ [
+      (mkBind "${mod} + SHIFT + TAB" ''        function()
+                    hl.plugin.overview.toggle("all")
+                  end'')
+    ];
+
   noctaliaRules = lib.optionals noctaliaEnabled [
     {
       name = "noctalia";
@@ -141,6 +228,15 @@
       ignore_alpha = 0.5;
       blur = true;
       blur_popups = true;
+    }
+  ];
+
+  hyprviewRules = lib.optionals hyprviewEnabled [
+    {
+      name = "qs-hyprview";
+      match.namespace = "^quickshell:expose$";
+      dim_around = true;
+      blur = true;
     }
   ];
 
@@ -153,22 +249,56 @@
     }
   ];
 
-  persistentWorkspaces = lib.optionals noctaliaEnabled (
-    map (i: {
-      workspace = toString i;
-      persistent = true;
-    }) (lib.range 1 5)
-  );
+  persistentWorkspaces =
+    if synchronizedWorkspaces != null
+    then
+      lib.concatMap (
+        i:
+          map (side: {
+            workspace = "name:${toString i}-${side.name}";
+            monitor = side.monitor;
+            persistent = true;
+          }) [
+            {
+              name = "left";
+              monitor = synchronizedWorkspaces.left;
+            }
+            {
+              name = "right";
+              monitor = synchronizedWorkspaces.right;
+            }
+          ]
+      ) (lib.range 1 synchronizedWorkspaces.count)
+    else
+      lib.optionals noctaliaEnabled (
+        map (i: {
+          workspace = toString i;
+          persistent = true;
+        }) (lib.range 1 5)
+      );
 
-  workspaceBinds = lib.concatMap (i: let
-    key =
-      if i == 10
-      then "0"
-      else toString i;
-  in [
-    (mkBind "${mod} + ${key}" "hl.dsp.focus({ workspace = ${toString i} })")
-    (mkBind "${mod} + SHIFT + ${key}" "hl.dsp.window.move({ workspace = ${toString i} })")
-  ]) (lib.range 1 10);
+  workspaceBinds =
+    lib.concatMap (i: let
+      key =
+        if i == 10
+        then "0"
+        else toString i;
+    in [
+      (
+        if synchronizedWorkspaces != null
+        then (mkBind "${mod} + ${key}" ''hl.dsp.exec_cmd("${synchronizedWorkspaceScript} switch ${toString i}")'')
+        else (mkBind "${mod} + ${key}" "hl.dsp.focus({ workspace = ${toString i} })")
+      )
+      (
+        if synchronizedWorkspaces != null
+        then (mkBind "${mod} + SHIFT + ${key}" ''hl.dsp.exec_cmd("${synchronizedWorkspaceScript} move ${toString i}")'')
+        else (mkBind "${mod} + SHIFT + ${key}" "hl.dsp.window.move({ workspace = ${toString i} })")
+      )
+    ]) (lib.range 1 (
+      if synchronizedWorkspaces != null
+      then synchronizedWorkspaces.count
+      else 10
+    ));
 
   catppuccinGtk = pkgs.catppuccin-gtk.override {
     accents = ["blue"];
@@ -329,21 +459,25 @@ in {
               };
             };
 
-            decoration = {
-              rounding = 14;
-              rounding_power = 2;
-              active_opacity = 1.0;
-              inactive_opacity = 1.0;
+            decoration =
+              {
+                rounding = 14;
+                rounding_power = 2;
+                active_opacity = 1.0;
+                inactive_opacity = 1.0;
 
-              blur = {
-                enabled = true;
-                size = 8;
-                passes = 2;
-                new_optimizations = true;
+                blur = {
+                  enabled = true;
+                  size = 8;
+                  passes = 2;
+                  new_optimizations = true;
+                };
+
+                shadow.enabled = false;
+              }
+              // lib.optionalAttrs hyprviewEnabled {
+                dim_around = 0.8;
               };
-
-              shadow.enabled = false;
-            };
 
             input = {
               kb_layout = "de";
@@ -363,6 +497,21 @@ in {
               disable_hyprland_logo = true;
               disable_splash_rendering = true;
               force_default_wallpaper = 0;
+            };
+
+            plugin.overview = {
+              panelColor = "rgba(1e1e2eee)";
+              panelBorderColor = "rgba(5c98cdee)";
+              workspaceActiveBackground = "rgba(5c98cd44)";
+              workspaceActiveBorder = "rgba(5c98cdee)";
+              workspaceInactiveBackground = "rgba(2f3943aa)";
+              workspaceInactiveBorder = "rgba(2f3943dd)";
+              centerAligned = true;
+              autoDrag = true;
+              exitOnClick = true;
+              exitOnSwitch = true;
+              showNewWorkspace = false;
+              showEmptyWorkspace = true;
             };
 
             cursor.no_hardware_cursors = true;
@@ -470,9 +619,10 @@ in {
             ]
             ++ workspaceBinds
             ++ mediaBinds
-            ++ noctaliaBinds;
+            ++ noctaliaBinds
+            ++ overviewBinds;
 
-          layer_rule = noctaliaRules;
+          layer_rule = noctaliaRules ++ hyprviewRules;
 
           workspace_rule = persistentWorkspaces;
 
@@ -489,19 +639,25 @@ in {
         };
       };
 
-      home.packages = with pkgs; [
-        acpi
-        alsa-utils
-        bc
-        catppuccinGtk
-        fd
-        gtk3
-        pamixer
-        pavucontrol
-        papirus-icon-theme
-        ripgrep
-        tree
-      ];
+      home.packages =
+        (with pkgs; [
+          acpi
+          alsa-utils
+          bc
+          catppuccinGtk
+          fd
+          gtk3
+          pamixer
+          pavucontrol
+          papirus-icon-theme
+          ripgrep
+          tree
+        ])
+        ++ lib.optionals hyprviewEnabled [hyprviewQuickshell];
+
+      xdg.configFile = lib.optionalAttrs hyprviewEnabled {
+        "quickshell/qs-hyprview".source = inputs.qs-hyprview;
+      };
 
       gtk = {
         enable = true;
@@ -564,23 +720,58 @@ in {
 
       services.easyeffects.enable = true;
 
-      systemd.user.services = lib.optionalAttrs (dockDisplay != null) {
-        hypr-dock-display = {
-          Unit = {
-            Description = "Disable the laptop display while docked, enable it when undocked";
-            PartOf = ["hyprland-session.target"];
-            After = ["hyprland-session.target"];
+      systemd.user.services =
+        (lib.optionalAttrs (dockDisplay != null) {
+          hypr-dock-display = {
+            Unit = {
+              Description = "Disable the laptop display while docked, enable it when undocked";
+              PartOf = ["hyprland-session.target"];
+              After = ["hyprland-session.target"];
+            };
+            Service = {
+              Type = "simple";
+              ExecStart = "${dockDisplayScript}";
+              Restart = "on-failure";
+            };
+            Install = {
+              WantedBy = ["hyprland-session.target"];
+            };
           };
-          Service = {
-            Type = "simple";
-            ExecStart = "${dockDisplayScript}";
-            Restart = "on-failure";
+        })
+        // (lib.optionalAttrs hyprviewEnabled {
+          qs-hyprview = {
+            Unit = {
+              Description = "Quickshell Hyprland window overview";
+              PartOf = ["hyprland-session.target"];
+              After = ["hyprland-session.target"];
+            };
+            Service = {
+              Type = "simple";
+              ExecStart = "${hyprviewQuickshell}/bin/quickshell -c qs-hyprview";
+              Restart = "on-failure";
+            };
+            Install = {
+              WantedBy = ["hyprland-session.target"];
+            };
           };
-          Install = {
-            WantedBy = ["hyprland-session.target"];
+        })
+        // {
+          hyprspace = {
+            Unit = {
+              Description = "Load the Hyprspace plugin";
+              PartOf = ["hyprland-session.target"];
+              After = ["hyprland-session.target"];
+            };
+            Service = {
+              Type = "oneshot";
+              ExecStart = "${hyprspaceLoadScript}";
+              RemainAfterExit = true;
+            };
+            Install = {
+              WantedBy = ["hyprland-session.target"];
+            };
           };
         };
-      };
     };
   };
 }

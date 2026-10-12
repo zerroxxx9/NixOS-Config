@@ -34,6 +34,16 @@
 
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
 
+    qs-hyprview = {
+      url = "github:dom0/qs-hyprview";
+      flake = false;
+    };
+
+    hyprspace = {
+      url = "github:KZDKM/Hyprspace/3624878a7b6c00dfa77e351438fa209df99ad81d";
+      flake = false;
+    };
+
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";

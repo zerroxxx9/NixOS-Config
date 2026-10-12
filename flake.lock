@@ -80,6 +80,26 @@
         "type": "github"
       }
     },
+    "disko": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789770686,
+        "narHash": "sha256-uZkBR7yHdIKUFB5SZdfgh1qkGfI3XmYmI/lTiquxbck=",
+        "owner": "nix-community",
+        "repo": "disko",
+        "rev": "725ea35e410ad83be4931d1bff7e090eacaf3563",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "disko",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -156,6 +176,23 @@
         "owner": "nix-community",
         "ref": "release-26.05",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "hyprspace": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783461049,
+        "narHash": "sha256-MLjX/A6pudwEl11LEesaAdOG8toqo1GHROLsoWKnT+o=",
+        "owner": "KZDKM",
+        "repo": "Hyprspace",
+        "rev": "3624878a7b6c00dfa77e351438fa209df99ad81d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "KZDKM",
+        "repo": "Hyprspace",
+        "rev": "3624878a7b6c00dfa77e351438fa209df99ad81d",
         "type": "github"
       }
     },
@@ -339,10 +376,28 @@
         "type": "github"
       }
     },
+    "qs-hyprview": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787327250,
+        "narHash": "sha256-slTEDoCmqEzL0DkixyNO+RwXNaj8lxL7S2mLcCy3NoY=",
+        "owner": "dom0",
+        "repo": "qs-hyprview",
+        "rev": "1fdea0ac9faea585771d4da3680397e449285706",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dom0",
+        "repo": "qs-hyprview",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "disko": "disko",
         "home-manager": "home-manager",
+        "hyprspace": "hyprspace",
         "llm-agents": "llm-agents",
         "nix-vscode-extensions": "nix-vscode-extensions",
         "nixos-wsl": "nixos-wsl",
@@ -350,6 +405,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixvim": "nixvim",
         "noctalia": "noctalia",
+        "qs-hyprview": "qs-hyprview",
         "spicetify-nix": "spicetify-nix"
       }
     },

@@ -26,6 +26,7 @@
     ./sunshine.nix
     ./mealie.nix
     ./freshrss.nix
+    ./learninghub.nix
     ./nixvim.nix
     ./zed.nix
     ./zellij.nix

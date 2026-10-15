@@ -48,6 +48,7 @@
       sunshine = false;
       mealie = false;
       freshrss = false;
+      learninghub = false;
       zed = false;
       zellij = true;
     };

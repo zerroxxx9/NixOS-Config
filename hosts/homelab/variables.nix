@@ -54,6 +54,7 @@ in
             fail2ban = true;
             mealie = false;
             freshrss = true;
+            learninghub = true;
           };
         systemSettings =
           default.modules.systemSettings

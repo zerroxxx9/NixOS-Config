@@ -4,6 +4,7 @@
   ...
 }: let
   opencloudPort = 9200;
+  opencloudUser = "opencloud-daemon";
   cfg = config.modules.software.opencloud;
   tsCfg = config.modules.software.tailscale;
 in {
@@ -17,28 +18,37 @@ in {
 
     uid = lib.mkOption {
       type = lib.types.int;
-      default = 994;
+      default = 987;
     };
 
     gid = lib.mkOption {
       type = lib.types.int;
-      default = 994;
+      default = 982;
     };
+
   };
 
   config = lib.mkIf cfg.enable {
     services.opencloud = {
       enable = true;
+      user = opencloudUser;
+      group = opencloudUser;
       address = "127.0.0.1";
       port = opencloudPort;
       url = tsCfg.serve.opencloud.url;
       stateDir = cfg.stateDir;
     };
 
-    users.users.opencloud.uid = cfg.uid;
-    users.groups.opencloud.gid = cfg.gid;
+    users.users.${opencloudUser} = {
+      uid = cfg.uid;
+      group = opencloudUser;
+      isSystemUser = true;
+      home = cfg.stateDir;
+    };
+    users.groups.${opencloudUser}.gid = cfg.gid;
 
     systemd.services.opencloud.unitConfig.RequiresMountsFor = [cfg.stateDir];
+    systemd.services.opencloud.serviceConfig.EnvironmentFile = "-${cfg.stateDir}/admin.env";
 
     modules.software.tailscale.serve.opencloud = {
       port = 443;

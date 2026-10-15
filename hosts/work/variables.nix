@@ -17,11 +17,13 @@ in
           // {
             noisetorch = false;
             obsidian = true;
-            display-link = false;
+            display-link = true;
             distrobox = true;
             tailscale = true;
             vscode = true;
             zed = true;
+            opencloud = true;
+            collabora = true;
           };
         gui =
           default.modules.gui
@@ -29,6 +31,7 @@ in
             gnome = false;
             hyprland = true;
             noctalia = true;
+            qs-hyprview = true;
           };
         security =
           default.modules.security
@@ -53,6 +56,11 @@ in
         dockDisplay = {
           laptop = "eDP-1";
           dockOutputs = ["DP-9" "DP-8"];
+        };
+        synchronizedWorkspaces = {
+          left = "DVI-I-1";
+          right = "DVI-I-2";
+          count = 10;
         };
         monitors = [
           {

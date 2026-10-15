@@ -19,6 +19,7 @@
       gnome = true;
       hyprland = false;
       noctalia = false;
+      qs-hyprview = false;
     };
     software = {
       collabora = false;

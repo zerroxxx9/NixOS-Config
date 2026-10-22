@@ -72,10 +72,10 @@
 
   services.xserver.enable = true;
   services.xserver.xkb = {
-    layout = "de";
+    layout = "us";
     variant = "";
   };
-  console.keyMap = "de";
+  console.keyMap = "us";
 
   # Logitech G305: configure DPI/polling rate via Piper
   services.ratbagd.enable = true;

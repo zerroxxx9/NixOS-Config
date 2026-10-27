@@ -27,6 +27,7 @@
   # monitorremoved and re-applies the state live via `hyprctl keyword`.
   dockDisplay = lib.attrByPath ["hyprland" "dockDisplay"] null hostVariables;
   synchronizedWorkspaces = lib.attrByPath ["hyprland" "synchronizedWorkspaces"] null hostVariables;
+  kbLayout = lib.attrByPath ["hyprland" "kbLayout"] "de" hostVariables;
 
   dockDisplayScript =
     if dockDisplay == null
@@ -206,8 +207,8 @@
     (mkBindOpts "${mod} + L" (ipc "session lock") locked)
     (mkBindOpts "XF86PowerOff" (ipc "session lock") locked)
 
-    (mkBindOpts "Insert" (ipc "screenshot-region") locked)
-    (mkBindOpts "${mod} + Insert" (ipc "screenshot-fullscreen") locked)
+    (mkBindOpts "Prior" (ipc "screenshot-region") locked)
+    (mkBindOpts "${mod} + Prior" (ipc "screenshot-fullscreen") locked)
   ];
 
   overviewBinds =
@@ -425,6 +426,10 @@ in {
         enable = true;
         systemd.enable = true;
         configType = "lua";
+        # The system-level xdg.portal already provides hyprland + gtk. HM's own
+        # portal would set NIX_XDG_DESKTOP_PORTAL_DIR to a per-user profile
+        # holding only the hyprland portal, hiding the gtk FileChooser.
+        portalPackage = null;
 
         # Border colours follow the wallpaper. Noctalia renders
         # ~/.config/hypr/noctalia.lua and, finding this require already
@@ -484,7 +489,7 @@ in {
               };
 
             input = {
-              kb_layout = "de";
+              kb_layout = kbLayout;
               kb_variant = "";
               kb_model = "";
               kb_options = "";

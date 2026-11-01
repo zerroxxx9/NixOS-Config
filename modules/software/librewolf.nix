@@ -71,9 +71,6 @@
       "privacy.query_stripping.enabled.pbmode" = true;
       "privacy.resistFingerprinting" = true;
       "privacy.sanitize.sanitizeOnShutdown" = true;
-      "signon.autofillForms" = false;
-      "signon.formlessCapture.enabled" = false;
-      "signon.rememberSignons" = false;
       "webgl.disabled" = true;
       "webgl.enable-debug-renderer-info" = false;
       "webgl.enable-webgl2" = false;
@@ -209,6 +206,30 @@
     "privacy.sanitize.clearOnShutdown.offlineApps" = false;
     "privacy.sanitize.clearOnShutdown.sessions" = false;
     "privacy.sanitize.clearOnShutdown.siteSettings" = false;
+  };
+
+  # Let the browser offer to save and autofill logins (work profile only).
+  # Policies are global, so anon/persona rely on defaultSettings keeping these off.
+  savePasswordSettings = {
+    "signon.rememberSignons" = true;
+    "signon.autofillForms" = true;
+    "signon.formlessCapture.enabled" = true;
+  };
+
+  # Reopen the previous windows/tabs on launch.
+  restoreSessionSettings = {
+    "browser.startup.page" = 3;
+    "browser.sessionstore.resume_from_crash" = true;
+  };
+
+  # Native vertical tabs in the left sidebar (Firefox 136+). The sidebar stays
+  # collapsed to icons and expands over the page on hover to show tab titles.
+  verticalTabsSettings = {
+    "sidebar.revamp" = true;
+    "sidebar.verticalTabs" = true;
+    "sidebar.visibility" = "expand-on-hover";
+    # Hover slide-out duration (Firefox default is 400ms).
+    "sidebar.animation.expand-on-hover.duration-ms" = 200;
   };
 
   # Letterboxing pads the content area to fixed-size buckets to resist
@@ -451,8 +472,6 @@ in {
               private_browsing = true;
             };
           };
-          OfferToSaveLogins = false;
-          PasswordManagerEnabled = false;
           Preferences = lockedPrivacyPreferences;
         };
 
@@ -469,7 +488,7 @@ in {
           path = "default"; # keep the existing ~/.librewolf/default data
           isDefault = true;
 
-          settings = defaultSettings // defaultProfileSettings // persistentProfileSettings // noLetterboxingSettings // cfg.settings;
+          settings = defaultSettings // defaultProfileSettings // persistentProfileSettings // restoreSessionSettings // savePasswordSettings // verticalTabsSettings // noLetterboxingSettings // cfg.settings;
 
           containersForce = true;
           containers = {

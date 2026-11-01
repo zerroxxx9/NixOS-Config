@@ -197,12 +197,8 @@ in {
         enable = true;
         settings = {
           logo = {
-            type = "kitty-direct";
-            source = "${home}/.dotfiles/assets/profilePictures/kitty.jpg";
-            width = 24;
-            height = 11;
+            source = "nixos";
             padding = {
-              top = 1;
               right = 3;
             };
           };
@@ -255,7 +251,7 @@ in {
             {
               type = "colors";
               symbol = "circle";
-              paddingLeft = 26;
+              paddingLeft = 0;
             }
           ];
         };

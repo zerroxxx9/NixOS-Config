@@ -101,9 +101,17 @@
     };
   };
 
-  modules.software.immich.mediaLocation = "/mnt/nas/immich";
+  modules.software.immich = {
+    mediaLocation = "/mnt/nas/immich";
+    uid = 996;
+    gid = 996;
+  };
 
-  modules.software.opencloud.stateDir = "/mnt/nas/opencloud";
+  modules.software.opencloud = {
+    stateDir = "/mnt/nas/opencloud";
+    uid = 994;
+    gid = 994;
+  };
 
   modules.software.paperless-ngx = {
     mediaDir = "/mnt/nas/paperless/media";

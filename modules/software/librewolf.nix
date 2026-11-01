@@ -7,7 +7,7 @@
 }: let
   cfg = config.modules.software.librewolf;
 
-  newTabWallpaper = "${../../assets/wallpaper/kim-jaehyun-260126-01.png}";
+  newTabWallpaper = "${../../assets/wallpaper/wanderer.png}";
   firefoxExtensionPath = "share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
 
   mkFetchedFirefoxExtension = {

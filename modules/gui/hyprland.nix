@@ -175,6 +175,7 @@
 
     (mkBind "${mod} + C" (qs "clipboard toggle"))
     (mkBind "${mod} + W" (qs "wallpapers toggle"))
+    (mkBind "${mod} + I" (qs "settings toggle"))
     (mkBind "${mod} + SHIFT + W" (run "random-wallpaper"))
     (mkBind "ALT + TAB" (qs "switcher next"))
     (mkBind "ALT + SHIFT + TAB" (qs "switcher prev"))
@@ -578,6 +579,12 @@ in {
 
           window_rule =
             [
+              {
+                name = "shell-settings";
+                match.title = "^(Settings)$";
+                float = true;
+                center = true;
+              }
               {
                 name = "cs2-immediate";
                 match.class = "^(cs2)$";

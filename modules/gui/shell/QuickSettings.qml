@@ -14,6 +14,7 @@ Item {
     id: panel
     signal closeRequested
     signal wallpapersRequested
+    signal settingsRequested
 
     implicitWidth: 560
     implicitHeight: col.implicitHeight + 20
@@ -271,6 +272,10 @@ Item {
             }
             Row {
                 spacing: 8
+                RoundButton {
+                    icon: "\uf013"
+                    onActivated: { panel.closeRequested(); panel.settingsRequested(); }
+                }
                 RoundButton {
                     icon: ""
                     onActivated: { panel.run(["loginctl", "lock-session"]); panel.closeRequested(); }

@@ -13,6 +13,7 @@ ShellRoot {
     property bool launcherOpen: false
     property bool wallpapersOpen: false
     property bool clipboardOpen: false
+    property bool settingsOpen: false
     property real clipX: 0
     property real clipY: 0
     signal panelToggle
@@ -27,6 +28,13 @@ ShellRoot {
         function toggle(): void { root.wallpapersOpen = !root.wallpapersOpen; }
         function open(): void { root.wallpapersOpen = true; }
         function close(): void { root.wallpapersOpen = false; }
+    }
+
+    IpcHandler {
+        target: "settings"
+        function toggle(): void { root.settingsOpen = !root.settingsOpen; }
+        function open(): void { root.settingsOpen = true; }
+        function close(): void { root.settingsOpen = false; }
     }
 
     IpcHandler {
@@ -68,6 +76,12 @@ ShellRoot {
     Theme { id: theme; path: settings.themeFile }
 
     SwitcherController { id: switcher }
+
+    SettingsWindow {
+        open: root.settingsOpen
+        onCloseRequested: root.settingsOpen = false
+        onWallpapersRequested: { root.settingsOpen = false; root.wallpapersOpen = true; }
+    }
 
     Variants {
         model: Quickshell.screens
@@ -231,6 +245,7 @@ ShellRoot {
                         Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                         onCloseRequested: scope.open = false
                         onWallpapersRequested: root.wallpapersOpen = true
+                        onSettingsRequested: root.settingsOpen = true
                         Connections {
                             target: scope
                             function onOpenChanged() { if (scope.open) panel.refresh(); }

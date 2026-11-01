@@ -1,0 +1,5 @@
+[colors]
+accent = "#d70a53"      # Debian red
+ui_primary = "#d70a53"
+ui_on_primary = "#ffffff"
+lyrics = "#d70a53"

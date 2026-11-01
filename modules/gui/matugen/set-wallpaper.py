@@ -8,7 +8,15 @@ matugen renders the templates -> reload apps. --preview stops after the
 contrast check and prints the numbers without applying anything.
 
 A `<image>.theme.toml` next to the wallpaper (`harbor.png` -> `harbor.theme.toml`)
-may pin `accent` (hex), `scheme` and `mode`.
+may pin `accent` (hex), `scheme` and `mode`, and override single colours in a
+`[colors]` table (any name from the --preview report, e.g. `keyword`, `text`,
+`ui_surface`, `ansi_red`). Overrides are applied last, after the contrast
+check, so they are used exactly as written:
+
+    accent = "#7aa2f7"
+    [colors]
+    keyword = "#ff79c6"
+    ui_surface = "#10131a"
 """
 import argparse
 import colorsys
@@ -229,6 +237,14 @@ def main():
         scheme, accent = "scheme-neutral", "#6c8ebf"
 
     hexed, ui, mode, scheme, _ = build(image, mode, scheme, accent)
+    hexed["lyrics"] = hexed["accent"]  # kinetic lyrics colour; follows the accent unless overridden
+    for name, value in override.get("colors", {}).items():
+        if name not in hexed:
+            print(f"warning: unknown colour '{name}' in {theme_file.name}", file=sys.stderr)
+        elif not (isinstance(value, str) and len(value) == 7 and value.startswith("#")):
+            print(f"warning: '{name}' must be a #rrggbb hex string", file=sys.stderr)
+        else:
+            hexed[name] = value.lower()
     opacity = with_opacity(hexed, image, mode == "dark")
     hexed["opacity"] = f"{opacity:.2f}"
     # Same fill alpha as the shell panels (opacity * 0.6), as hex for mako.

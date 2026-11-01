@@ -234,6 +234,12 @@ Item {
             }
         }
 
+        // Now playing
+        MediaCard {
+            Layout.fillWidth: true
+            Layout.preferredHeight: implicitHeight
+        }
+
         // Sliders, battery, power
         RowLayout {
             Layout.fillWidth: true

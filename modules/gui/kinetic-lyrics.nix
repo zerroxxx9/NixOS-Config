@@ -23,7 +23,7 @@
     uppercase = true;
     scriptMaxLetters = 2;
     color = "#e8962c";
-    colorSource = "accent";
+    colorSource = "lyrics";
     colorsFile = "/home/${hostVariables.username}/.local/state/matugen/theme.json";
     shadow = true;
     heroSize = 150;

@@ -4,6 +4,7 @@
   "text": "{{adj.text}}",
   "textDim": "{{adj.text_dim}}",
   "accent": "{{adj.accent}}",
+  "lyrics": "{{adj.lyrics}}",
   "accentText": "{{adj.ui_on_primary}}",
   "outline": "{{adj.ui_outline_variant}}",
   "success": "{{adj.success}}",

@@ -29,6 +29,27 @@
     }
   '';
 
+  lockSettingsQml = ''
+    import QtQuick
+
+    QtObject {
+        property string font: "Geist"
+        property string themeFile: ${builtins.toJSON "${home}/.local/state/matugen/theme.json"}
+        property string stateDir: ${builtins.toJSON "${home}/.local/state/matugen"}
+        property string username: ${builtins.toJSON hostVariables.username}
+        property string avatar: ${builtins.toJSON "${home}/.dotfiles/assets/profilePictures/kitty.jpg"}
+    }
+  '';
+
+  lockScreen = pkgs.writeShellApplication {
+    name = "lock-screen";
+    runtimeInputs = [pkgs.quickshell pkgs.procps];
+    text = ''
+      pgrep -f "quickshell -c lock" >/dev/null && exit 0
+      exec quickshell -c lock
+    '';
+  };
+
   wallpaperDir = "${home}/.dotfiles/assets/wallpaper";
 
   screenshot = pkgs.writeShellApplication {
@@ -105,10 +126,12 @@ in {
     services.udisks2.enable = lib.mkDefault true;
 
     security.pam.services.hyprlock = {};
+    security.pam.services.quickshell-lock = {};
 
     environment.systemPackages = [
       screenshot
       randomWallpaper
+      lockScreen
       nightlight
       pkgs.mako
       pkgs.cliphist
@@ -128,6 +151,12 @@ in {
           recursive = true;
         };
         "quickshell/shell/Settings.qml".text = settingsQml;
+        "quickshell/lock" = {
+          source = ./lock;
+          recursive = true;
+        };
+        "quickshell/lock/Theme.qml".source = ./shell/Theme.qml;
+        "quickshell/lock/Settings.qml".text = lockSettingsQml;
       };
 
       systemd.user.services.shell = {
@@ -213,7 +242,7 @@ in {
         enable = true;
         settings = {
           general = {
-            lock_cmd = "pidof hyprlock || hyprlock";
+            lock_cmd = "lock-screen";
             before_sleep_cmd = "loginctl lock-session";
           };
           listener = [

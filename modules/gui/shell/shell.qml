@@ -12,6 +12,7 @@ ShellRoot {
 
     property bool launcherOpen: false
     property bool wallpapersOpen: false
+    property bool carouselOpen: false
     property bool clipboardOpen: false
     property bool settingsOpen: false
     property real clipX: 0
@@ -28,6 +29,17 @@ ShellRoot {
         function toggle(): void { root.wallpapersOpen = !root.wallpapersOpen; }
         function open(): void { root.wallpapersOpen = true; }
         function close(): void { root.wallpapersOpen = false; }
+    }
+
+    IpcHandler {
+        target: "wallpaperbar"
+        function toggle(): void {
+            root.launcherOpen = false;
+            root.wallpapersOpen = false;
+            root.carouselOpen = !root.carouselOpen;
+        }
+        function open(): void { root.carouselOpen = true; }
+        function close(): void { root.carouselOpen = false; }
     }
 
     IpcHandler {
@@ -90,6 +102,17 @@ ShellRoot {
             required property var modelData
             screen: modelData
             ctl: switcher
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens.filter(s => s.name === settings.output)
+
+        WallpaperCarousel {
+            required property var modelData
+            screen: modelData
+            open: root.carouselOpen
+            onCloseRequested: root.carouselOpen = false
         }
     }
 

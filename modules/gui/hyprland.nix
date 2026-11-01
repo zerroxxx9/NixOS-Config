@@ -176,6 +176,7 @@
     (mkBind "${mod} + C" (qs "clipboard toggle"))
     (mkBind "${mod} + W" (qs "wallpapers toggle"))
     (mkBind "${mod} + I" (qs "settings toggle"))
+    (mkBind "${mod} + CTRL + W" (qs "wallpaperbar toggle"))
     (mkBind "${mod} + SHIFT + W" (run "random-wallpaper"))
     (mkBind "ALT + TAB" (qs "switcher next"))
     (mkBind "ALT + SHIFT + TAB" (qs "switcher prev"))

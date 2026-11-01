@@ -13,6 +13,8 @@
     "nodiratime"
     "_netdev"
     "x-systemd.mount-timeout=90"
+    "x-systemd.requires=network-online.target"
+    "x-systemd.after=network-online.target"
   ];
 
   mkFileSystem = share: {

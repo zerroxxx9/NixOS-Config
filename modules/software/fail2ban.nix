@@ -1,5 +1,8 @@
-{ lib, config, ... }:
 {
+  lib,
+  config,
+  ...
+}: {
   options.modules.software.fail2ban = {
     enable = lib.mkEnableOption "fail2ban";
   };

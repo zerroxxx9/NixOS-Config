@@ -74,10 +74,10 @@ in {
       home.file =
         lib.listToAttrs
         (map (beatmap: {
-          name = "${cfg.beatmapImportDir}/${baseNameOf (toString beatmap)}";
-          value.source = beatmap;
-        })
-        cfg.beatmaps);
+            name = "${cfg.beatmapImportDir}/${baseNameOf (toString beatmap)}";
+            value.source = beatmap;
+          })
+          cfg.beatmaps);
 
       xdg.mimeApps = {
         enable = true;

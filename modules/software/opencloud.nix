@@ -25,7 +25,6 @@ in {
       type = lib.types.int;
       default = 982;
     };
-
   };
 
   config = lib.mkIf cfg.enable {

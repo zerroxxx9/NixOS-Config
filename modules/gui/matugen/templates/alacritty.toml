@@ -1,0 +1,31 @@
+[colors.primary]
+background = "{{adj.ui_surface}}"
+foreground = "{{adj.text}}"
+
+[colors.cursor]
+text = "{{adj.ui_surface}}"
+cursor = "{{adj.accent}}"
+
+[colors.selection]
+text = "{{adj.ui_on_primary_container}}"
+background = "{{adj.ui_primary_container}}"
+
+[colors.normal]
+black = "{{adj.ansi_black}}"
+red = "{{adj.ansi_red}}"
+green = "{{adj.ansi_green}}"
+yellow = "{{adj.ansi_yellow}}"
+blue = "{{adj.ansi_blue}}"
+magenta = "{{adj.ansi_magenta}}"
+cyan = "{{adj.ansi_cyan}}"
+white = "{{adj.ansi_white}}"
+
+[colors.bright]
+black = "{{adj.ansi_bright_black}}"
+red = "{{adj.ansi_bright_red}}"
+green = "{{adj.ansi_bright_green}}"
+yellow = "{{adj.ansi_bright_yellow}}"
+blue = "{{adj.ansi_bright_blue}}"
+magenta = "{{adj.ansi_bright_magenta}}"
+cyan = "{{adj.ansi_bright_cyan}}"
+white = "{{adj.ansi_bright_white}}"

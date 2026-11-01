@@ -1,0 +1,15 @@
+themes {
+  matugen {
+    fg "{{adj.text}}"
+    bg "{{adj.ui_surface}}"
+    black "{{adj.ansi_black}}"
+    red "{{adj.ansi_red}}"
+    green "{{adj.ansi_green}}"
+    yellow "{{adj.ansi_yellow}}"
+    blue "{{adj.ansi_blue}}"
+    magenta "{{adj.ansi_magenta}}"
+    cyan "{{adj.ansi_cyan}}"
+    white "{{adj.ansi_white}}"
+    orange "{{adj.number}}"
+  }
+}

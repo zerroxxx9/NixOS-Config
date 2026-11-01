@@ -2,11 +2,9 @@
   nixConfig = {
     extra-substituters = [
       "https://cache.numtide.com"
-      "https://noctalia.cachix.org"
     ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
     ];
   };
 
@@ -27,20 +25,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     spicetify-nix = {
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    noctalia.url = "github:noctalia-dev/noctalia/cachix";
-
-    qs-hyprview = {
-      url = "github:dom0/qs-hyprview";
-      flake = false;
-    };
-
-    hyprspace = {
-      url = "github:KZDKM/Hyprspace/3624878a7b6c00dfa77e351438fa209df99ad81d";
+    hyprexpo = {
+      url = "github:sandwichfarm/hyprexpo/e76761b268a0ee1747d41e21355fa315797a9bfd";
       flake = false;
     };
 
@@ -89,6 +84,7 @@
             {
               nixpkgs.config.permittedInsecurePackages = permittedInsecurePackages;
               nixpkgs.overlays = [
+                inputs.nur.overlays.default
                 (final: prev: {
                   unstable = pkgs-unstable;
                 })

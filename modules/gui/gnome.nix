@@ -12,14 +12,10 @@
     variant = "mocha";
   };
   catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
-  # With wallpaper-driven theming on, these colour definitions come from
-  # Noctalia's gtk3/gtk4 templates instead, regenerated on every palette
-  # change. The import has to stay first: GTK ignores @import once any other
-  # rule has been seen. Without theming, the static Catppuccin values remain.
   gtkColors =
-    if config.modules.gui.theming.enable
+    if config.modules.gui.matugen.enable
     then ''
-      @import url("noctalia.css");
+      @import url("matugen.css");
     ''
     else ''
       @define-color accent_color #89b4fa;

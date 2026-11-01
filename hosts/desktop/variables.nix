@@ -15,19 +15,16 @@ in
         software =
           default.modules.software
           // {
-            distrobox = true;
-            ctf = true;
+            ctf-browser = true;
             noisetorch = true;
             obsidian = true;
-            osu = true;
             display-link = false;
-            lmstudio = true;
             tailscale = true;
             tor = true;
+            vpn = true;
             vesktop = true;
             spicetify = true;
-            sunshine = true;
-            vscode = true;
+            vscode = false;
             zed = true;
             librewolf = true;
           };
@@ -36,11 +33,14 @@ in
           // {
             gnome = true;
             hyprland = true;
-            noctalia = true;
+            matugen = true;
+            shell = true;
+            kinetic-lyrics = true;
           };
         security =
           default.modules.security
           // {
+            pentest = true;
             yubikey = true;
             agenix = true;
           };
@@ -58,6 +58,7 @@ in
     hyprland =
       default.hyprland
       // {
+        kbLayout = "us";
         monitors = [
           {
             output = "DP-2";

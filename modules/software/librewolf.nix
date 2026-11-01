@@ -241,11 +241,11 @@
 
   userChrome = ''
     /* The --lw-* palette is rendered from the active wallpaper into a
-       sibling noctalia.css (modules/gui/theming.nix); userChrome.css itself
+       sibling matugen.css (modules/gui/matugen.nix); userChrome.css itself
        is a read-only store symlink. Must stay first: Firefox ignores
        @import after any other rule. Chrome CSS is read once at startup, so
        a colour change lands on the next browser launch. */
-    @import url("noctalia.css");
+    @import url("matugen.css");
 
     :root {
       --toolbar-bgcolor: var(--lw-bg) !important;

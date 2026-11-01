@@ -172,30 +172,17 @@
     gh
     zip
     unzip
-    chromium
-    element-desktop
-    codex
     busybox
     steam
-    heroic
     piper
     libratbag
     easyeffects
-    pnpm
-    nodejs_24
     burpsuite
-    jython
-    qemu
-    virt-manager
-    virt-viewer
     cloudflare-warp
     ethtool
-    lutris
     geary
-    thunderbird
     claude-code
     orca-slicer
-    prusa-slicer
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
@@ -211,7 +198,6 @@
     desktopBookmarks = false;
   };
 
-  # YubiKey f?r SSH zu GitHub nutzen
   modules.security.yubikey = {
     enableSSH = true;
     enablePAM = false;

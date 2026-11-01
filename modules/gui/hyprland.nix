@@ -116,40 +116,26 @@
       '';
 
   mod = "SUPER";
-  terminal = "alacritty";
-  noctaliaEnabled = config.modules.gui.noctalia.enable;
-  hyprviewEnabled = lib.attrByPath ["modules" "gui" "qs-hyprview"] false hostVariables;
-  hyprviewQuickshell = pkgs.symlinkJoin {
-    name = "quickshell-with-qt5compat";
-    paths = [pkgs.quickshell];
-    nativeBuildInputs = [pkgs.makeWrapper];
-    postBuild = ''
-      wrapProgram "$out/bin/quickshell" \
-        --prefix NIXPKGS_QT6_QML_IMPORT_PATH : "${pkgs.qt6.qt5compat}/lib/qt-6/qml"
-    '';
+  terminal =
+    if config.modules.gui.matugen.enable
+    then "kitty"
+    else "alacritty";
+  shellEnabled = config.modules.gui.shell.enable;
+  hyprexpo = pkgs.hyprlandPlugins.mkHyprlandPlugin {
+    pluginName = "hyprexpo";
+    version = "0.1-${builtins.substring 0 7 inputs.hyprexpo.rev}";
+    src = inputs.hyprexpo;
+    inherit (pkgs.hyprland) nativeBuildInputs;
+    meta = {};
   };
-  hyprspace = pkgs.gcc14Stdenv.mkDerivation {
-    pname = "Hyprspace";
-    version = "0.1-${builtins.substring 0 7 inputs.hyprspace.rev}";
-    src = inputs.hyprspace;
-    nativeBuildInputs = pkgs.hyprland.nativeBuildInputs;
-    buildInputs = [pkgs.hyprland] ++ pkgs.hyprland.buildInputs;
-    dontUseCmakeConfigure = true;
-    installFlags = ["PREFIX=$(out)"];
-    postInstall = ''
-      mv "$out/lib/Hyprspace.so" "$out/lib/libHyprspace.so"
-    '';
-  };
-  hyprspaceLoadScript = pkgs.writeShellScript "load-hyprspace" ''
+  hyprexpoLoadScript = pkgs.writeShellScript "load-hyprexpo" ''
     set -euo pipefail
 
-    if ! hyprctl plugin list | grep -q '^Plugin Hyprspace '; then
-      hyprctl plugin load "${hyprspace}/lib/libHyprspace.so"
+    if ! hyprctl plugin list | grep -q '^Plugin hyprexpo '; then
+      hyprctl plugin load "${hyprexpo}/lib/libhyprexpo.so"
     fi
     hyprctl reload
   '';
-  ipc = cmd: ''hl.dsp.exec_cmd("noctalia msg ${cmd}")'';
-
   mkBind = keys: dispatcher: {_args = [keys (mkLuaInline dispatcher)];};
   mkBindOpts = keys: dispatcher: opts: {_args = [keys (mkLuaInline dispatcher) opts];};
 
@@ -161,22 +147,7 @@
   repeating = {repeating = true;};
   mouse = {mouse = true;};
 
-  mediaBinds =
-    if noctaliaEnabled
-    then [
-      (mkBindOpts "XF86AudioRaiseVolume" (ipc "volume-up") lockedRepeat)
-      (mkBindOpts "XF86AudioLowerVolume" (ipc "volume-down") lockedRepeat)
-      (mkBindOpts "XF86AudioMute" (ipc "volume-mute") locked)
-      (mkBindOpts "XF86AudioMicMute" (ipc "mic-mute") locked)
-      (mkBindOpts "XF86MonBrightnessUp" (ipc "brightness-up") lockedRepeat)
-      (mkBindOpts "XF86MonBrightnessDown" (ipc "brightness-down") lockedRepeat)
-      (mkBindOpts "XF86AudioNext" (ipc "media next") locked)
-      (mkBindOpts "XF86AudioPrev" (ipc "media previous") locked)
-      (mkBindOpts "XF86AudioPlay" (ipc "media toggle") locked)
-      (mkBindOpts "XF86AudioPause" (ipc "media toggle") locked)
-      (mkBindOpts "${mod} + SPACE" (ipc "media toggle") locked)
-    ]
-    else [
+  mediaBinds = [
       (mkBindOpts "XF86AudioRaiseVolume" ''hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+")'' lockedRepeat)
       (mkBindOpts "XF86AudioLowerVolume" ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")'' lockedRepeat)
       (mkBindOpts "XF86AudioMute" ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")'' locked)
@@ -188,65 +159,46 @@
       (mkBindOpts "XF86AudioPlay" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
       (mkBindOpts "XF86AudioPause" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
       (mkBindOpts "${mod} + SPACE" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
-    ];
-
-  noctaliaBinds = lib.optionals noctaliaEnabled [
-    (mkBindOpts "${mod} + Super_L" (ipc "panel-toggle launcher") {release = true;})
-    (mkBindOpts "${mod} + Super_R" (ipc "panel-toggle launcher") {release = true;})
-    (mkBind "${mod} + D" (ipc "panel-toggle launcher"))
-
-    (mkBind "${mod} + C" (ipc "panel-toggle clipboard"))
-    (mkBind "${mod} + W" (ipc "panel-toggle wallpaper"))
-    (mkBind "${mod} + SHIFT + W" (ipc "wallpaper-random"))
-    (mkBind "${mod} + S" (ipc "panel-toggle control-center"))
-    (mkBind "${mod} + N" (ipc "panel-toggle control-center"))
-    (mkBind "${mod} + Q" (ipc "panel-toggle control-center media"))
-    (mkBind "${mod} + SHIFT + S" (ipc "settings-toggle"))
-    (mkBind "ALT + TAB" (ipc "window-switcher"))
-
-    (mkBindOpts "${mod} + L" (ipc "session lock") locked)
-    (mkBindOpts "XF86PowerOff" (ipc "session lock") locked)
-
-    (mkBindOpts "Prior" (ipc "screenshot-region") locked)
-    (mkBindOpts "${mod} + Prior" (ipc "screenshot-fullscreen") locked)
   ];
 
-  overviewBinds =
-    lib.optionals hyprviewEnabled [
-      (mkBind "${mod} + TAB" ''hl.dsp.exec_cmd("${hyprviewQuickshell}/bin/quickshell ipc -c qs-hyprview call expose toggle smartgrid")'')
-    ]
-    ++ [
-      (mkBind "${mod} + SHIFT + TAB" ''        function()
-                    hl.plugin.overview.toggle("all")
-                  end'')
-    ];
+  # Binds for the self-built Quickshell shell (modules/gui/shell.nix).
+  qs = sub: ''hl.dsp.exec_cmd("quickshell -c shell ipc call ${sub}")'';
+  run = cmd: ''hl.dsp.exec_cmd("${cmd}")'';
 
-  noctaliaRules = lib.optionals noctaliaEnabled [
+  shellBinds = lib.optionals shellEnabled [
+    (mkBindOpts "${mod} + Super_L" (qs "launcher toggle") {release = true;})
+    (mkBindOpts "${mod} + Super_R" (qs "launcher toggle") {release = true;})
+    (mkBind "${mod} + D" (qs "launcher toggle"))
+
+    (mkBind "${mod} + S" (qs "panel toggle"))
+    (mkBind "${mod} + N" (qs "panel toggle"))
+
+    (mkBind "${mod} + C" (qs "clipboard toggle"))
+    (mkBind "${mod} + W" (qs "wallpapers toggle"))
+    (mkBind "${mod} + SHIFT + W" (run "random-wallpaper"))
+    (mkBind "ALT + TAB" (qs "switcher next"))
+    (mkBind "ALT + SHIFT + TAB" (qs "switcher prev"))
+    (mkBindOpts "ALT + Alt_L" (qs "switcher commit") {release = true;})
+
+    (mkBindOpts "${mod} + L" (run "loginctl lock-session") locked)
+    (mkBindOpts "XF86PowerOff" (run "loginctl lock-session") locked)
+
+    (mkBindOpts "Prior" (run "shell-screenshot region") locked)
+    (mkBindOpts "${mod} + Prior" (run "shell-screenshot full") locked)
+  ];
+
+  overviewBinds = [
+    (mkBind "${mod} + TAB" ''function() hl.plugin.hyprexpo.expo("toggle") end'')
+  ];
+
+  shellRules = lib.optionals shellEnabled [
     {
-      name = "noctalia";
-      match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$";
+      name = "shell";
+      match.namespace = "^(pill-(bar|panel|launcher)|notifications)$";
       no_anim = true;
-      ignore_alpha = 0.5;
+      ignore_alpha = 0.3;
       blur = true;
       blur_popups = true;
-    }
-  ];
-
-  hyprviewRules = lib.optionals hyprviewEnabled [
-    {
-      name = "qs-hyprview";
-      match.namespace = "^quickshell:expose$";
-      dim_around = true;
-      blur = true;
-    }
-  ];
-
-  noctaliaWindowRules = lib.optionals noctaliaEnabled [
-    {
-      name = "noctalia-settings";
-      match.class = "dev.noctalia.Noctalia";
-      float = true;
-      size = [1080 920];
     }
   ];
 
@@ -271,7 +223,7 @@
           ]
       ) (lib.range 1 synchronizedWorkspaces.count)
     else
-      lib.optionals noctaliaEnabled (
+      lib.optionals shellEnabled (
         map (i: {
           workspace = toString i;
           persistent = true;
@@ -309,12 +261,9 @@
   };
   catppuccinThemeName = "catppuccin-mocha-blue-standard+normal";
 
-  # Colour definitions come from Noctalia's gtk templates, regenerated on
-  # every palette change. Must stay first: GTK ignores @import once any other
-  # rule has been seen.
   gtkFileManagerCss = ''
-    ${lib.optionalString config.modules.gui.theming.enable ''
-      @import url("noctalia.css");
+    ${lib.optionalString config.modules.gui.matugen.enable ''
+      @import url("matugen.css");
     ''}
     window,
     dialog,
@@ -416,6 +365,7 @@ in {
     services.blueman.enable = true;
 
     modules.gui.alacritty.enable = lib.mkDefault true;
+    modules.gui.kitty.enable = lib.mkDefault true;
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
@@ -431,15 +381,9 @@ in {
         # holding only the hyprland portal, hiding the gtk FileChooser.
         portalPackage = null;
 
-        # Border colours follow the wallpaper. Noctalia renders
-        # ~/.config/hypr/noctalia.lua and, finding this require already
-        # present, leaves the read-only hyprland.lua alone. pcall keeps a
-        # missing module (fresh machine, before the first palette) from
-        # taking the whole config down; the static col values above are the
-        # fallback until then.
         extraConfig = ''
           pcall(function()
-            require("noctalia").apply_theme()
+            require("matugen").apply_theme()
           end)
         '';
 
@@ -468,25 +412,29 @@ in {
               };
             };
 
-            decoration =
-              {
-                rounding = 14;
-                rounding_power = 2;
-                active_opacity = 1.0;
-                inactive_opacity = 1.0;
+            decoration = {
+              rounding = 14;
+              rounding_power = 2;
+              active_opacity = 1.0;
+              inactive_opacity = 1.0;
 
-                blur = {
-                  enabled = true;
-                  size = 8;
-                  passes = 2;
-                  new_optimizations = true;
-                };
-
-                shadow.enabled = false;
-              }
-              // lib.optionalAttrs hyprviewEnabled {
-                dim_around = 0.8;
+              blur = {
+                enabled = true;
+                size = 8;
+                passes = 2;
+                new_optimizations = true;
               };
+
+              shadow =
+                if config.modules.gui.matugen.enable
+                then {
+                  enabled = true;
+                  range = 28;
+                  render_power = 3;
+                  color = "rgba(00000066)";
+                }
+                else {enabled = false;};
+            };
 
             input = {
               kb_layout = kbLayout;
@@ -508,19 +456,11 @@ in {
               force_default_wallpaper = 0;
             };
 
-            plugin.overview = {
-              panelColor = "rgba(1e1e2eee)";
-              panelBorderColor = "rgba(5c98cdee)";
-              workspaceActiveBackground = "rgba(5c98cd44)";
-              workspaceActiveBorder = "rgba(5c98cdee)";
-              workspaceInactiveBackground = "rgba(2f3943aa)";
-              workspaceInactiveBorder = "rgba(2f3943dd)";
-              centerAligned = true;
-              autoDrag = true;
-              exitOnClick = true;
-              exitOnSwitch = true;
-              showNewWorkspace = false;
-              showEmptyWorkspace = true;
+            plugin.hyprexpo = {
+              columns = 3;
+              gaps_in = 8;
+              bg_col = "rgb(1e1e2e)";
+              workspace_method = "center current";
             };
 
             cursor.no_hardware_cursors = true;
@@ -602,6 +542,7 @@ in {
             [
               # Applications
               (mkBind "${mod} + T" "hl.dsp.exec_cmd(\"${terminal}\")")
+              (mkBind "${mod} + SHIFT + T" "hl.dsp.exec_cmd(\"kitty\")")
               (mkBind "${mod} + F" "hl.dsp.exec_cmd(\"brave\")")
               (mkBind "${mod} + E" "hl.dsp.exec_cmd(\"nautilus\")")
 
@@ -628,10 +569,10 @@ in {
             ]
             ++ workspaceBinds
             ++ mediaBinds
-            ++ noctaliaBinds
+            ++ shellBinds
             ++ overviewBinds;
 
-          layer_rule = noctaliaRules ++ hyprviewRules;
+          layer_rule = shellRules;
 
           workspace_rule = persistentWorkspaces;
 
@@ -643,30 +584,23 @@ in {
                 immediate = true;
                 keep_aspect_ratio = true;
               }
-            ]
-            ++ noctaliaWindowRules;
+            ];
         };
       };
 
-      home.packages =
-        (with pkgs; [
-          acpi
-          alsa-utils
-          bc
-          catppuccinGtk
-          fd
-          gtk3
-          pamixer
-          pavucontrol
-          papirus-icon-theme
-          ripgrep
-          tree
-        ])
-        ++ lib.optionals hyprviewEnabled [hyprviewQuickshell];
-
-      xdg.configFile = lib.optionalAttrs hyprviewEnabled {
-        "quickshell/qs-hyprview".source = inputs.qs-hyprview;
-      };
+      home.packages = with pkgs; [
+        acpi
+        alsa-utils
+        bc
+        catppuccinGtk
+        fd
+        gtk3
+        pamixer
+        pavucontrol
+        papirus-icon-theme
+        ripgrep
+        tree
+      ];
 
       gtk = {
         enable = true;
@@ -747,33 +681,16 @@ in {
             };
           };
         })
-        // (lib.optionalAttrs hyprviewEnabled {
-          qs-hyprview = {
-            Unit = {
-              Description = "Quickshell Hyprland window overview";
-              PartOf = ["hyprland-session.target"];
-              After = ["hyprland-session.target"];
-            };
-            Service = {
-              Type = "simple";
-              ExecStart = "${hyprviewQuickshell}/bin/quickshell -c qs-hyprview";
-              Restart = "on-failure";
-            };
-            Install = {
-              WantedBy = ["hyprland-session.target"];
-            };
-          };
-        })
         // {
-          hyprspace = {
+          hyprexpo = {
             Unit = {
-              Description = "Load the Hyprspace plugin";
+              Description = "Load the hyprexpo plugin";
               PartOf = ["hyprland-session.target"];
               After = ["hyprland-session.target"];
             };
             Service = {
               Type = "oneshot";
-              ExecStart = "${hyprspaceLoadScript}";
+              ExecStart = "${hyprexpoLoadScript}";
               RemainAfterExit = true;
             };
             Install = {

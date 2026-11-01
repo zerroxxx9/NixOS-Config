@@ -2,7 +2,8 @@
   imports = [
     ./gnome.nix
     ./hyprland.nix
-    ./noctalia.nix
-    ./theming.nix
+    ./kinetic-lyrics.nix
+    ./matugen.nix
+    ./shell.nix
   ];
 }

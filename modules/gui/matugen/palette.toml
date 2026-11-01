@@ -1,0 +1,23 @@
+# Fixed code and signal hues (OKLCH). The wallpaper only nudges them: each hue
+# moves at most `blend` of the way toward the wallpaper's primary hue, and the
+# nudge is dropped when it would bring two code hues closer than `min_hue_gap`.
+# Lightness is not set here; the contrast check picks it per wallpaper.
+
+blend = 0.08
+min_hue_gap = 25
+chroma = 0.14
+
+[code]
+keyword = 300
+string = 145
+function = 250
+type = 95
+number = 50
+constant = 195
+operator = 340
+
+[signal]
+error = 25
+warning = 75
+info = 245
+success = 150

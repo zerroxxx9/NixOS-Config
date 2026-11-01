@@ -1,0 +1,13 @@
+{
+  "surface": "{{adj.ui_surface}}",
+  "surfaceHigh": "{{adj.ui_surface_container_high}}",
+  "text": "{{adj.text}}",
+  "textDim": "{{adj.text_dim}}",
+  "accent": "{{adj.accent}}",
+  "accentText": "{{adj.ui_on_primary}}",
+  "outline": "{{adj.ui_outline_variant}}",
+  "success": "{{adj.success}}",
+  "warning": "{{adj.warning}}",
+  "error": "{{adj.error}}",
+  "opacity": {{adj.opacity}}
+}

@@ -1,0 +1,57 @@
+* {
+    bg: {{adj.ui_surface}}f2;
+    surface: {{adj.ui_surface_container_high}};
+    fg: {{adj.text}};
+    fg-dim: {{adj.text_dim}};
+    accent: {{adj.accent}};
+    border: {{adj.ui_outline_variant}};
+}
+
+window {
+    location: north;
+    anchor: north;
+    y-offset: 7%;
+    width: 520px;
+    background-color: @bg;
+    border: 1px;
+    border-color: @border;
+    border-radius: 18px;
+    padding: 8px;
+}
+
+mainbox { children: [inputbar, listview]; spacing: 6px; }
+
+inputbar {
+    padding: 12px 14px;
+    spacing: 12px;
+    children: [textbox-search, entry];
+    border: 0 0 1px 0;
+    border-color: @border;
+}
+textbox-search {
+    expand: false;
+    str: "";
+    text-color: @fg-dim;
+    vertical-align: 0.5;
+}
+entry {
+    text-color: @fg;
+    placeholder: "Search";
+    placeholder-color: @fg-dim;
+    vertical-align: 0.5;
+}
+
+listview { lines: 6; scrollbar: false; spacing: 2px; fixed-height: false; }
+
+element {
+    padding: 8px 12px;
+    border-radius: 12px;
+    spacing: 14px;
+    text-color: @fg;
+}
+element-icon { size: 34px; vertical-align: 0.5; }
+element-text { text-color: inherit; markup: true; vertical-align: 0.5; }
+element selected.normal {
+    background-color: @surface;
+    text-color: @accent;
+}

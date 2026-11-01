@@ -3,6 +3,7 @@
     ./collabora.nix
     ./chessstack.nix
     ./ctf.nix
+    ./ctf-browser.nix
     ./displaylink.nix
     ./distrobox.nix
     ./docker.nix
@@ -19,6 +20,7 @@
     ./vscode.nix
     ./tailscale.nix
     ./tor.nix
+    ./vpn.nix
     ./vesktop.nix
     ./opencloud.nix
     ./paperless-ngx.nix

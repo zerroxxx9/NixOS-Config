@@ -14,11 +14,9 @@
       programs.alacritty = {
         enable = true;
         settings = {
-          # Colours come from Noctalia's alacritty template, regenerated from
-          # the wallpaper (see modules/gui/theming.nix). The path is spelled
-          # exactly as Noctalia's apply.sh would write it, so it finds the
-          # import already present and leaves this read-only file alone.
-          general.import = ["~/.config/alacritty/themes/noctalia.toml"];
+          # Colours come from the matugen alacritty template, regenerated from
+          # the wallpaper by set-wallpaper (see modules/gui/matugen.nix).
+          general.import = ["~/.config/alacritty/themes/matugen.toml"];
 
           terminal.shell.program = "${pkgs.fish}/bin/fish";
           window = {
@@ -30,7 +28,7 @@
           };
           font = {
             size = 11;
-            normal.family = "JetBrainsMono Nerd Font";
+            normal.family = "Geist Mono";
           };
         };
       };

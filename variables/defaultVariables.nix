@@ -18,8 +18,9 @@
     gui = {
       gnome = true;
       hyprland = false;
-      noctalia = false;
-      qs-hyprview = false;
+      matugen = false;
+      shell = false;
+      kinetic-lyrics = false;
     };
     software = {
       collabora = false;
@@ -29,6 +30,7 @@
       docker = true;
       couchdb = false;
       ctf = false;
+      ctf-browser = false;
       fail2ban = false;
       flatpak = false;
       git = true;
@@ -43,6 +45,7 @@
       vesktop = false;
       tailscale = false;
       tor = false;
+      vpn = false;
       opencloud = false;
       paperless-ngx = false;
       spicetify = false;
@@ -54,6 +57,7 @@
       zellij = true;
     };
     security = {
+      pentest = false;
       yubikey = false;
       agenix = false;
     };

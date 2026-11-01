@@ -1,10 +1,9 @@
-# Vesktop, themed by Noctalia.
+# Vesktop, themed by set-wallpaper (matugen).
 #
-# Noctalia's community `discord` template renders its Discord stylesheets from
-# the wallpaper palette straight into ~/.config/vesktop/themes/ on every colour
-# change (enabled in modules/gui/noctalia.nix). Home Manager owns the Vencord
-# settings file, so the enabled theme is selected here rather than in
-# Vesktop's UI.
+# set-wallpaper renders the Discord stylesheet from the wallpaper palette into
+# ~/.config/vesktop/themes/ on every change (modules/gui/matugen.nix). Home
+# Manager owns the Vencord settings file, so the enabled theme is selected here
+# rather than in Vesktop's UI.
 {
   lib,
   pkgs,
@@ -17,25 +16,11 @@
   palette = import ../gui/palette.nix;
   inherit (palette) client;
 
-  # Filenames are fixed by the community template's template.toml.
-  themeFile =
-    {
-      midnight = "noctalia.theme.css";
-      material = "noctalia-material.theme.css";
-      system24 = "discord-system24.css";
-    }
-    .${
-      cfg.theme
-    };
+  themeFile = "matugen.theme.css";
 in {
   options.modules.software.vesktop = {
-    enable = lib.mkEnableOption "Vesktop, themed by Noctalia, with a Vencord plugin set";
+    enable = lib.mkEnableOption "Vesktop, themed from the wallpaper, with a Vencord plugin set";
 
-    theme = lib.mkOption {
-      type = lib.types.enum ["midnight" "material" "system24"];
-      default = "midnight";
-      description = "Which of Noctalia's Discord stylesheets Vencord enables.";
-    };
   };
 
   config = lib.mkIf cfg.enable {

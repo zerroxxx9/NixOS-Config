@@ -18,9 +18,6 @@ in
             noisetorch = false;
             obsidian = true;
             display-link = true;
-            distrobox = true;
-            tailscale = true;
-            vscode = true;
             zed = true;
             opencloud = true;
             collabora = true;
@@ -30,8 +27,8 @@ in
           // {
             gnome = false;
             hyprland = true;
-            noctalia = true;
-            qs-hyprview = true;
+            matugen = true;
+            shell = true;
           };
         security =
           default.modules.security

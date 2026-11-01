@@ -76,18 +76,14 @@
     (with pkgs; [
       unstable.bruno
       keepassxc
-      vscode-with-extensions
       gh
       zip
       unzip
       burpsuite
-      libreoffice-qt
       chromium
-      element-desktop
       busybox
       pnpm
       nodejs_24
-      gitg
       (unstable.brave.override {
         commandLineArgs = [
           "--enable-features=UseOzonePlatform"

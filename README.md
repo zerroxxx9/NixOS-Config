@@ -129,7 +129,8 @@ in
           // {
             gnome = true;
             hyprland = true;
-            noctalia = true;
+            matugen = true;
+            shell = true;
           };
 
         software =
@@ -169,7 +170,7 @@ Current module groups:
 
 - `console`: `fish`, `alacritty`
 - `driver`: `amdgpu`, `nvidia`
-- `gui`: `gnome`, `hyprland`, `noctalia`
+- `gui`: `gnome`, `hyprland`, `matugen`, `shell`
 - `software`: `chessstack`, `collabora`, `ctf`, `display-link`, `distrobox`, `docker`, `couchdb`, `fail2ban`, `flatpak`, `freshrss`, `git`, `immich`, `librewolf`, `lmstudio`, `mealie`, `nixvim`, `noisetorch`, `obsidian`, `opencloud`, `osu`, `paperless-ngx`, `spicetify`, `sunshine`, `tailscale`, `tor`, `vesktop`, `vscode`, `zed`, `zellij`
 - `security`: `agenix`, `yubikey`
 - `systemSettings`: `bootanimation`, `gaming`

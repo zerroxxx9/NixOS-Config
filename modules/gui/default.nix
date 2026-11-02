@@ -1,5 +1,6 @@
 {
   imports = [
+    ./files.nix
     ./gnome.nix
     ./hyprland.nix
     ./kinetic-lyrics.nix

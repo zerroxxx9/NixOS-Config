@@ -582,6 +582,7 @@ in {
               (mkBind "${mod} + SHIFT + T" "hl.dsp.exec_cmd(\"kitty\")")
               (mkBind "${mod} + F" "hl.dsp.exec_cmd(\"brave\")")
               (mkBind "${mod} + E" "hl.dsp.exec_cmd(\"nautilus\")")
+              (mkBind "${mod} + SHIFT + E" "hl.dsp.exec_cmd(\"files\")")
 
               # Window management
               (mkBind "ALT + F4" "hl.dsp.window.close()")
@@ -619,6 +620,13 @@ in {
               match.title = "^(Settings)$";
               float = true;
               center = true;
+            }
+            {
+              name = "shell-files";
+              match.title = "^(Files)$";
+              float = true;
+              center = true;
+              size = "1100 700";
             }
             {
               name = "cs2-immediate";

@@ -47,6 +47,7 @@ FloatingWindow {
     function refresh() {
         wifiRadio.running = true;
         wifiList.running = true;
+        savedWifi.running = true;
         monitors.running = true;
         profileGet.running = true;
         lightProbe.running = true;
@@ -59,6 +60,39 @@ FloatingWindow {
     property bool wifiOn: false
     property var networks: []
     property string netStatus: ""
+    property var savedNetworks: []
+    property string pwSsid: ""
+    property bool pwShow: false
+
+    function connectWifi(net) {
+        if (net.active)
+            return;
+        if (!net.secure || savedNetworks.includes(net.ssid)) {
+            pwSsid = "";
+            netStatus = "Connecting to " + net.ssid + " …";
+            wifiConnect.ssid = net.ssid;
+            wifiConnect.password = "";
+            wifiConnect.running = true;
+        } else {
+            netStatus = "";
+            pwSsid = net.ssid;
+            pwShow = false;
+            pwInput.text = "";
+            pwInput.forceActiveFocus();
+        }
+    }
+    function submitPassword() {
+        if (pwInput.text.length < 8) {
+            netStatus = "Wi-Fi passwords need at least 8 characters";
+            return;
+        }
+        netStatus = "Connecting to " + pwSsid + " …";
+        wifiConnect.ssid = pwSsid;
+        wifiConnect.password = pwInput.text;
+        pwInput.text = "";
+        pwSsid = "";
+        wifiConnect.running = true;
+    }
     property var monitorInfo: []
     property string profile: ""
     property bool hasBacklight: false
@@ -105,12 +139,42 @@ FloatingWindow {
         }
     }
     Process {
+        id: savedWifi
+        command: [settings.bin + "/nmcli", "-t", "-f", "NAME,TYPE", "connection", "show"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                win.savedNetworks = text.split("\n")
+                    .filter(l => l.endsWith(":802-11-wireless"))
+                    .map(l => l.slice(0, l.lastIndexOf(":")).replace(/\\:/g, ":"));
+            }
+        }
+    }
+    Process {
         id: wifiConnect
         property string ssid
-        command: [settings.bin + "/nmcli", "device", "wifi", "connect", ssid]
-        stdout: StdioCollector { onStreamFinished: win.netStatus = text.trim() }
+        property string password: ""
+        command: password === ""
+            ? [settings.bin + "/nmcli", "device", "wifi", "connect", ssid]
+            : [settings.bin + "/nmcli", "device", "wifi", "connect", ssid, "password", password]
+        stdout: StdioCollector { onStreamFinished: if (text.trim() !== "") win.netStatus = text.trim() }
         stderr: StdioCollector { onStreamFinished: if (text.trim() !== "") win.netStatus = text.trim() }
-        onExited: wifiList.running = true
+        onExited: code => {
+            const hadPassword = password !== "";
+            password = "";
+            if (code !== 0) {
+                // A rejected password leaves a broken profile behind; drop it so the
+                // next attempt asks again instead of reusing the bad key.
+                win.run([settings.bin + "/nmcli", "connection", "delete", "id", ssid]);
+                win.netStatus = (hadPassword ? "Could not connect — wrong password?" : "Saved password didn't work — enter it again.");
+                if (!hadPassword) {
+                    win.pwSsid = ssid;
+                    pwInput.text = "";
+                    pwInput.forceActiveFocus();
+                }
+            }
+            wifiList.running = true;
+            savedWifi.running = true;
+        }
     }
     Process {
         id: monitors
@@ -195,8 +259,8 @@ FloatingWindow {
     component Heading: Text {
         color: theme.text
         font.family: settings.font
-        font.pixelSize: 22
-        font.weight: Font.Medium
+        font.pixelSize: 20
+        font.weight: Font.DemiBold
     }
     component Label: Text {
         color: theme.textDim
@@ -209,7 +273,8 @@ FloatingWindow {
         font.pixelSize: 11
         font.capitalization: Font.AllUppercase
         font.letterSpacing: 1
-        topPadding: 6
+        topPadding: 16
+        bottomPadding: 2
     }
     component Row_: Rectangle {
         id: r
@@ -221,8 +286,8 @@ FloatingWindow {
 
         Layout.fillWidth: true
         implicitHeight: 52
-        radius: 14
-        color: selected ? theme.accent : (m.containsMouse ? Qt.lighter(theme.surfaceHigh, 1.15) : theme.surfaceHigh)
+        radius: 12
+        color: selected ? Qt.alpha(theme.accent, 0.26) : (m.containsMouse ? Qt.lighter(theme.surfaceHigh, 1.15) : theme.surfaceHigh)
         Behavior on color { ColorAnimation { duration: 140 } }
 
         Column {
@@ -235,7 +300,7 @@ FloatingWindow {
                 width: parent.width
                 text: r.title
                 elide: Text.ElideRight
-                color: r.selected ? theme.accentText : theme.text
+                color: theme.text
                 font.family: settings.font
                 font.pixelSize: 14
             }
@@ -244,7 +309,7 @@ FloatingWindow {
                 width: parent.width
                 text: r.subtitle
                 elide: Text.ElideRight
-                color: r.selected ? Qt.rgba(theme.accentText.r, theme.accentText.g, theme.accentText.b, 0.7) : theme.textDim
+                color: theme.textDim
                 font.family: settings.font
                 font.pixelSize: 11
             }
@@ -255,7 +320,7 @@ FloatingWindow {
             anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter
             text: r.trailing
-            color: r.selected ? theme.accentText : theme.textDim
+            color: r.selected ? theme.accent : theme.textDim
             font.family: settings.font
             font.pixelSize: 12
         }
@@ -274,7 +339,7 @@ FloatingWindow {
         implicitWidth: 46
         implicitHeight: 26
         radius: 13
-        color: checked ? theme.accent : theme.surfaceHigh
+        color: checked ? theme.accent : Qt.alpha(theme.text, 0.16)
         Behavior on color { ColorAnimation { duration: 140 } }
         Rectangle {
             y: 3
@@ -303,17 +368,18 @@ FloatingWindow {
 
             Column {
                 anchors.fill: parent
-                anchors.margins: 12
-                spacing: 4
+                anchors.margins: 10
+                anchors.topMargin: 18
+                spacing: 5
 
                 Text {
                     text: "Settings"
-                    color: theme.text
+                    color: theme.textDim
                     font.family: settings.font
-                    font.pixelSize: 16
-                    font.weight: Font.Medium
-                    padding: 8
-                    bottomPadding: 14
+                    font.pixelSize: 11
+                    font.weight: Font.DemiBold
+                    leftPadding: 10
+                    bottomPadding: 12
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
@@ -329,26 +395,28 @@ FloatingWindow {
                         required property var modelData
                         required property int index
                         width: parent.width
-                        height: 40
-                        radius: 12
-                        color: win.page === index ? theme.accent : (sm.containsMouse ? Qt.rgba(1, 1, 1, 0.06) : "transparent")
+                        height: 38
+                        radius: 10
+                        color: win.page === index ? Qt.alpha(theme.accent, 0.26) : (sm.containsMouse ? Qt.alpha(theme.text, 0.07) : "transparent")
+                        Behavior on color { ColorAnimation { duration: 120 } }
                         Row {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
-                            anchors.leftMargin: 14
-                            spacing: 12
+                            anchors.leftMargin: 10
+                            spacing: 10
                             Text {
                                 text: modelData.icon
-                                color: win.page === index ? theme.accentText : theme.text
+                                horizontalAlignment: Text.AlignHCenter
+                                color: theme.accent
                                 font.family: settings.font
-                                font.pixelSize: 15
+                                font.pixelSize: 14
                                 width: 18
                             }
                             Text {
                                 text: modelData.name
-                                color: win.page === index ? theme.accentText : theme.text
+                                color: theme.text
                                 font.family: settings.font
-                                font.pixelSize: 14
+                                font.pixelSize: 13
                             }
                         }
                         MouseArea {
@@ -446,6 +514,74 @@ FloatingWindow {
                         wrapMode: Text.Wrap
                         Layout.fillWidth: true
                     }
+                    Rectangle {
+                        visible: win.pwSsid !== ""
+                        Layout.fillWidth: true
+                        implicitHeight: 124
+                        radius: 14
+                        color: theme.surfaceHigh
+
+                        Text {
+                            x: 16; y: 14
+                            text: "Password for " + win.pwSsid
+                            color: theme.text
+                            font.family: settings.font
+                            font.pixelSize: 14
+                        }
+                        Rectangle {
+                            x: 16; y: 44
+                            width: parent.width - 32
+                            height: 36
+                            radius: 18
+                            color: theme.surface
+                            border.width: 1
+                            border.color: pwInput.activeFocus ? theme.accent : theme.outline
+
+                            TextInput {
+                                id: pwInput
+                                anchors { fill: parent; leftMargin: 16; rightMargin: 44 }
+                                verticalAlignment: TextInput.AlignVCenter
+                                echoMode: win.pwShow ? TextInput.Normal : TextInput.Password
+                                passwordCharacter: "\u2022"
+                                color: theme.text
+                                selectionColor: theme.accent
+                                selectedTextColor: theme.accentText
+                                font.family: settings.font
+                                font.pixelSize: 14
+                                clip: true
+                                onAccepted: win.submitPassword()
+                                Keys.onEscapePressed: { text = ""; win.pwSsid = ""; }
+                            }
+                            Text {
+                                anchors { right: parent.right; rightMargin: 14; verticalCenter: parent.verticalCenter }
+                                text: win.pwShow ? "Hide" : "Show"
+                                color: theme.textDim
+                                font.family: settings.font
+                                font.pixelSize: 11
+                                MouseArea {
+                                    anchors { fill: parent; margins: -6 }
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: win.pwShow = !win.pwShow
+                                }
+                            }
+                        }
+                        Row {
+                            anchors { right: parent.right; rightMargin: 16; bottom: parent.bottom; bottomMargin: 10 }
+                            spacing: 8
+                            Rectangle {
+                                width: 80; height: 30; radius: 15
+                                color: cancelPw.containsMouse ? Qt.lighter(theme.surfaceHigh, 1.3) : "transparent"
+                                Text { anchors.centerIn: parent; text: "Cancel"; color: theme.text; font.family: settings.font; font.pixelSize: 13 }
+                                MouseArea { id: cancelPw; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { pwInput.text = ""; win.pwSsid = ""; } }
+                            }
+                            Rectangle {
+                                width: 96; height: 30; radius: 15
+                                color: theme.accent
+                                Text { anchors.centerIn: parent; text: "Connect"; color: theme.accentText; font.family: settings.font; font.pixelSize: 13; font.weight: Font.DemiBold }
+                                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: win.submitPassword() }
+                            }
+                        }
+                    }
                     Section { text: "Available networks" }
                     Label { visible: win.wifiOn && win.networks.length === 0; text: "No networks found" }
                     Label { visible: !win.wifiOn; text: "Wi-Fi is off" }
@@ -454,16 +590,10 @@ FloatingWindow {
                         delegate: Row_ {
                             required property var modelData
                             title: modelData.ssid
-                            subtitle: modelData.secure ? "Secured" : "Open"
+                            subtitle: modelData.secure ? (win.savedNetworks.includes(modelData.ssid) ? "Secured · saved" : "Secured") : "Open"
                             trailing: modelData.active ? "Connected  ·  " + modelData.signal + " %" : modelData.signal + " %"
                             selected: modelData.active
-                            onClicked: {
-                                if (modelData.active)
-                                    return;
-                                win.netStatus = "Connecting to " + modelData.ssid + " … (new secured networks need a saved password: nmtui)";
-                                wifiConnect.ssid = modelData.ssid;
-                                wifiConnect.running = true;
-                            }
+                            onClicked: win.connectWifi(modelData)
                         }
                     }
                 }

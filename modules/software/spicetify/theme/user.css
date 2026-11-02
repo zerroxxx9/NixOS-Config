@@ -1,0 +1,161 @@
+/* Floating-panel layout on top of Spotify's own styles; every colour comes
+ * from the --spice-* variables, which matugen.js recolours from the wallpaper.
+ *   main  = window frame      sidebar = panels
+ *   card  = raised surfaces   selected-row = hover / pressed */
+:root {
+  --mg-radius: 18px;
+  --mg-radius-sm: 12px;
+  --mg-gap: 10px;
+}
+
+html, body, .Root, .Root__top-container {
+  background: var(--spice-main) !important;
+}
+
+/* ---- frame and panels -------------------------------------------------- */
+.Root__top-container {
+  gap: var(--mg-gap) !important;
+  padding: 0 var(--mg-gap) var(--mg-gap) !important;
+}
+.Root__globalNav {
+  background: transparent !important;
+  padding: var(--mg-gap) 4px 0 !important;
+}
+.Root__nav-bar,
+.Root__main-view,
+.Root__right-sidebar,
+.Root__now-playing-bar {
+  background: var(--spice-sidebar) !important;
+  border-radius: var(--mg-radius) !important;
+  overflow: hidden;
+}
+.Root__nav-bar > *,
+.Root__right-sidebar > *,
+.main-view-container,
+.main-view-container__scroll-node,
+.main-view-container__scroll-node-child,
+.main-home-content,
+.main-entityHeader-container {
+  background: transparent !important;
+}
+.main-home-homeHeader,
+.main-entityHeader-background,
+.main-actionBarBackground-background,
+.main-entityHeader-overlay,
+.main-home-homeHeader::before {
+  background: transparent !important;
+  background-image: none !important;
+}
+.Root__now-playing-bar {
+  background: var(--spice-player) !important;
+}
+
+/* ---- top bar ------------------------------------------------------------ */
+.main-globalNav-searchInputWrapper,
+.main-topBar-searchBar {
+  border-radius: 999px !important;
+}
+.main-topBar-searchBar {
+  background: var(--spice-card) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.main-globalNav-searchContainer .encore-internal-color-text-subdued,
+.main-globalNav-searchContainer button[aria-label="Home"],
+.main-globalNav-searchContainer a[aria-label="Home"] {
+  border-radius: 999px;
+}
+.main-globalNav-searchContainer > button:first-child,
+.main-globalNav-searchContainer > a:first-child {
+  background: var(--spice-card) !important;
+  border-radius: 999px !important;
+}
+.main-globalNav-historyButtons button {
+  border-radius: 999px !important;
+}
+
+/* ---- home shortcuts and cards ------------------------------------------ */
+.view-homeShortcutsGrid-shortcut {
+  background: var(--spice-card) !important;
+  border-radius: var(--mg-radius-sm) !important;
+  overflow: hidden;
+  box-shadow: none !important;
+  border: 0 !important;
+  transition: background 0.15s ease;
+}
+.view-homeShortcutsGrid-shortcut:hover {
+  background: var(--spice-selected-row) !important;
+}
+.main-card-cardContainer,
+[data-encore-id="card"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: var(--mg-radius-sm) !important;
+  transition: background 0.15s ease;
+}
+.main-card-cardContainer:hover,
+[data-encore-id="card"]:hover {
+  background: var(--spice-card) !important;
+}
+.main-card-cardContainer *,
+[data-encore-id="card"] *,
+.view-homeShortcutsGrid-shortcut * {
+  box-shadow: none !important;
+  filter: none;
+}
+.view-homeShortcutsGrid-draggable {
+  background: transparent !important;
+  border-radius: var(--mg-radius-sm) !important;
+  overflow: hidden;
+}
+.main-image-image,
+.main-cardImage-imageWrapper,
+.main-card-imageContainer,
+.view-homeShortcutsGrid-imageContainer {
+  border-radius: 10px !important;
+}
+
+/* ---- chips ---------------------------------------------------------------- */
+.main-home-filterChipsSection button,
+[data-encore-id="chip"] {
+  border-radius: 999px !important;
+}
+
+/* ---- track lists ------------------------------------------------------------ */
+.main-trackList-trackListHeader {
+  background: var(--spice-card) !important;
+  border-radius: 10px;
+  border: 0 !important;
+}
+.main-trackList-trackListRow {
+  border-radius: 10px !important;
+}
+.main-trackList-trackListRow:hover,
+.main-trackList-selected {
+  background: var(--spice-selected-row) !important;
+}
+
+/* ---- library -------------------------------------------------------------------- */
+.main-yourLibraryX-libraryItemContainer img,
+.main-yourLibraryX-libraryItemContainer [class*="image"] {
+  border-radius: 10px !important;
+}
+
+/* ---- player ---------------------------------------------------------------------- */
+.player-controls__buttons button[data-testid="control-button-playpause"] {
+  background: var(--spice-accent) !important;
+  color: var(--spice-alt-text) !important;
+  border-radius: 999px !important;
+}
+.playback-progressbar,
+.progress-bar {
+  --progress-bar-active-color: var(--spice-accent);
+}
+
+/* ---- scrollbars ---------------------------------------------------------------------- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb {
+  background: var(--spice-button-disabled);
+  border-radius: 999px;
+}

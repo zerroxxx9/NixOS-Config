@@ -73,6 +73,11 @@
       input_path = "${templates}/obsidian.css"
       output_path = "${home}/${obsidianCfg.vaultPath}/.obsidian/snippets/matugen.css"
     ''}
+    ${optionalTemplate config.modules.software.spicetify.enable ''
+      [templates.spotify]
+      input_path = "${templates}/spotify.json"
+      output_path = "${state}/spotify/colors.json"
+    ''}
     ${optionalTemplate config.modules.software.librewolf.enable ''
       [templates.librewolf]
       input_path = "${templates}/librewolf.css"

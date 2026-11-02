@@ -422,6 +422,9 @@ in {
           ''
           + lib.optionalString (synchronizedWorkspaceScript != null) ''
             hl.dsp.exec_cmd("${synchronizedWorkspaceScript} migrate")
+          ''
+          + lib.optionalString shellEnabled ''
+            hl.dsp.exec_cmd("monitors-layout restore")
           '';
 
         settings = {

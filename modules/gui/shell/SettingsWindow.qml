@@ -49,6 +49,7 @@ FloatingWindow {
         wifiList.running = true;
         savedWifi.running = true;
         monitors.running = true;
+        monitorEditor.refresh();
         profileGet.running = true;
         lightProbe.running = true;
         dndProbe.running = true;
@@ -690,20 +691,7 @@ FloatingWindow {
                         }
                     }
                     Section { text: "Monitors" }
-                    Repeater {
-                        model: win.monitorInfo
-                        delegate: Row_ {
-                            required property var modelData
-                            title: modelData.name + (modelData.description ? "  ·  " + modelData.description : "")
-                            subtitle: modelData.width + "×" + modelData.height + " @ " + Math.round(modelData.refreshRate) + " Hz  ·  scale " + modelData.scale
-                            trailing: modelData.x + "," + modelData.y
-                        }
-                    }
-                    Label {
-                        text: "Layout, scale and resolution are set per host in hosts/<host>/variables.nix (hyprland.monitors)."
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                    MonitorsEditor { id: monitorEditor }
                 }
             }
 

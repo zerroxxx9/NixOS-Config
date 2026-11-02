@@ -85,6 +85,46 @@
     '';
   };
 
+  # Monitor layout chosen in Settings → Display. `save JSON` merges it into
+  # ~/.local/state/shell/monitors.json and applies it; `restore` re-applies the
+  # saved file (run on every Hyprland config load, since the declarative
+  # monitor block would otherwise reset it).
+  monitorsLayout = pkgs.writeShellApplication {
+    name = "monitors-layout";
+    runtimeInputs = [pkgs.jq pkgs.coreutils pkgs.gnugrep];
+    text = ''
+      file="''${XDG_STATE_HOME:-$HOME/.local/state}/shell/monitors.json"
+
+      apply() {
+        [ -f "$file" ] || return 0
+        connected=$(hyprctl monitors all -j | jq -r '.[].name')
+        jq -r 'to_entries[] | [.key, .value.mode, (.value.x | tostring), (.value.y | tostring), (.value.scale | tostring), (.value.transform | tostring)] | @tsv' "$file" |
+          while IFS=$'\t' read -r name mode x y scale transform; do
+            grep -qx "$name" <<<"$connected" || continue
+            hyprctl eval "hl.monitor({ output = \"$name\", mode = \"$mode\", position = \"''${x}x''${y}\", scale = $scale, transform = $transform })" >/dev/null
+          done
+      }
+
+      case "''${1:-restore}" in
+        save)
+          mkdir -p "$(dirname "$file")"
+          if [ -f "$file" ]; then
+            printf '%s' "$2" | jq -s '.[0] * .[1]' "$file" - >"$file.new"
+            mv "$file.new" "$file"
+          else
+            printf '%s' "$2" | jq . >"$file"
+          fi
+          apply
+          ;;
+        restore) apply ;;
+        *)
+          echo "usage: monitors-layout save JSON|restore" >&2
+          exit 2
+          ;;
+      esac
+    '';
+  };
+
   nightlight = pkgs.writeShellApplication {
     name = "nightlight";
     runtimeInputs = [pkgs.hyprsunset pkgs.procps pkgs.util-linux];
@@ -132,6 +172,7 @@ in {
       screenshot
       randomWallpaper
       lockScreen
+      monitorsLayout
       nightlight
       pkgs.mako
       pkgs.cliphist

@@ -24,7 +24,7 @@
   # Disables the laptop panel while any docking-station output is present,
   # and re-enables it otherwise. Hyprland's declarative `monitor` block only
   # runs once at config load, so this watches socket2 for monitoradded/
-  # monitorremoved and re-applies the state live via `hyprctl keyword`.
+  # monitorremoved and re-applies the state live via `hyprctl eval`.
   dockDisplay = lib.attrByPath ["hyprland" "dockDisplay"] null hostVariables;
   synchronizedWorkspaces = lib.attrByPath ["hyprland" "synchronizedWorkspaces"] null hostVariables;
   kbLayout = lib.attrByPath ["hyprland" "kbLayout"] "de" hostVariables;
@@ -52,9 +52,9 @@
 
         apply_state() {
           if dock_connected; then
-            hyprctl keyword monitor "$laptop_output, disable" >/dev/null
+            hyprctl eval "hl.monitor({ output = \"$laptop_output\", disabled = true })" >/dev/null
           else
-            hyprctl keyword monitor "$laptop_output, preferred, auto, 1" >/dev/null
+            hyprctl eval "hl.monitor({ output = \"$laptop_output\", mode = \"preferred\", position = \"auto\", scale = 1 })" >/dev/null
           fi
         }
 
@@ -81,10 +81,41 @@
         number="''${2:?expected workspace number}"
         left=${lib.escapeShellArg synchronizedWorkspaces.left}
         right=${lib.escapeShellArg synchronizedWorkspaces.right}
+        count=${toString synchronizedWorkspaces.count}
         current=$(hyprctl activeworkspace -j | jq -r '.monitor')
 
         case "$mode" in
+          migrate)
+            hyprctl workspaces -j |
+              jq -r --argjson count "$count" '
+                .[]
+                | select(.name | test("^[0-9]+$"))
+                | select((.name | tonumber) <= $count)
+                | [.name, .monitor]
+                | @tsv
+              ' |
+              while IFS=$'\t' read -r workspace monitor; do
+                case "$monitor" in
+                  "$left")
+                    target="name:$workspace-left"
+                    ;;
+                  "$right")
+                    target="name:$workspace-right"
+                    ;;
+                  *)
+                    continue
+                    ;;
+                esac
+
+                hyprctl clients -j |
+                  jq -r --arg workspace "$workspace" '.[] | select(.workspace.name == $workspace) | .address' |
+                  while read -r address; do
+                    hyprctl dispatch "hl.dsp.window.move({ workspace = \"$target\", silent = true, window = \"address:$address\" })" >/dev/null
+                  done
+              done
+            ;;
           switch)
+            "$0" migrate
             hyprctl dispatch "hl.dsp.focus({ monitor = \"$left\" })" >/dev/null
             hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$number-left\" })" >/dev/null
             hyprctl dispatch "hl.dsp.focus({ monitor = \"$right\" })" >/dev/null
@@ -148,17 +179,17 @@
   mouse = {mouse = true;};
 
   mediaBinds = [
-      (mkBindOpts "XF86AudioRaiseVolume" ''hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+")'' lockedRepeat)
-      (mkBindOpts "XF86AudioLowerVolume" ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")'' lockedRepeat)
-      (mkBindOpts "XF86AudioMute" ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")'' locked)
-      (mkBindOpts "XF86AudioMicMute" ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")'' locked)
-      (mkBindOpts "XF86MonBrightnessUp" ''hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+")'' lockedRepeat)
-      (mkBindOpts "XF86MonBrightnessDown" ''hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-")'' lockedRepeat)
-      (mkBindOpts "XF86AudioNext" ''hl.dsp.exec_cmd("playerctl next")'' locked)
-      (mkBindOpts "XF86AudioPrev" ''hl.dsp.exec_cmd("playerctl previous")'' locked)
-      (mkBindOpts "XF86AudioPlay" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
-      (mkBindOpts "XF86AudioPause" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
-      (mkBindOpts "${mod} + SPACE" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
+    (mkBindOpts "XF86AudioRaiseVolume" ''hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+")'' lockedRepeat)
+    (mkBindOpts "XF86AudioLowerVolume" ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")'' lockedRepeat)
+    (mkBindOpts "XF86AudioMute" ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")'' locked)
+    (mkBindOpts "XF86AudioMicMute" ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle")'' locked)
+    (mkBindOpts "XF86MonBrightnessUp" ''hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+")'' lockedRepeat)
+    (mkBindOpts "XF86MonBrightnessDown" ''hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-")'' lockedRepeat)
+    (mkBindOpts "XF86AudioNext" ''hl.dsp.exec_cmd("playerctl next")'' locked)
+    (mkBindOpts "XF86AudioPrev" ''hl.dsp.exec_cmd("playerctl previous")'' locked)
+    (mkBindOpts "XF86AudioPlay" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
+    (mkBindOpts "XF86AudioPause" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
+    (mkBindOpts "${mod} + SPACE" ''hl.dsp.exec_cmd("playerctl play-pause")'' locked)
   ];
 
   # Binds for the self-built Quickshell shell (modules/gui/shell.nix).
@@ -229,7 +260,7 @@
         map (i: {
           workspace = toString i;
           persistent = true;
-        }) (lib.range 1 5)
+        }) (lib.range 1 10)
       );
 
   workspaceBinds =
@@ -383,11 +414,15 @@ in {
         # holding only the hyprland portal, hiding the gtk FileChooser.
         portalPackage = null;
 
-        extraConfig = ''
-          pcall(function()
-            require("matugen").apply_theme()
-          end)
-        '';
+        extraConfig =
+          ''
+            pcall(function()
+              require("matugen").apply_theme()
+            end)
+          ''
+          + lib.optionalString (synchronizedWorkspaceScript != null) ''
+            hl.dsp.exec_cmd("${synchronizedWorkspaceScript} migrate")
+          '';
 
         settings = {
           monitor = monitors;
@@ -578,21 +613,20 @@ in {
 
           workspace_rule = persistentWorkspaces;
 
-          window_rule =
-            [
-              {
-                name = "shell-settings";
-                match.title = "^(Settings)$";
-                float = true;
-                center = true;
-              }
-              {
-                name = "cs2-immediate";
-                match.class = "^(cs2)$";
-                immediate = true;
-                keep_aspect_ratio = true;
-              }
-            ];
+          window_rule = [
+            {
+              name = "shell-settings";
+              match.title = "^(Settings)$";
+              float = true;
+              center = true;
+            }
+            {
+              name = "cs2-immediate";
+              match.class = "^(cs2)$";
+              immediate = true;
+              keep_aspect_ratio = true;
+            }
+          ];
         };
       };
 

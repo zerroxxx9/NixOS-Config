@@ -50,24 +50,20 @@ in
     hyprland =
       default.hyprland
       // {
+        kbLayout = "us";
         dockDisplay = {
           laptop = "eDP-1";
-          dockOutputs = ["DP-9" "DP-8"];
-        };
-        synchronizedWorkspaces = {
-          left = "DVI-I-1";
-          right = "DVI-I-2";
-          count = 10;
+          dockOutputs = ["DP-8" "DP-9"];
         };
         monitors = [
           {
-            output = "DP-9";
+            output = "DP-8";
             mode = "preferred";
             position = "0x0";
             scale = 1.5;
           }
           {
-            output = "DP-8";
+            output = "DP-9";
             mode = "preferred";
             position = "2560x0";
             scale = 1.5;

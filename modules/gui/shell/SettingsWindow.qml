@@ -21,7 +21,7 @@ FloatingWindow {
     implicitWidth: 880
     implicitHeight: 640
     minimumSize: Qt.size(700, 580)
-    color: theme.surface
+    color: Qt.rgba(theme.surface.r, theme.surface.g, theme.surface.b, theme.opacity * 0.6)
     onClosed: closeRequested()
     onVisibleChanged: if (visible) refresh()
 
@@ -365,7 +365,7 @@ FloatingWindow {
         Rectangle {
             Layout.fillHeight: true
             Layout.preferredWidth: 200
-            color: theme.surfaceHigh
+            color: Qt.rgba(theme.surfaceHigh.r, theme.surfaceHigh.g, theme.surfaceHigh.b, theme.opacity * 0.6)
 
             Column {
                 anchors.fill: parent

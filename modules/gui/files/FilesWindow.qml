@@ -32,7 +32,7 @@ FloatingWindow {
     implicitWidth: 1100
     implicitHeight: 700
     minimumSize: Qt.size(720, 460)
-    color: theme.surface
+    color: Qt.rgba(theme.surface.r, theme.surface.g, theme.surface.b, theme.opacity * 0.6)
 
     // ---------------------------------------------------------------- helpers
 
@@ -311,7 +311,7 @@ FloatingWindow {
             id: side
             anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
             width: 200
-            color: theme.surfaceHigh
+            color: Qt.rgba(theme.surfaceHigh.r, theme.surfaceHigh.g, theme.surfaceHigh.b, theme.opacity * 0.6)
 
             Column {
                 anchors { fill: parent; leftMargin: 10; rightMargin: 10; topMargin: 14 }

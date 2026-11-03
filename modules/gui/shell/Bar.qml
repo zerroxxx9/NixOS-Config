@@ -15,6 +15,7 @@ Item {
     id: bar
     required property string screenName
     signal islandClicked
+    signal menuRequested(string kind, real x)
     property bool panelOpen: false
 
     readonly property var monitor: Hyprland.monitors.values.find(m => m.name === screenName) ?? null
@@ -271,20 +272,27 @@ Item {
         }
 
         Text {
+            id: btIcon
             text: ""
             color: bar.btOn ? theme.text : theme.textDim
             font.family: settings.font
             font.pixelSize: 14
             anchors.verticalCenter: parent.verticalCenter
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -6
+                cursorShape: Qt.PointingHandCursor
+                onClicked: bar.menuRequested("bluetooth", btIcon.mapToItem(bar, btIcon.width / 2, 0).x)
+            }
         }
 
-        // Volume: scroll to change, click to mute.
+        // Volume: scroll to change.
         MouseArea {
             anchors.verticalCenter: parent.verticalCenter
             implicitWidth: volume.implicitWidth
             implicitHeight: volume.implicitHeight
             cursorShape: Qt.PointingHandCursor
-            onClicked: if (bar.sink && bar.sink.audio) bar.sink.audio.muted = !bar.sink.audio.muted
+            onClicked: bar.menuRequested("volume", mapToItem(bar, width / 2, 0).x)
             onWheel: wheel => {
                 if (bar.sink && bar.sink.audio)
                     bar.sink.audio.volume = Math.max(0, Math.min(1, bar.sink.audio.volume + (wheel.angleDelta.y > 0 ? 0.05 : -0.05)));
@@ -308,8 +316,15 @@ Item {
         }
 
         Row {
+            id: wifiRow
             spacing: 6
             anchors.verticalCenter: parent.verticalCenter
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: -6
+                cursorShape: Qt.PointingHandCursor
+                onClicked: bar.menuRequested("wifi", wifiRow.mapToItem(bar, wifiRow.width / 2, 0).x)
+            }
             Text {
                 text: !bar.wifiUp ? "" : bar.wired ? "󰈀" : ""
                 color: bar.wifiUp ? theme.text : theme.textDim

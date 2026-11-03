@@ -47,7 +47,14 @@ html, body, .Root, .Root__top-container {
   background-image: none !important;
 }
 .Root__now-playing-bar {
-  background: var(--spice-player) !important;
+  /* flat: the player blends into the panel colour instead of being a card */
+  background: var(--spice-sidebar) !important;
+  box-shadow: none !important;
+}
+.Root__now-playing-bar > *,
+.main-nowPlayingBar-container {
+  background: transparent !important;
+  border: 0 !important;
 }
 
 /* ---- top bar ------------------------------------------------------------ */
@@ -124,8 +131,8 @@ html, body, .Root, .Root__top-container {
 
 /* ---- track lists ------------------------------------------------------------ */
 .main-trackList-trackListHeader {
-  background: var(--spice-card) !important;
-  border-radius: 10px;
+  background: var(--spice-selected-row) !important;
+  border-radius: 0;
   border: 0 !important;
 }
 .main-trackList-trackListRow {
@@ -133,7 +140,15 @@ html, body, .Root, .Root__top-container {
 }
 .main-trackList-trackListRow:hover,
 .main-trackList-selected {
-  background: var(--spice-selected-row) !important;
+  background: var(--spice-card) !important;
+}
+
+/* round play/pause button in the playlist header, like the player's */
+.main-actionBar-ActionBar button[data-testid="play-button"],
+[data-testid="action-bar-row"] button[data-encore-id="buttonPrimary"] {
+  background: var(--spice-accent) !important;
+  color: var(--spice-alt-text) !important;
+  border-radius: 999px !important;
 }
 
 /* ---- library -------------------------------------------------------------------- */

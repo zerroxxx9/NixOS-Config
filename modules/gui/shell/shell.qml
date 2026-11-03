@@ -138,10 +138,13 @@ ShellRoot {
             required property var modelData
             property bool open: false
             property bool mapped: false
+            property string menuKind: ""
+            property real menuX: 0
             readonly property int flareSize: 24
 
             onOpenChanged: {
                 if (open) {
+                    menuKind = "";
                     root.launcherOpen = false;
                     root.wallpapersOpen = false;
                     root.clipboardOpen = false;
@@ -157,6 +160,7 @@ ShellRoot {
                 function onLauncherOpenChanged() {
                     if (root.launcherOpen) {
                         scope.open = false;
+                        scope.menuKind = "";
                         root.wallpapersOpen = false;
                         root.clipboardOpen = false;
                     }
@@ -164,6 +168,7 @@ ShellRoot {
                 function onWallpapersOpenChanged() {
                     if (root.wallpapersOpen) {
                         scope.open = false;
+                        scope.menuKind = "";
                         root.launcherOpen = false;
                         root.clipboardOpen = false;
                     }
@@ -171,6 +176,7 @@ ShellRoot {
                 function onClipboardOpenChanged() {
                     if (root.clipboardOpen) {
                         scope.open = false;
+                        scope.menuKind = "";
                         root.launcherOpen = false;
                         root.wallpapersOpen = false;
                     }
@@ -192,7 +198,7 @@ ShellRoot {
                 exclusiveZone: settings.height
                 // Fixed height (resizing the surface made the bar flicker); the mask
                 // below keeps the unused part click-through.
-                implicitHeight: settings.height + Math.max(panelClip.height, launcher.maxHeight, wallpapers.maxHeight)
+                implicitHeight: settings.height + Math.max(panelClip.height, launcher.maxHeight, wallpapers.maxHeight, statusMenu.maxHeight)
                 color: "transparent"
                 WlrLayershell.namespace: "pill-bar"
                 WlrLayershell.keyboardFocus: (root.launcherOpen || root.wallpapersOpen) ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
@@ -203,6 +209,12 @@ ShellRoot {
                         y: panelClip.y
                         width: panelClip.width + 2 * scope.flareSize
                         height: scope.mapped ? panelClip.height : 0
+                    }
+                    Region {
+                        x: statusMenu.x
+                        y: statusMenu.y
+                        width: statusMenu.width
+                        height: statusMenu.visible ? statusMenu.height : 0
                     }
                     Region {
                         x: launcher.x - scope.flareSize
@@ -225,7 +237,28 @@ ShellRoot {
                     height: settings.height
                     screenName: scope.modelData.name
                     panelOpen: scope.open || root.launcherOpen || root.wallpapersOpen
-                    onIslandClicked: scope.open = !scope.open
+                    onIslandClicked: { scope.menuKind = ""; scope.open = !scope.open; }
+                    onMenuRequested: (kind, x) => {
+                        scope.open = false;
+                        root.launcherOpen = false;
+                        root.wallpapersOpen = false;
+                        root.clipboardOpen = false;
+                        if (scope.menuKind === kind) {
+                            scope.menuKind = "";
+                        } else {
+                            scope.menuX = x;
+                            scope.menuKind = kind;
+                        }
+                    }
+                }
+
+                StatusMenu {
+                    id: statusMenu
+                    y: settings.height
+                    kind: scope.menuKind
+                    anchorX: scope.menuX
+                    windowWidth: bar.width
+                    onCloseRequested: scope.menuKind = ""
                 }
 
                 // Concave corners where the panel's sides meet the bar.
@@ -331,8 +364,8 @@ ShellRoot {
             // it toggles instead of close-then-reopen.
             HyprlandFocusGrab {
                 windows: [bar]
-                active: scope.open
-                onCleared: scope.open = false
+                active: scope.open || scope.menuKind !== ""
+                onCleared: { scope.open = false; scope.menuKind = ""; }
             }
         }
     }

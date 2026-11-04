@@ -266,15 +266,13 @@ def main():
     subprocess.run([MATUGEN, "image", str(image), "--source-color-index", "0", "-c", CONFIG,
                     "-m", mode, "-t", scheme, "--import-json", str(data_file), "-q"], check=True)
 
-    # Spotify cannot be made see-through, so its theme fakes the frosted look
-    # with a blurred copy of the wallpaper (see spicetify/matugen.js).
-    spotify_dir = STATE / "spotify"
-    spotify_dir.mkdir(parents=True, exist_ok=True)
-    blurred = spotify_dir / "bg.tmp.jpg"
-    subprocess.run(["magick", str(image), "-resize", "1600x", "-blur", "0x28",
-                    "-quality", "80", str(blurred)], check=False)
-    if blurred.exists():
-        blurred.replace(spotify_dir / "bg.jpg")
+    keyboard = subprocess.run(
+        ["set-keychron-accent", hexed["accent"]],
+        capture_output=True, text=True, check=False,
+    )
+    if keyboard.returncode:
+        detail = keyboard.stderr.strip() or f"exited with status {keyboard.returncode}"
+        print(f"warning: could not update Keychron Q1 Max lighting: {detail}", file=sys.stderr)
 
     # Reload: wallpaper (awww), Hyprland borders, kitty (SIGUSR1). rofi, GTK,
     # the shell and Zed/Vesktop/Obsidian read the new files on their own.

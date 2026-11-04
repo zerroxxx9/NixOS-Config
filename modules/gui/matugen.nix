@@ -127,11 +127,29 @@
 
   setWallpaper = pkgs.writeShellApplication {
     name = "set-wallpaper";
-    runtimeInputs = [pkgs.matugen pkgs.imagemagick pkgs.python3 pkgs.procps pkgs.awww pkgs.hyprland pkgs.mako];
+    runtimeInputs = [
+      pkgs.matugen
+      pkgs.imagemagick
+      pkgs.python3
+      pkgs.procps
+      pkgs.awww
+      pkgs.hyprland
+      pkgs.mako
+      setKeychronAccent
+    ];
     text = ''
       export MATUGEN_CONFIG=${matugenConfig}
       export MATUGEN_PALETTE=${./matugen/palette.toml}
       exec python3 -I ${./matugen/set-wallpaper.py} "$@"
+    '';
+  };
+
+  hidPython = pkgs.python3.withPackages (ps: [ps.hidapi]);
+  setKeychronAccent = pkgs.writeShellApplication {
+    name = "set-keychron-accent";
+    runtimeInputs = [hidPython];
+    text = ''
+      exec python3 ${./matugen/set-keychron-accent.py} "$@"
     '';
   };
 in {
@@ -140,6 +158,10 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    services.udev.extraRules = lib.mkAfter ''
+      SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="3434", ATTR{idProduct}=="0810", OWNER="${hostVariables.username}", MODE="0600"
+    '';
+
     modules.gui.kitty.enable = lib.mkDefault true;
     modules.software.vscode.extensions = [
       (vscodeExtension // {

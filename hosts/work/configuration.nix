@@ -13,8 +13,12 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.kernelParams = ["usbcore.autosuspend=-1"];
+
   networking.hostName = hostVariables.host;
   networking.networkmanager.enable = true;
+
+  services.hardware.bolt.enable = true;
 
   age.identityPaths = ["/var/lib/agenix/work-agenix"];
 

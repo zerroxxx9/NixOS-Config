@@ -619,6 +619,11 @@ in {
 
           window_rule = [
             {
+              name = "terminal-suppress-maximize";
+              match.class = "^(kitty|Alacritty)$";
+              suppress_event = "maximize";
+            }
+            {
               name = "shell-settings";
               match.title = "^(Settings)$";
               float = true;

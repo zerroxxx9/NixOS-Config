@@ -6,10 +6,19 @@
   --mg-radius: 18px;
   --mg-radius-sm: 12px;
   --mg-gap: 10px;
+  --mg-panel: rgba(var(--spice-rgb-sidebar), 0.62);
 }
 
-html, body, .Root, .Root__top-container {
-  background: var(--spice-main) !important;
+/* Spotify cannot be see-through, so the frosted look is a blurred copy of the
+ * wallpaper behind semi-transparent panels (--mg-bg is set by matugen.js). */
+html {
+  background-color: var(--spice-main) !important;
+  background-image: var(--mg-bg, none) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+body, .Root, .Root__top-container {
+  background: transparent !important;
 }
 
 /* ---- frame and panels -------------------------------------------------- */
@@ -25,9 +34,12 @@ html, body, .Root, .Root__top-container {
 .Root__main-view,
 .Root__right-sidebar,
 .Root__now-playing-bar {
-  background: var(--spice-sidebar) !important;
+  background: var(--mg-panel) !important;
   border-radius: var(--mg-radius) !important;
   overflow: hidden;
+}
+.Root__now-playing-bar {
+  margin: 0 !important;
 }
 .Root__nav-bar > *,
 .Root__right-sidebar > *,
@@ -48,7 +60,7 @@ html, body, .Root, .Root__top-container {
 }
 .Root__now-playing-bar {
   /* flat: the player blends into the panel colour instead of being a card */
-  background: var(--spice-sidebar) !important;
+  background: var(--mg-panel) !important;
   box-shadow: none !important;
 }
 .Root__now-playing-bar > *,

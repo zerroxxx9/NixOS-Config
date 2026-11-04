@@ -54,6 +54,7 @@ in {
             disableMinSize = true;
             enabledThemes = [themeFile];
             notifyAboutUpdates = false;
+            transparent = true;
             useQuickCss = false;
 
             plugins = {

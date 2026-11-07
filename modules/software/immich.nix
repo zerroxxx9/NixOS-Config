@@ -24,6 +24,28 @@ in {
       type = lib.types.int;
       default = 995;
     };
+
+    oidc = {
+      enable = lib.mkEnableOption "OAuth/OIDC login for Immich";
+
+      issuerUrl = lib.mkOption {
+        type = lib.types.str;
+        default = tsCfg.serve.pocket-id.url;
+        description = "OIDC issuer URL (Pocket ID's APP_URL).";
+      };
+
+      clientId = lib.mkOption {
+        type = lib.types.str;
+        default = "immich";
+        description = "Client ID of the Immich client created in Pocket ID.";
+      };
+
+      clientSecretFile = lib.mkOption {
+        type = lib.types.str;
+        default = "/var/lib/secrets/immich-oidc-client-secret";
+        description = "Root-readable file with the client secret. Substituted at service start, never in the Nix store.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -33,10 +55,22 @@ in {
       port = immichPort;
       mediaLocation = cfg.mediaLocation;
 
-      settings = {
-        newVersionCheck.enabled = false;
-        server.externalDomain = tsCfg.serve.immich.url;
-      };
+      settings =
+        {
+          newVersionCheck.enabled = false;
+          server.externalDomain = tsCfg.serve.immich.url;
+        }
+        // lib.optionalAttrs cfg.oidc.enable {
+          oauth = {
+            enabled = true;
+            issuerUrl = cfg.oidc.issuerUrl;
+            clientId = cfg.oidc.clientId;
+            clientSecret._secret = cfg.oidc.clientSecretFile;
+            scope = "openid email profile";
+            buttonText = "Login with Pocket ID";
+            autoRegister = true;
+          };
+        };
     };
 
     users.users.immich.uid = cfg.uid;

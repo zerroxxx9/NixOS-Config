@@ -24,7 +24,9 @@
     ./vesktop.nix
     ./opencloud.nix
     ./paperless-ngx.nix
+    ./pocket-id.nix
     ./spicetify.nix
+    ./smart-home.nix
     ./sunshine.nix
     ./mealie.nix
     ./freshrss.nix

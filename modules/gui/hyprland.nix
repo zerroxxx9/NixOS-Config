@@ -218,6 +218,7 @@
 
     (mkBindOpts "Prior" (run "shell-screenshot region") locked)
     (mkBindOpts "${mod} + Prior" (run "shell-screenshot full") locked)
+    (mkBind "${mod} + SHIFT + R" (run "shell-record menu"))
   ];
 
   overviewBinds = [

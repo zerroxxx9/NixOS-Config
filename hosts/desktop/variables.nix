@@ -58,7 +58,7 @@ in
     hyprland =
       default.hyprland
       // {
-        kbLayout = "us";
+        kbLayout = "eu";
         monitors = [
           {
             output = "DP-2";

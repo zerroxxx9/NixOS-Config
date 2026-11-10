@@ -50,7 +50,7 @@ in
     hyprland =
       default.hyprland
       // {
-        kbLayout = "us";
+        kbLayout = "eu";
         dockDisplay = {
           laptop = "eDP-1";
           dockOutputs = ["DP-8" "DP-9"];

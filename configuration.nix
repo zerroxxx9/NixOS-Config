@@ -40,6 +40,7 @@
   modules.software.librewolf.enable = lib.attrByPath ["modules" "software" "librewolf"] false hostVariables;
   modules.software.lmstudio.enable = lib.attrByPath ["modules" "software" "lmstudio"] false hostVariables;
   modules.software.mealie.enable = lib.attrByPath ["modules" "software" "mealie"] false hostVariables;
+  modules.software.pocket-id.enable = lib.attrByPath ["modules" "software" "pocket-id"] false hostVariables;
   modules.software.freshrss.enable = lib.attrByPath ["modules" "software" "freshrss"] false hostVariables;
   modules.software.learninghub.enable = lib.attrByPath ["modules" "software" "learninghub"] false hostVariables;
   modules.software.nixvim.enable = lib.attrByPath ["modules" "software" "nixvim"] false hostVariables;
@@ -53,6 +54,7 @@
   modules.software.vesktop.enable = lib.attrByPath ["modules" "software" "vesktop"] false hostVariables;
   modules.software.paperless-ngx.enable = lib.attrByPath ["modules" "software" "paperless-ngx"] false hostVariables;
   modules.software.spicetify.enable = lib.attrByPath ["modules" "software" "spicetify"] false hostVariables;
+  modules.software.smart-home.enable = lib.attrByPath ["modules" "software" "smart-home"] false hostVariables;
   modules.software.sunshine.enable = lib.attrByPath ["modules" "software" "sunshine"] false hostVariables;
   modules.software.vscode.enable = lib.attrByPath ["modules" "software" "vscode"] false hostVariables;
   modules.software.zed.enable = lib.attrByPath ["modules" "software" "zed"] false hostVariables;

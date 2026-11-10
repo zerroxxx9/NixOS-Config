@@ -10,6 +10,26 @@
   state = "${home}/.local/state/matugen";
   templates = ./matugen/templates;
 
+  midnight = pkgs.fetchFromGitHub {
+    owner = "refact0r";
+    repo = "midnight-discord";
+    rev = "118bf0d32448c00790b2505a7df333290412a2e8";
+    hash = "sha256-Zoa07DsBQcKDWOu+9e9cmoXTGKoMhIrzlMQv7q3etRw=";
+  };
+  # Midnight, vendored so Discord never fetches CSS, fonts or images at
+  # runtime: remote imports and URLs are dropped and the generated colours go
+  # last. The theme header has to stay the first block.
+  vesktopTemplate =
+    pkgs.runCommand "vesktop-theme.css" {
+      nativeBuildInputs = [pkgs.gnused pkgs.coreutils];
+    } ''
+      {
+        head -n 5 ${templates}/vesktop.css
+        sed -e '/^@import/d' -e "s|url('https://refact0r.github.io[^']*')|url(''')|" ${midnight}/build/midnight.css
+        tail -n +6 ${templates}/vesktop.css
+      } > $out
+    '';
+
   obsidianCfg = config.modules.software.obsidian;
   optionalTemplate = cond: text: lib.optionalString cond text;
 
@@ -65,7 +85,7 @@
     output_path = "${state}/vscode-theme.json"
 
     [templates.vesktop]
-    input_path = "${templates}/vesktop.css"
+    input_path = "${vesktopTemplate}"
     output_path = "${home}/.config/vesktop/themes/matugen.theme.css"
 
     ${optionalTemplate obsidianCfg.enable ''

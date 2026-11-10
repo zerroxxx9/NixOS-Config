@@ -62,7 +62,7 @@
       file="$dir/$(date +%F_%H-%M-%S).png"
       case "$mode" in
         region)
-          geometry=$(slurp) || exit 0
+          geometry=$(slurp </dev/null) || exit 0
           grim -g "$geometry" "$file"
           ;;
         full) grim "$file" ;;
@@ -73,6 +73,61 @@
       esac
       wl-copy < "$file"
       notify-send -i "$file" "Screenshot" "Saved $(basename "$file")"
+    '';
+  };
+
+  record = pkgs.writeShellApplication {
+    name = "shell-record";
+    runtimeInputs = [pkgs.wl-screenrec pkgs.slurp pkgs.jq pkgs.libnotify pkgs.coreutils pkgs.util-linux pkgs.quickshell];
+    text = ''
+      pidfile="''${XDG_RUNTIME_DIR:-/tmp}/shell-record.pid"
+      dir="$HOME/Videos/Recordings"
+
+      recording() {
+        [ -f "$pidfile" ] && kill -0 "$(cat "$pidfile")" 2>/dev/null
+      }
+
+      stop() {
+        recording || { rm -f "$pidfile"; return 0; }
+        pid=$(cat "$pidfile")
+        kill -INT "$pid"
+        while kill -0 "$pid" 2>/dev/null; do sleep 0.1; done
+        rm -f "$pidfile"
+        notify-send -i media-record "Recording saved" "$(basename "$(cat "$pidfile.file")")"
+      }
+
+      case "''${1:-menu}" in
+        menu)
+          if recording; then stop; else quickshell -c shell ipc call record open; fi
+          ;;
+        start)
+          recording && exit 0
+          mkdir -p "$dir"
+          file="$dir/$(date +%F_%H-%M-%S).mp4"
+          case "''${2:-full}" in
+            region)
+              geometry=$(slurp </dev/null) || exit 0
+              target=(-g "$geometry")
+              ;;
+            full)
+              target=(-o "$(hyprctl monitors -j | jq -r '.[] | select(.focused) | .name')")
+              ;;
+            *)
+              echo "usage: shell-record start region|full" >&2
+              exit 2
+              ;;
+          esac
+          printf '%s' "$file" >"$pidfile.file"
+          setsid sh -c 'echo $$ >"$1"; shift; exec wl-screenrec "$@"' sh "$pidfile" "''${target[@]}" -f "$file" >/dev/null 2>&1 &
+          sleep 0.3
+          notify-send -i media-record "Recording started" "Press Super+Shift+R to stop"
+          ;;
+        stop) stop ;;
+        *)
+          echo "usage: shell-record menu|start region|full|stop" >&2
+          exit 2
+          ;;
+      esac
     '';
   };
 
@@ -170,6 +225,7 @@ in {
 
     environment.systemPackages = [
       screenshot
+      record
       randomWallpaper
       lockScreen
       monitorsLayout

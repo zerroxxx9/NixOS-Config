@@ -15,6 +15,7 @@ ShellRoot {
     property bool carouselOpen: false
     property bool clipboardOpen: false
     property bool settingsOpen: false
+    property bool recordOpen: false
     property real clipX: 0
     property real clipY: 0
     signal panelToggle
@@ -47,6 +48,13 @@ ShellRoot {
         function toggle(): void { root.settingsOpen = !root.settingsOpen; }
         function open(): void { root.settingsOpen = true; }
         function close(): void { root.settingsOpen = false; }
+    }
+
+    IpcHandler {
+        target: "record"
+        function toggle(): void { root.recordOpen = !root.recordOpen; }
+        function open(): void { root.recordOpen = true; }
+        function close(): void { root.recordOpen = false; }
     }
 
     IpcHandler {
@@ -113,6 +121,18 @@ ShellRoot {
             screen: modelData
             open: root.carouselOpen
             onCloseRequested: root.carouselOpen = false
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        RecordMenu {
+            required property var modelData
+            screen: modelData
+            screenName: modelData.name
+            open: root.recordOpen
+            onCloseRequested: root.recordOpen = false
         }
     }
 

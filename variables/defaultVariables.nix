@@ -52,6 +52,7 @@
       sunshine = false;
       mealie = false;
       freshrss = false;
+      pocket-id = false;
       learninghub = false;
       zed = false;
       zellij = true;

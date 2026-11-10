@@ -131,6 +131,10 @@
         modules = [./hosts/homelab];
         hostVariables = import ./hosts/homelab/variables.nix;
       };
+      zimablade = mkNixosConfiguration {
+        modules = [./hosts/zimablade];
+        hostVariables = import ./hosts/zimablade/variables.nix;
+      };
       desktop = mkNixosConfiguration {
         modules = [./hosts/desktop];
         hostVariables = import ./hosts/desktop/variables.nix;

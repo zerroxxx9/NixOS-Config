@@ -122,7 +122,7 @@ Item {
                     anchors.top: parent.top
                     width: parent.width
                     height: 2
-                    color: Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.35)
+                    color: theme.accent
                 }
 
                 Text {

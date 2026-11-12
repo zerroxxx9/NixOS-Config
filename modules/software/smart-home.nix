@@ -98,7 +98,7 @@ in {
 
     services.home-assistant = {
       enable = true;
-      extraComponents = ["default_config" "mqtt" "met" "radio_browser" "wake_on_lan"];
+      extraComponents = ["default_config" "mqtt" "met" "radio_browser" "wake_on_lan" "reolink"];
       config = {
         default_config = {};
 

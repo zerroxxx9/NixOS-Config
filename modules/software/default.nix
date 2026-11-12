@@ -24,6 +24,7 @@
     ./vesktop.nix
     ./opencloud.nix
     ./paperless-ngx.nix
+    ./protonmail-bridge.nix
     ./pocket-id.nix
     ./spicetify.nix
     ./smart-home.nix

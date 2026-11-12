@@ -179,11 +179,15 @@ in {
         app-registry.app_registry.mimetypes = collaboraMimeTypes;
         csp.directives = {
           child-src = ["'self'"];
-          connect-src = [
-            "'self'"
-            "blob:"
-            "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"
-          ];
+          connect-src =
+            [
+              "'self'"
+              "blob:"
+              "https://raw.githubusercontent.com/opencloud-eu/awesome-apps/"
+            ]
+            # The web client fetches the IdP's discovery document and token endpoint.
+            ++ lib.optional config.modules.software.opencloud.oidc.enable
+            config.modules.software.opencloud.oidc.issuerUrl;
           default-src = ["'none'"];
           font-src = ["'self'"];
           frame-ancestors = ["'self'"];

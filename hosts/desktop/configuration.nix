@@ -183,6 +183,7 @@
     geary
     claude-code
     orca-slicer
+    prismlauncher
     (unstable.brave.override {
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
@@ -196,6 +197,15 @@
     wifiPasswords = false;
     copilotApiKey = false;
     desktopBookmarks = false;
+  };
+
+  # Room LEDs follow the wallpaper accent through Home Assistant on zimablade.
+  # Token: plain file at ~/.config/home-assistant/token (not in the repo).
+  # Set the real light entity ids here.
+  modules.gui.matugen.homeAssistant = {
+    enable = true;
+    entities = ["light.led_strip_desk" "light.led_strip_tv"];
+    effect = "blink"; # the Lidl strips only show a new colour after an effect
   };
 
   modules.security.yubikey = {

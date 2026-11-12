@@ -78,6 +78,7 @@
 
   record = pkgs.writeShellApplication {
     name = "shell-record";
+    excludeShellChecks = ["SC2016"]; # the sh -c '...$$...' string is meant to expand in the child shell
     runtimeInputs = [pkgs.wl-screenrec pkgs.slurp pkgs.jq pkgs.libnotify pkgs.coreutils pkgs.util-linux pkgs.quickshell];
     text = ''
       pidfile="''${XDG_RUNTIME_DIR:-/tmp}/shell-record.pid"

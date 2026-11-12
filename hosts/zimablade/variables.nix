@@ -46,7 +46,7 @@ in
             mealie = false;
             freshrss = true;
             pocket-id = true;
-            learninghub = true;
+            learninghub = false; # offline until it has content
             smart-home = true;
             zellij = false;
           };

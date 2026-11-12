@@ -136,7 +136,7 @@
       pkgs.hyprland
       pkgs.mako
       setKeychronAccent
-    ];
+    ] ++ lib.optional cfg.homeAssistant.enable setRoomLeds;
     text = ''
       export MATUGEN_CONFIG=${matugenConfig}
       export MATUGEN_PALETTE=${./matugen/palette.toml}
@@ -152,12 +152,57 @@
       exec python3 ${./matugen/set-keychron-accent.py} "$@"
     '';
   };
+
+  setRoomLeds = pkgs.writeShellApplication {
+    name = "set-room-leds";
+    runtimeInputs = [pkgs.python3];
+    text = ''
+      export HA_URL=${lib.escapeShellArg cfg.homeAssistant.url}
+      export HA_TOKEN_FILE=${lib.escapeShellArg cfg.homeAssistant.tokenFile}
+      export HA_LED_EFFECT=${lib.escapeShellArg (toString cfg.homeAssistant.effect)}
+      export HA_LIGHT_ENTITIES=${lib.escapeShellArg (lib.concatStringsSep "," cfg.homeAssistant.entities)}
+      exec python3 -I ${./matugen/set-room-leds.py} "$@"
+    '';
+  };
 in {
   options.modules.gui.matugen = {
     enable = lib.mkEnableOption "matugen wallpaper theming";
+
+    homeAssistant = {
+      enable = lib.mkEnableOption "room LED sync through Home Assistant";
+      url = lib.mkOption {
+        type = lib.types.str;
+        default = "http://zimablade.tail11bba0.ts.net:8123";
+        description = "Home Assistant base URL, reached over the tailnet.";
+      };
+      tokenFile = lib.mkOption {
+        type = lib.types.str;
+        default = "${home}/.config/home-assistant/token";
+        description = "File holding a Home Assistant long-lived access token (keep it outside the repo).";
+      };
+      entities = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        example = ["light.room_led"];
+        description = "Light entities that follow the wallpaper accent colour.";
+      };
+      effect = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        example = "blink";
+        description = "Effect sent right after the colour. Some Zigbee strips only apply a new colour once an effect runs.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = !cfg.homeAssistant.enable || cfg.homeAssistant.entities != [];
+        message = "modules.gui.matugen.homeAssistant.entities must list at least one light entity.";
+      }
+    ];
+
     services.udev.extraRules = lib.mkAfter ''
       SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="3434", ATTR{idProduct}=="0810", OWNER="${hostVariables.username}", MODE="0600"
     '';

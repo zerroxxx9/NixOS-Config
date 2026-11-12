@@ -23,6 +23,7 @@ import colorsys
 import json
 import math
 import os
+import shutil
 import subprocess
 import sys
 import tomllib
@@ -274,6 +275,13 @@ def main():
         detail = keyboard.stderr.strip() or f"exited with status {keyboard.returncode}"
         print(f"warning: could not update Keychron Q1 Max lighting: {detail}", file=sys.stderr)
 
+    # Room LEDs via Home Assistant. Started now and collected after the reloads
+    # so an unreachable server (3 s timeout) never delays the wallpaper change.
+    leds = None
+    if shutil.which("set-room-leds"):
+        leds = subprocess.Popen(["set-room-leds", hexed["accent"]],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+
     # Reload: wallpaper (awww), Hyprland borders, kitty (SIGUSR1). rofi, GTK,
     # the shell and Zed/Vesktop/Obsidian read the new files on their own.
     subprocess.run(["awww", "img", str(image), "--transition-type", "grow",
@@ -281,6 +289,12 @@ def main():
     subprocess.run(["hyprctl", "reload"], check=False)
     subprocess.run(["pkill", "-USR1", "kitty"], check=False)
     subprocess.run(["makoctl", "reload"], check=False)
+
+    if leds:
+        _, err = leds.communicate()
+        if leds.returncode:
+            print(f"warning: could not update room LEDs: {err.strip() or f'exited with status {leds.returncode}'}",
+                  file=sys.stderr)
 
 
 if __name__ == "__main__":

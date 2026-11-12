@@ -154,7 +154,7 @@ Item {
         const out = {};
         for (const m of layout)
             out[m.name] = { mode: m.mode, x: m.x, y: m.y, scale: m.scale, transform: m.transform };
-        saver.command = [settings.bin + "/monitors-layout", "save", JSON.stringify(out)];
+        saver.command = [settings.userBin + "/monitors-layout", "save", JSON.stringify(out)];
         saver.running = true;
         status = "Applying …";
     }

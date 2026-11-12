@@ -10,6 +10,18 @@ import Quickshell.Wayland
 ShellRoot {
     id: root
 
+    readonly property var primaryScreens: {
+        const configured = Quickshell.screens.find(screen => screen.name === settings.output);
+        if (configured)
+            return [configured];
+
+        const external = Quickshell.screens.find(screen => !screen.name.startsWith("eDP-"));
+        if (external)
+            return [external];
+
+        return Quickshell.screens.length > 0 ? [Quickshell.screens[0]] : [];
+    }
+
     property bool launcherOpen: false
     property bool wallpapersOpen: false
     property bool carouselOpen: false
@@ -114,7 +126,7 @@ ShellRoot {
     }
 
     Variants {
-        model: Quickshell.screens.filter(s => s.name === settings.output)
+        model: root.primaryScreens
 
         WallpaperCarousel {
             required property var modelData
@@ -151,7 +163,7 @@ ShellRoot {
     }
 
     Variants {
-        model: Quickshell.screens.filter(s => s.name === settings.output)
+        model: root.primaryScreens
 
         Scope {
             id: scope

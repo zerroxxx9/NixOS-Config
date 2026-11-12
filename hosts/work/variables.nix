@@ -50,12 +50,33 @@ in
     hyprland =
       default.hyprland
       // {
-        kbLayout = "us";
+        kbLayout = "eu";
+        hotplugUsbResetDevices = ["3434:0810"];
         dockDisplay = {
           laptop = "eDP-1";
           dockOutputs = ["DP-8" "DP-9"];
+          undockedPosition = "0x0";
+          undockedScale = 1;
         };
         monitors = [
+          {
+            output = "HDMI-A-1";
+            mode = "3840x2160@60.00";
+            position = "4480x0";
+            scale = 1.5;
+          }
+          {
+            output = "DP-1";
+            mode = "2560x1440@59.95";
+            position = "1920x0";
+            scale = 1;
+          }
+          {
+            output = "eDP-1";
+            mode = "1920x1200@60.01";
+            position = "0x0";
+            scale = 1;
+          }
           {
             output = "DP-8";
             mode = "preferred";
@@ -67,12 +88,6 @@ in
             mode = "preferred";
             position = "2560x0";
             scale = 1.5;
-          }
-          {
-            output = "eDP-1";
-            mode = "preferred";
-            position = "5120x0";
-            scale = 1;
           }
         ];
       };

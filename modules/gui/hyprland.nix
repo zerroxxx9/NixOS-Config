@@ -26,6 +26,7 @@
   # runs once at config load, so this watches socket2 for monitoradded/
   # monitorremoved and re-applies the state live via `hyprctl eval`.
   dockDisplay = lib.attrByPath ["hyprland" "dockDisplay"] null hostVariables;
+  hotplugUsbResetDevices = lib.attrByPath ["hyprland" "hotplugUsbResetDevices"] [] hostVariables;
   synchronizedWorkspaces = lib.attrByPath ["hyprland" "synchronizedWorkspaces"] null hostVariables;
   kbLayout = lib.attrByPath ["hyprland" "kbLayout"] "de" hostVariables;
 
@@ -38,6 +39,8 @@
 
         laptop_output=${lib.escapeShellArg dockDisplay.laptop}
         dock_outputs=(${lib.concatMapStringsSep " " lib.escapeShellArg dockDisplay.dockOutputs})
+        undocked_position=${lib.escapeShellArg (dockDisplay.undockedPosition or "auto")}
+        undocked_scale=${toString (dockDisplay.undockedScale or 1)}
 
         dock_connected() {
           local names
@@ -54,17 +57,48 @@
           if dock_connected; then
             hyprctl eval "hl.monitor({ output = \"$laptop_output\", disabled = true })" >/dev/null
           else
-            hyprctl eval "hl.monitor({ output = \"$laptop_output\", mode = \"preferred\", position = \"auto\", scale = 1 })" >/dev/null
+            hyprctl eval "hl.monitor({ output = \"$laptop_output\", disabled = false, mode = \"preferred\", position = \"$undocked_position\", scale = $undocked_scale })" >/dev/null
           fi
         }
 
         apply_state
 
         socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
-        socat -U UNIX-CONNECT:"$socket" - | while read -r line; do
+        socat -U - UNIX-CONNECT:"$socket" | while read -r line; do
           case "$line" in
           monitoraddedv2* | monitorremovedv2*)
             apply_state
+            ;;
+          esac
+        done
+      '';
+
+  hotplugUsbResetScript =
+    if hotplugUsbResetDevices == []
+    then null
+    else
+      pkgs.writeShellScript "hypr-hotplug-usb-reset" ''
+        set -euo pipefail
+
+        devices=(${lib.concatMapStringsSep " " lib.escapeShellArg hotplugUsbResetDevices})
+
+        reset_devices() {
+          sleep 1
+          for device in "''${devices[@]}"; do
+            for _ in {1..5}; do
+              if ${pkgs.usbutils}/bin/usbreset "$device" >/dev/null 2>&1; then
+                break
+              fi
+              sleep 0.5
+            done
+          done
+        }
+
+        socket="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+        socat -U - UNIX-CONNECT:"$socket" | while read -r line; do
+          case "$line" in
+          monitoraddedv2*)
+            reset_devices
             ;;
           esac
         done
@@ -733,11 +767,28 @@ in {
             Service = {
               Type = "simple";
               ExecStart = "${dockDisplayScript}";
-              Restart = "on-failure";
+              Restart = "always";
+              RestartSec = 1;
             };
             Install = {
               WantedBy = ["hyprland-session.target"];
             };
+          };
+        })
+        // (lib.optionalAttrs (hotplugUsbResetDevices != []) {
+          hypr-hotplug-usb-reset = {
+            Unit = {
+              Description = "Reset USB devices after monitor hotplug";
+              PartOf = ["hyprland-session.target"];
+              After = ["hyprland-session.target"];
+            };
+            Service = {
+              Type = "simple";
+              ExecStart = "${hotplugUsbResetScript}";
+              Restart = "always";
+              RestartSec = 1;
+            };
+            Install.WantedBy = ["hyprland-session.target"];
           };
         })
         // {

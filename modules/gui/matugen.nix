@@ -144,6 +144,20 @@
     '';
   };
 
+  restoreWallpaper = pkgs.writeShellScript "restore-wallpaper" ''
+    sleep 1
+    ${pkgs.awww}/bin/awww restore
+
+    image=$(
+      ${pkgs.awww}/bin/awww query |
+        ${pkgs.gnused}/bin/sed -n 's/.*currently displaying: image: //p' |
+        ${pkgs.coreutils}/bin/head -n1
+    )
+    if [ -n "$image" ]; then
+      ${pkgs.awww}/bin/awww img "$image" --transition-type none
+    fi
+  '';
+
   hidPython = pkgs.python3.withPackages (ps: [ps.hidapi]);
   setKeychronAccent = pkgs.writeShellApplication {
     name = "set-keychron-accent";
@@ -231,7 +245,7 @@ in {
         Service = {
           Type = "simple";
           ExecStart = "${pkgs.awww}/bin/awww-daemon";
-          ExecStartPost = "${pkgs.bash}/bin/bash -c 'sleep 1; ${pkgs.awww}/bin/awww restore'";
+          ExecStartPost = restoreWallpaper;
           Restart = "on-failure";
         };
         Install.WantedBy = ["hyprland-session.target"];

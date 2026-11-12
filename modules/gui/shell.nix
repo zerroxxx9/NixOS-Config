@@ -23,6 +23,7 @@
         property string font: "Geist"
         property string themeFile: ${builtins.toJSON "${home}/.local/state/matugen/theme.json"}
         property string bin: "/run/current-system/sw/bin"
+        property string userBin: ${builtins.toJSON "${home}/.local/state/nix/profiles/home-manager/home-path/bin"}
         property string stateDir: ${builtins.toJSON "${home}/.local/state/matugen"}
         property string wallpaperDir: ${builtins.toJSON "${home}/.dotfiles/assets/wallpaper"}
         property int height: 30
@@ -119,6 +120,7 @@
               ;;
           esac
           printf '%s' "$file" >"$pidfile.file"
+          # shellcheck disable=SC2016
           setsid sh -c 'echo $$ >"$1"; shift; exec wl-screenrec "$@"' sh "$pidfile" "''${target[@]}" -f "$file" >/dev/null 2>&1 &
           sleep 0.3
           notify-send -i media-record "Recording started" "Press Super+Shift+R to stop"
@@ -147,9 +149,17 @@
   # monitor block would otherwise reset it).
   monitorsLayout = pkgs.writeShellApplication {
     name = "monitors-layout";
-    runtimeInputs = [pkgs.jq pkgs.coreutils pkgs.gnugrep];
+    runtimeInputs = [pkgs.jq pkgs.coreutils pkgs.gnugrep pkgs.gnused pkgs.awww];
     text = ''
       file="''${XDG_STATE_HOME:-$HOME/.local/state}/shell/monitors.json"
+
+      refresh_wallpaper() {
+        sleep 0.5
+        image=$(awww query 2>/dev/null | sed -n 's/.*currently displaying: image: //p' | head -n1 || true)
+        if [ -n "$image" ]; then
+          awww img "$image" --transition-type none
+        fi
+      }
 
       apply() {
         [ -f "$file" ] || return 0
@@ -159,6 +169,7 @@
             grep -qx "$name" <<<"$connected" || continue
             hyprctl eval "hl.monitor({ output = \"$name\", mode = \"$mode\", position = \"''${x}x''${y}\", scale = $scale, transform = $transform })" >/dev/null
           done
+        refresh_wallpaper
       }
 
       case "''${1:-restore}" in
@@ -172,7 +183,12 @@
           fi
           apply
           ;;
-        restore) apply ;;
+        restore)
+          # Hyprland applies declarative monitor rules asynchronously during
+          # startup/reload; wait until they settle before restoring the saved layout.
+          sleep 1
+          apply
+          ;;
         *)
           echo "usage: monitors-layout save JSON|restore" >&2
           exit 2
@@ -241,7 +257,7 @@ in {
     ];
 
     home-manager.users.${hostVariables.username} = {
-      home.packages = [pkgs.quickshell];
+      home.packages = [pkgs.quickshell monitorsLayout];
 
       xdg.configFile = {
         "quickshell/shell" = {

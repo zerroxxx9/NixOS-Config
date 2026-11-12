@@ -58,7 +58,8 @@ in
     hyprland =
       default.hyprland
       // {
-        kbLayout = "us";
+        kbLayout = "eu";
+        hotplugUsbResetDevices = ["3434:0810"];
         monitors = [
           {
             output = "DP-2";

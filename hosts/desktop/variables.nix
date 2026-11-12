@@ -73,6 +73,19 @@ in
             position = "2560x0";
             scale = 1;
           }
+          # Über den UGREEN-KVM (HDMI): EDID bietet max. 1440p@120
+          {
+            output = "HDMI-A-1";
+            mode = "2560x1440@120.00";
+            position = "0x0";
+            scale = 1;
+          }
+          {
+            output = "HDMI-A-2";
+            mode = "3840x2160@60.00";
+            position = "2560x0";
+            scale = 1;
+          }
         ];
       };
     gnome =

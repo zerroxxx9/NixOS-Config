@@ -4,6 +4,7 @@
     ./chessstack.nix
     ./ctf.nix
     ./ctf-browser.nix
+    ./lab-domain.nix
     ./displaylink.nix
     ./distrobox.nix
     ./docker.nix

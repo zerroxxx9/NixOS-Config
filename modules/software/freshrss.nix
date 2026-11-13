@@ -74,7 +74,7 @@ in {
   config = lib.mkIf cfg.enable {
     services.freshrss = {
       enable = true;
-      baseUrl = "https://${tsCfg.hostname}:${toString freshrssPort}";
+      baseUrl = tsCfg.serve.freshrss.url;
       authType = "none";
     };
 
@@ -85,10 +85,11 @@ in {
           port = freshrssPort;
         }
       ];
-      serverAliases = [tsCfg.hostname];
+      serverAliases = [tsCfg.hostname] ++ lib.optional (tsCfg.domain != null) "${tsCfg.serve.freshrss.subdomain}.${tsCfg.domain}";
     };
 
     modules.software.tailscale.serve.freshrss = {
+      subdomain = "rss";
       port = freshrssPort;
       target = "http://127.0.0.1:${toString freshrssPort}";
       after = ["nginx.service" "phpfpm-freshrss.service" "freshrss-config.service"];

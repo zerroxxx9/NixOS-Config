@@ -60,7 +60,7 @@ in {
       enable = true;
       address = "127.0.0.1";
       port = paperlessPort;
-      domain = "${tsCfg.hostname}:${toString paperlessPort}";
+      domain = lib.removePrefix "https://" tsCfg.serve.paperless.url;
       mediaDir = cfg.mediaDir;
       consumptionDir = cfg.consumptionDir;
 

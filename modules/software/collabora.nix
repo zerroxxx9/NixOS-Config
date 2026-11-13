@@ -15,7 +15,9 @@
     tailnetIpRegex
     "::ffff:${tailnetIpRegex}"
   ];
-  collaboraUrl = "https://${hostname}:${toString collaboraPort}";
+  collaboraUrl = tsCfg.serve.collabora.url;
+  collaboraHost = lib.removePrefix "https://" collaboraUrl;
+  opencloudUrl = tsCfg.serve.opencloud.url;
   collaboraUrls = [collaboraUrl];
   wopiUrl = "http://127.0.0.1:${toString wopiPort}";
   wopiPublicUrl = "https://${hostname}:${toString wopiPort}";
@@ -23,6 +25,7 @@
     wopiPublicUrl
     "https://${hostname}"
     "https://${hostname}:443"
+    opencloudUrl
     "https://.*\\.ts\\.net:${toString wopiPort}"
     "http://.*\\.ts\\.net:${toString wopiPort}"
     "http://${hostname}:${toString wopiPort}"
@@ -32,6 +35,7 @@
   frameAncestorOrigins = [
     "https://${hostname}"
     "https://${hostname}:443"
+    opencloudUrl
   ];
   frameAncestors = lib.concatStringsSep " " frameAncestorOrigins;
   contentSecurityFrameAncestors = lib.concatStringsSep " " (["'self'"] ++ frameAncestorOrigins);
@@ -136,7 +140,7 @@ in {
       ];
 
       settings = {
-        server_name = "${hostname}:${toString collaboraPort}";
+        server_name = collaboraHost;
 
         ssl = {
           enable = false;

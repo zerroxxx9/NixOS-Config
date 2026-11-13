@@ -65,6 +65,17 @@ in {
       description = "MagicDNS suffix of the tailnet this host belongs to.";
     };
 
+    domain = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "lab.example.com";
+      description = ''
+        Public lab domain. When set, every service in `serve` is reachable at
+        `https://<subdomain>.<domain>` (terminated by Caddy, see lab-domain.nix)
+        instead of `https://<hostname>:<port>`, and `tailscale serve` is no longer used.
+      '';
+    };
+
     serve = lib.mkOption {
       default = {};
       description = ''
@@ -76,8 +87,14 @@ in {
         read-modify-write of one shared config, so concurrent invocations race and
         silently drop each other's entries.
       '';
-      type = lib.types.attrsOf (lib.types.submodule (sub: {
+      type = lib.types.attrsOf (lib.types.submodule (sub @ {name, ...}: {
         options = {
+          subdomain = lib.mkOption {
+            type = lib.types.str;
+            default = name;
+            description = "Subdomain below `domain` this service is published under. Defaults to the service name.";
+          };
+
           port = lib.mkOption {
             type = lib.types.port;
             description = "HTTPS port to publish this service on.";
@@ -107,14 +124,17 @@ in {
           url = lib.mkOption {
             type = lib.types.str;
             readOnly = true;
-            description = "Public URL this service is reachable at. Derived from hostname, port and path.";
+            description = "Public URL this service is reachable at. Derived from the lab domain, or from hostname, port and path.";
           };
         };
 
         config.url =
-          "https://${cfg.hostname}"
-          + lib.optionalString (sub.config.port != 443) ":${toString sub.config.port}"
-          + lib.optionalString (sub.config.path != null) sub.config.path;
+          if cfg.domain != null
+          then "https://${sub.config.subdomain}.${cfg.domain}" + lib.optionalString (sub.config.path != null) sub.config.path
+          else
+            "https://${cfg.hostname}"
+            + lib.optionalString (sub.config.port != 443) ":${toString sub.config.port}"
+            + lib.optionalString (sub.config.path != null) sub.config.path;
       }));
     };
   };
@@ -146,7 +166,7 @@ in {
 
     networking.firewall.trustedInterfaces = ["tailscale0"];
 
-    systemd.services.tailscale-serve = lib.mkIf (cfg.serve != {}) {
+    systemd.services.tailscale-serve = lib.mkIf (cfg.serve != {} && cfg.domain == null) {
       description = "Apply the declarative Tailscale Serve configuration";
       after = ["network-online.target" "tailscaled.service" "tailscaled-autoconnect.service"] ++ serveOrderUnits;
       wants = ["network-online.target" "tailscaled.service"];

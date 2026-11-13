@@ -93,6 +93,7 @@
     exitNode = true;
     subnetRoutes = ["192.168.178.0/24"];
     useSSH = true;
+    domain = "lab.zerrox-sec.com";
   };
 
   modules.software.smart-home.desktop = {

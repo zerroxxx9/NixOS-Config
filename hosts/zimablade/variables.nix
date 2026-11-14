@@ -51,6 +51,7 @@ in
             zellij = false;
             vaultwarden = true;
             ntfy = true;
+            backup = true;
           };
         systemSettings =
           default.modules.systemSettings

@@ -58,6 +58,7 @@
       zellij = true;
       vaultwarden = false;
       ntfy = false;
+      backup = false;
     };
     security = {
       pentest = false;

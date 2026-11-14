@@ -38,5 +38,6 @@
     ./zellij.nix
     ./vaultwarden.nix
     ./ntfy.nix
+    ./backup.nix
   ];
 }

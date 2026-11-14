@@ -59,6 +59,7 @@
       vaultwarden = false;
       ntfy = false;
       backup = false;
+      adguard = false;
     };
     security = {
       pentest = false;

@@ -39,5 +39,6 @@
     ./vaultwarden.nix
     ./ntfy.nix
     ./backup.nix
+    ./adguard.nix
   ];
 }

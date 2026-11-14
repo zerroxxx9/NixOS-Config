@@ -52,6 +52,7 @@ in
             vaultwarden = true;
             ntfy = true;
             backup = true;
+            adguard = true;
           };
         systemSettings =
           default.modules.systemSettings

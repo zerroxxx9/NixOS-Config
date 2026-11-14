@@ -82,6 +82,7 @@
     "protonmail-bridge"
     "home-assistant"
     "mosquitto"
+    "adguardhome"
   ] (_: { onFailure = ["notify-failure@%n.service"]; });
 
   modules.software.immich = {
@@ -132,6 +133,8 @@
     mac = "30:56:0f:71:73:4d"; # enp9s0 on the desktop
     host = "192.168.178.108";
   };
+
+  modules.software.adguard.tailnetIP = "100.121.95.15";
 
   services.smartd.enable = true;
 

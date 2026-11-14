@@ -50,6 +50,7 @@ in
             smart-home = true;
             zellij = false;
             vaultwarden = true;
+            ntfy = true;
           };
         systemSettings =
           default.modules.systemSettings

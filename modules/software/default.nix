@@ -37,5 +37,6 @@
     ./zed.nix
     ./zellij.nix
     ./vaultwarden.nix
+    ./ntfy.nix
   ];
 }

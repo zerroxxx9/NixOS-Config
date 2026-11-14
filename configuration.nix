@@ -60,6 +60,7 @@
   modules.software.zed.enable = lib.attrByPath ["modules" "software" "zed"] false hostVariables;
   modules.software.zellij.enable = lib.attrByPath ["modules" "software" "zellij"] false hostVariables;
   modules.software.vaultwarden.enable = lib.attrByPath ["modules" "software" "vaultwarden"] false hostVariables;
+  modules.software.ntfy.enable = lib.attrByPath ["modules" "software" "ntfy"] false hostVariables;
   modules.system.bootanimation.enable = lib.attrByPath ["modules" "systemSettings" "bootanimation"] false hostVariables;
   modules.system.gaming.enable = lib.attrByPath ["modules" "systemSettings" "gaming"] false hostVariables;
   modules.system.nas.enable = lib.attrByPath ["modules" "systemSettings" "nas"] false hostVariables;

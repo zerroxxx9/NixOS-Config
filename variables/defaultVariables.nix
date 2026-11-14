@@ -57,6 +57,7 @@
       zed = false;
       zellij = true;
       vaultwarden = false;
+      ntfy = false;
     };
     security = {
       pentest = false;

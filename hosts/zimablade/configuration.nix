@@ -52,6 +52,38 @@
     options = ["noatime" "nofail" "x-systemd.device-timeout=10"];
   };
 
+  systemd.services = lib.genAttrs [
+    # infra
+    "caddy"
+    "acme-lab.zerrox-sec.com"
+    "tailscaled"
+    "sshd"
+    "fail2ban"
+    "smartd"
+  
+    # databases
+    "postgresql"
+    "redis-immich"
+    "redis-paperless"
+    "couchdb"
+  
+    # services
+    "pocket-id"
+    "immich-server"
+    "immich-machine-learning"
+    "paperless-web"
+    "paperless-consumer"
+    "paperless-scheduler"
+    "paperless-task-queue"
+    "opencloud"
+    "coolwsd" # Collabora
+    "nginx" # FreshRSS
+    "phpfpm-freshrss"
+    "protonmail-bridge"
+    "home-assistant"
+    "mosquitto"
+  ] (_: { onFailure = ["notify-failure@%n.service"]; });
+
   modules.software.immich = {
     mediaLocation = "/mnt/storage/immich";
     uid = 996;

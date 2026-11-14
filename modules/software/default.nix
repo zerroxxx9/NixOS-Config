@@ -36,5 +36,6 @@
     ./nixvim.nix
     ./zed.nix
     ./zellij.nix
+    ./vaultwarden.nix
   ];
 }

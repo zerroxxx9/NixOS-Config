@@ -145,6 +145,7 @@
       "gcknhkkoolaabfmlnjonogaaifnjlfnp"
       "gkeojjjcdcopjkbelgbcpckplegclfeg"
       "gphhapmejobijbbhgpjhcjognlahblep"
+      "nngceckbapebfimnlniiiahkandclblb"
     ];
   };
 
@@ -168,6 +169,7 @@
 
   environment.systemPackages = with pkgs; [
     keepassxc
+    bitwarden-desktop
     vscode-with-extensions
     gh
     zip
@@ -191,6 +193,8 @@
       ];
     })
   ];
+
+  modules.software.librewolf.extensions = [pkgs.nur.repos.rycee.firefox-addons.bitwarden];
 
   # agenix Secrets aktivieren
   modules.security.agenix.secrets = {

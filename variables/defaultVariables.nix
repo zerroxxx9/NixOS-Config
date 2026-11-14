@@ -56,6 +56,7 @@
       learninghub = false;
       zed = false;
       zellij = true;
+      vaultwarden = false;
     };
     security = {
       pentest = false;

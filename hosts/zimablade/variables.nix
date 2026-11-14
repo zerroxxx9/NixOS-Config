@@ -49,6 +49,7 @@ in
             learninghub = false; # offline until it has content
             smart-home = true;
             zellij = false;
+            vaultwarden = true;
           };
         systemSettings =
           default.modules.systemSettings
